@@ -1,6 +1,6 @@
 # cs231n-final-project
 
-## Jakub Dworakowski (jakub@stanford.edu), Tyler Mau (tylermau@stanford.edu), Bohan Wu (bohanwu@stanford.edu)
+#### Jakub Dworakowski (jakub@stanford.edu), Tyler Mau (tylermau@stanford.edu), Bohan Wu (bohanwu@stanford.edu)
 
 Key questions we need to address in the proposal:
 1. What is the problem that you will be investigating? Why is it interesting?
