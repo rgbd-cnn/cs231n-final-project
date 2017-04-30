@@ -22,12 +22,15 @@ def save_original_images_to_disk(data_file_dir):
 
 
 def save_images_to_disk(images, root_dir):
-    W, H = np.ma.size(images, axis=2), np.ma.size(images, axis=3)
-    print np.ma.size(images, axis=0)
-    for i in range(np.ma.size(images, axis=0)):
-        print i
+    # print len(images)
+    if not os.path.exists(root_dir):
+        os.makedirs(root_dir)
+    for i in range(len(images)):
+        print("saving image: %s" % i)
+        image = images[i]
+        C, W, H = image.shape
         im = Image.new('RGB', (W, H))
-        im.putdata(format_pixel_data(images[i, :, :, :], H, W))
+        im.putdata(format_pixel_data(image, H, W))
         im.save(os.path.join(root_dir, "%s.png" % i))
 
 
@@ -39,6 +42,8 @@ def save_single_object_images_to_disk(data_file_dir):
     images = np.array(f.get("images"))
     num_images = images.shape[0]
     root_dir = "single-object-images"
+    if not os.path.exists(root_dir):
+        os.makedirs(root_dir)
     for i in range(len(labels)):
         label = labels[i]
         label_sub_dir = os.path.join(os.path.expanduser(root_dir), label)
@@ -62,7 +67,48 @@ def parse_arguments(argv):
     return parser.parse_args(argv)
 
 
+def save_cropped_single_object_images_to_disk(data_file_dir):
+    f = h5py.File(data_file_dir, 'r')
+    labels = ["".join([chr(j) for j in f[i].value]) for i in
+              f.get("names").value[0]]
+    pixel_labels = np.array(f.get("labels"))
+    images = np.array(f.get("images"))
+    num_images = images.shape[0]
+    root_dir = "cropped-single-object-images"
+    if not os.path.exists(root_dir):
+        os.makedirs(root_dir)
+    for i in range(len(labels)):
+        label = labels[i]
+        label_sub_dir = os.path.join(os.path.expanduser(root_dir), label)
+        if not os.path.exists(label_sub_dir):
+            os.makedirs(label_sub_dir)
+        images_to_save = []
+        for j in range(num_images):
+            image = images[j]
+            pixel_label = pixel_labels[j]
+            if np.sum(pixel_label == (i + 1)) > 0:
+                print(j)
+                images_to_save.append(cropped_image(image, pixel_label, i + 1))
+        save_images_to_disk(images_to_save, label_sub_dir)
+
+
+def cropped_image(image, pixel_label, index):
+    c, w, h = image.shape
+    x1, y1, x2, y2 = 10000, 10000, -1, -1
+
+    for i in range(w):
+        for j in range(h):
+            if pixel_label[i, j] == index:
+                x1 = min(x1, i)
+                x2 = max(x2, i)
+                y1 = min(y1, j)
+                y2 = max(y2, j)
+
+    return image[:, x1:x2+1, y1:y2+1]
+
+
 if __name__ == '__main__':
     dir = parse_arguments(sys.argv[1:]).data_file_dir
-    # save_original_images_to_disk(dir)
-    # save_single_object_images_to_disk(dir)
+    save_original_images_to_disk(dir)
+    save_single_object_images_to_disk(dir)
+    save_cropped_single_object_images_to_disk(dir)
