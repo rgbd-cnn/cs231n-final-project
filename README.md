@@ -29,9 +29,11 @@
             3. SUN3D (dimensions: various, such as `530 x 730`, `531 x 681`, `441 x 591`)
     * The Test Set, [SUNRGBDv2Test](http://rgbd.cs.princeton.edu/data/LSUN/SUNRGBDLSUNTest.zip), contains 2860 RGB-D scene images.
 * `data/Princeton-SUNRGB-D/load_data.py`
-    * `get_rgbd_training_set()` generates X_train, y_train
+    * `get_rgbd_training_set()` generates X_train (width, height resized to `640 x 480`), y_train
         * X_train is 10,355 x 480 x 640 x 4. 
             * 10,355 is num training examples.
+            * 640 is image width
+            * 480 is image height
             * 4 is all channels with the last being depth. 
         * y_train is 10,355 english scene names
     * `get_rgbd_test_set` generates X_test
