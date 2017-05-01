@@ -21,6 +21,7 @@ def save_original_images_to_disk(data_file_dir):
     save_images_to_disk(images, "raw-images")
 
 
+# saves all 1449 images in ./raw-images
 def save_images_to_disk(images, root_dir):
     # print len(images)
     if not os.path.exists(root_dir):
@@ -34,6 +35,8 @@ def save_images_to_disk(images, root_dir):
         im.save(os.path.join(root_dir, "%s.png" % i))
 
 
+# creates 894 sub-folders under ./single-object-images and put all images
+# containing a specific object type in one of these 894 sub-folders
 def save_single_object_images_to_disk(data_file_dir):
     f = h5py.File(data_file_dir, 'r')
     labels = ["".join([chr(j) for j in f[i].value]) for i in
@@ -61,12 +64,16 @@ def save_single_object_images_to_disk(data_file_dir):
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--data_file_dir', type=str,
+    parser.add_argument('--matlab_file_dir', type=str,
                         help='Directory of the matlab data file.',
                         default='./nyu_depth_v2_labeled.mat')
     return parser.parse_args(argv)
 
 
+# crops all pixels of an image that are labeled as a specific object class
+# using a rectangle and save this cropped image to 894 individual
+# sub-folders under ./cropped-single-object-images. Since these images vary
+# in sizes, we are not yet sure how this could be useful
 def save_cropped_single_object_images_to_disk(data_file_dir):
     f = h5py.File(data_file_dir, 'r')
     labels = ["".join([chr(j) for j in f[i].value]) for i in
@@ -104,11 +111,11 @@ def cropped_image(image, pixel_label, index):
                 y1 = min(y1, j)
                 y2 = max(y2, j)
 
-    return image[:, x1:x2+1, y1:y2+1]
+    return image[:, x1:x2 + 1, y1:y2 + 1]
 
 
 if __name__ == '__main__':
-    dir = parse_arguments(sys.argv[1:]).data_file_dir
+    dir = parse_arguments(sys.argv[1:]).matlab_file_dir
     save_original_images_to_disk(dir)
     save_single_object_images_to_disk(dir)
     save_cropped_single_object_images_to_disk(dir)
