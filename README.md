@@ -43,3 +43,9 @@
                 * 480 is image height
                 * 4 is all channels with the last being depth
 
+#### `Relevant Works Cited` 
+1. [RGB-D Object Recognition and Pose Estimation based on Pre-trained Convolutional Neural Network Features](https://pdfs.semanticscholar.org/efa3/e8826aab1a79d05b1f3ab55b277c0120a092.pdf)
+2. [FuseNet: Incorporating Depth into Semantic Segmentation via Fusion-based CNN Architecture.](http://vision.in.tum.de/_media/spezial/bib/hazirbasma2016fusenet.pdf)
+3. [Convolutional-Recursive Deep Learning for 3D Object Classification](https://papers.nips.cc/paper/4773-convolutional-recursive-deep-learning-for-3d-object-classification.pdf)
+
+     
