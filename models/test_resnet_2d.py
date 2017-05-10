@@ -9,11 +9,6 @@ from data.cs231n.data_utils import get_CIFAR10_data
 # Train the Model
 def train_model(device, model, train_data, train_labels, epochs=1,
                 batch_size=64, is_training=False, log_freq=100, plot_loss=False):
-  # Required for Batch Normalization
-  extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-  with tf.control_dependencies(extra_update_ops):
-      train_step = model['optimizer'].minimize(model['loss_val'])
-
   with tf.device(device):
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -29,7 +24,7 @@ def train_model(device, model, train_data, train_labels, epochs=1,
     # Populate TensorFlow Variables
     variables = [model['loss_val'], correct_prediction, accuracy]
     if is_training:
-      variables[-1] = train_step
+      variables[-1] = model['train_step']
 
     # Iteration Counter 
     iter_cnt = 0
