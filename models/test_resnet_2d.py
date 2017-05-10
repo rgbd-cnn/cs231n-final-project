@@ -7,11 +7,9 @@ from data.princeton_sunrgbd.load_data import *
 from data.cs231n.data_utils import get_CIFAR10_data
 
 # Train the Model
-def train_model(device, model, X_data, labels, epochs=1,
+def train_model(device, sess, model, X_data, labels, epochs=1,
                 batch_size=64, training=False, log_freq=100, plot_loss=False):
   with tf.device(device):
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
 
     # Calculate Prediction Accuracy
     correct_prediction = tf.equal(tf.argmax(y_out,1), y)
@@ -135,15 +133,18 @@ print("Setting up model...")
 # model = setup_model()
 model = {}
 
+sess = tf.Session()
+sess.run(tf.global_variables_initializer())
+
 # Train Model
 print("Training model...")
-train_model('/gpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=128,
+train_model('/gpu:0', sess, model, data['X_train'], data['y_train'], epochs=1, batch_size=128,
             training=True, log_freq=100, plot_loss=False)
 print("Final Training Accuracy:")
-train_model('/gpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=64,
+train_model('/gpu:0', sess, model, data['X_train'], data['y_train'], epochs=1, batch_size=64,
             training=False, log_freq=100, plot_loss=False)
 print('Final Validation Accuracy:')
-train_model('/gpu:0', model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
+train_model('/gpu:0', sess, model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
             training=False, log_freq=100, plot_loss=False)
 
 # main()
