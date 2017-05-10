@@ -132,7 +132,8 @@ data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
 
 # Create Model
 print("Setting up model...")
-model = setup_model()
+# model = setup_model()
+model = {}
 
 # Train Model
 print("Training model...")

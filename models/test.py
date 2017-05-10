@@ -3,6 +3,7 @@ import tensorflow.contrib.slim as slim
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from models.resnet_2d import *
 from data.cs231n.data_utils import get_CIFAR10_data
 
 def run_model(session, predict, loss_val, Xd, yd,
@@ -141,53 +142,51 @@ def my_model(X,y,is_training):
     
     return y_out
 
-def main():
-    # Reset Network
-    tf.reset_default_graph()
+# Reset Network
+tf.reset_default_graph()
 
-    # Create Placeholder Variables
-    X = tf.placeholder(tf.float32, [None, 32, 32, 3])
-    y = tf.placeholder(tf.int64, [None])
-    is_training = tf.placeholder(tf.bool)
+# Create Placeholder Variables
+X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+y = tf.placeholder(tf.int64, [None])
+is_training = tf.placeholder(tf.bool)
 
-    learning_rate=1e-3
+learning_rate=1e-3
 
-    # Define Output and Calculate Loss
-    y_out = my_model(X,y,is_training)
-    total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, 10), logits=y_out)
-    mean_loss = tf.reduce_mean(total_loss)
+# Define Output and Calculate Loss
+y_out = my_model(X,y,is_training)
+total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, 10), logits=y_out)
+mean_loss = tf.reduce_mean(total_loss)
 
-    # Adam Optimizer
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
-                                       beta1=0.9,
-                                       beta2=0.999,
-                                       epsilon=1e-08)
+# Adam Optimizer
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
+                                   beta1=0.9,
+                                   beta2=0.999,
+                                   epsilon=1e-08)
 
-    # Required for Batch Normalization
-    extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-    with tf.control_dependencies(extra_update_ops):
-        train_step = optimizer.minimize(mean_loss)
+# Required for Batch Normalization
+extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+with tf.control_dependencies(extra_update_ops):
+    train_step = optimizer.minimize(mean_loss)
 
 
-    # Test with CIFAR-10 Data
-    data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
-                            subtract_mean=True)
+# Test with CIFAR-10 Data
+data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
+                        subtract_mean=True)
 
-    X_train = data['X_train']
-    y_train = data['y_train']
-    X_val = data['X_val']
-    y_val = data['y_val']
+X_train = data['X_train']
+y_train = data['y_train']
+X_val = data['X_val']
+y_val = data['y_val']
 
-    sess = tf.Session()
+sess = tf.Session()
 
-    sess.run(tf.global_variables_initializer())
-    print('Training')
-    run_model(sess,y_out,mean_loss,X_train,y_train,1,128,100,train_step,False)
+sess.run(tf.global_variables_initializer())
+print('Training')
+run_model(sess,y_out,mean_loss,X_train,y_train,1,128,100,train_step,False)
 
-    print('Training Final')
-    run_model(sess,y_out,mean_loss,X_train,y_train,1,64)
-    print('Validation Final')
-    run_model(sess,y_out,mean_loss,X_val,y_val,1,64)
+print('Training Final')
+run_model(sess,y_out,mean_loss,X_train,y_train,1,64)
+print('Validation Final')
+run_model(sess,y_out,mean_loss,X_val,y_val,1,64)
 
-main()
-exit(0)
+
