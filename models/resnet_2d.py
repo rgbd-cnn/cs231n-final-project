@@ -4,14 +4,14 @@ import tensorflow.contrib.slim as slim
 def residual_unit(input, num_filters, counter, is_training):
   with tf.variable_scope("res_unit" + str(counter)):
     # Batch Normalization
-    out = slim.batch_norm(input,
-                          decay=0.999,
-                          center=True,
-                          scale=True,
-                          epsilon=1e-8,
-                          activation_fn=None,
-                          is_training=is_training,
-                          trainable=True)
+    # out = slim.batch_norm(input,
+    #                       decay=0.999,
+    #                       center=True,
+    #                       scale=True,
+    #                       epsilon=1e-8,
+    #                       activation_fn=None,
+    #                       is_training=is_training,
+    #                       trainable=True)
     
     # ReLU Activation
     out = tf.nn.relu(out)
@@ -21,14 +21,14 @@ def residual_unit(input, num_filters, counter, is_training):
     #out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
     
     # Batch Normalization
-    out = slim.batch_norm(out,
-                          decay=0.999,
-                          center=True,
-                          scale=True,
-                          epsilon=1e-8,
-                          activation_fn=None,
-                          is_training=is_training,
-                          trainable=True)
+    # out = slim.batch_norm(out,
+    #                       decay=0.999,
+    #                       center=True,
+    #                       scale=True,
+    #                       epsilon=1e-8,
+    #                       activation_fn=None,
+    #                       is_training=is_training,
+    #                       trainable=True)
     
     # ReLU Activation
     out = tf.nn.relu(out)
