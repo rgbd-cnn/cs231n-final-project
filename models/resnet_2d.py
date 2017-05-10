@@ -72,21 +72,20 @@ def resnet_2d_model(X, y, is_training):
   
   return y_out
 
-def setup_model():
+def setup_resnet_2d_model(image_size, num_classes, learning_rate=1e-3):
   # Reset Network
   tf.reset_default_graph()
 
   # Create Placeholder Variables
-  X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+  size = [None] + image_size
+  X = tf.placeholder(tf.float32, size)
   y = tf.placeholder(tf.int64, [None])
   is_training = tf.placeholder(tf.bool)
 
-  # Specify Learning Rate
-  learning_rate=1e-3
-
   # Define Output and Calculate Loss
   y_out = resnet_2d_model(X, y, is_training)
-  total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, 10), logits=y_out)
+  total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, num_classes),
+                                                       logits=y_out)
   mean_loss = tf.reduce_mean(total_loss)
 
   # Adam Optimizer
