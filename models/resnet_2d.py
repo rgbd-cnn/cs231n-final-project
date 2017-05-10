@@ -14,7 +14,7 @@ def residual_unit(input, num_filters, counter, is_training):
     #                       trainable=True)
     
     # ReLU Activation
-    out = tf.nn.relu(out)
+    out = tf.nn.relu(input)
     
     # Convolutional Layer (3x3)
     out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
