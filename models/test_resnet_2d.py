@@ -102,7 +102,10 @@ def main():
   print("Training model...")
   train_model('/gpu:0', model, data['X_train'], data['y_train'], epochs=2, batch_size=128,
               is_training=True, log_freq=100, plot_loss=False)
-  print('Validation...')
+  print("Final Training Accuracy:")
+  train_model('/gpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=64,
+              is_training=False, log_freq=100, plot_loss=False)
+  print('Final Validation Accuracy:')
   train_model('/gpu:0', model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
               is_training=False, log_freq=100, plot_loss=False)
 
