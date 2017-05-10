@@ -3,14 +3,14 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 from resnet_2d import *
-from data.princeton_sunrgbd.load_data import *
 from data.cs231n.data_utils import get_CIFAR10_data
+from data.princeton_sunrgbd.load_data import *
 
 # Train the Model
-def train_model(device, sess, model, X_data, labels, epochs=1,
-                batch_size=64, is_training=False, log_freq=100, plot_loss=False):
-  with tf.device(device):
+def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
+                is_training=False, log_freq=100, plot_loss=False):
 
+  with tf.device(device):
     # Calculate Prediction Accuracy
     correct_prediction = tf.equal(tf.argmax(model['y_out'],1), model['y'])
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
