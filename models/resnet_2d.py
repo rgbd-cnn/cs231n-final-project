@@ -4,38 +4,38 @@ import tensorflow.contrib.slim as slim
 def residual_unit(input, num_filters, counter, is_training):
   with tf.variable_scope("res_unit" + str(counter)):
     # Batch Normalization
-    # out = slim.batch_norm(input,
-    #                       decay=0.999,
-    #                       center=True,
-    #                       scale=True,
-    #                       epsilon=1e-8,
-    #                       activation_fn=None,
-    #                       is_training=is_training,
-    #                       trainable=True)
-    
-    # ReLU Activation
-    out = tf.nn.relu(input)
-    
-    # Convolutional Layer (3x3)
-    out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
-    #out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
-    
-    # Batch Normalization
-    # out = slim.batch_norm(out,
-    #                       decay=0.999,
-    #                       center=True,
-    #                       scale=True,
-    #                       epsilon=1e-8,
-    #                       activation_fn=None,
-    #                       is_training=is_training,
-    #                       trainable=True)
+    out = slim.batch_norm(input,
+                          decay=0.999,
+                          center=True,
+                          scale=True,
+                          epsilon=1e-8,
+                          activation_fn=None,
+                          is_training=is_training,
+                          trainable=True)
     
     # ReLU Activation
     out = tf.nn.relu(out)
     
     # Convolutional Layer (3x3)
     out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
-    #out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
+    out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
+    
+    # Batch Normalization
+    out = slim.batch_norm(out,
+                          decay=0.999,
+                          center=True,
+                          scale=True,
+                          epsilon=1e-8,
+                          activation_fn=None,
+                          is_training=is_training,
+                          trainable=True)
+    
+    # ReLU Activation
+    out = tf.nn.relu(out)
+    
+    # Convolutional Layer (3x3)
+    out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
+    out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
     
     # Residual Addition
     output = out + input
@@ -59,7 +59,7 @@ def resnet_2d_model(X, y, is_training):
     
     # Pooling Convolutional Layer (Stride = 2)
     layer = slim.conv2d(layer, num_filters, [3,3], stride=[2,2], normalizer_fn=slim.batch_norm, scope='conv_pool' + str(i))
-    #layer = slim.dropout(layer, keep_prob=0.75, is_training=is_training)
+    layer = slim.dropout(layer, keep_prob=0.75, is_training=is_training)
       
   # ReLU Activation
   layer = tf.nn.relu(layer)
