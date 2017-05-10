@@ -188,3 +188,6 @@ def main():
     run_model(sess,y_out,mean_loss,X_train,y_train,1,64)
     print('Validation Final')
     run_model(sess,y_out,mean_loss,X_val,y_val,1,64)
+
+main()
+exit(0)
