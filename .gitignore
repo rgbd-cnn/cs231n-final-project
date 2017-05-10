@@ -1,5 +1,6 @@
 data/**/*.mat
 **/*.png
+**/*.pyc
 **/*.jpeg
 **/SUNRGBDv2Test
 data/princeton_sunrgbd/SUNRGBD

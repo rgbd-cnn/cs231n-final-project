@@ -100,8 +100,13 @@ def main():
 
   # Train Model
   print("Training model...")
+<<<<<<< HEAD
   train_model('/gpu:0', model, data['X_train'], data['y_train'], epochs=2, batch_size=128,
               is_training=True, log_freq=100, plot_loss=False)
+=======
+  # train_model('/cpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=64,
+  #             is_training=True, log_freq=100, plot_loss=True)
+>>>>>>> 03480268d636915cd6199fad91271a28994a9fda
 
 main()
 exit(0)
