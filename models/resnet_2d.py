@@ -95,11 +95,6 @@ def setup_model():
                                      beta2=0.999,
                                      epsilon=1e-08)
 
-  # Required for Batch Normalization
-  extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-  with tf.control_dependencies(extra_update_ops):
-      train_step = optimizer.minimize(mean_loss)
-
   # Store Model in Dictionary
   model = {}
   model['X'] = X
@@ -107,7 +102,7 @@ def setup_model():
   model['is_training'] = is_training
   model['y_out'] = y_out
   model['loss_val'] = mean_loss
-  model['train_step'] = train_step
+  model['optimizer'] = optimizer
 
   return model
 
