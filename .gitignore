@@ -3,3 +3,4 @@ data/**/*.mat
 **/*.jpeg
 **/SUNRGBDv2Test
 data/Princeton-SUNRGB-D/SUNRGBD
+data/UWASH-RGBD/rgbd-dataset
