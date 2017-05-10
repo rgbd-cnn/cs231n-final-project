@@ -8,43 +8,7 @@ from data.cs231n.data_utils import get_CIFAR10_data
 
 # Train the Model
 def train_model(device, model, X_data, labels, epochs=1,
-                batch_size=64, training=False, log_freq=100, plot_loss=False):
-  # Reset Network
-  tf.reset_default_graph()
-
-  # Create Placeholder Variables
-  X = tf.placeholder(tf.float32, [None, 32, 32, 3])
-  y = tf.placeholder(tf.int64, [None])
-  is_training = tf.placeholder(tf.bool)
-
-  # Specify Learning Rate
-  learning_rate=1e-3
-
-  # Define Output and Calculate Loss
-  y_out = resnet_2d_model(X, y, is_training)
-  total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, 10), logits=y_out)
-  mean_loss = tf.reduce_mean(total_loss)
-
-  # Adam Optimizer
-  optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
-                                     beta1=0.9,
-                                     beta2=0.999,
-                                     epsilon=1e-08)
-
-  # Required for Batch Normalization
-  extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-  with tf.control_dependencies(extra_update_ops):
-      train_step = optimizer.minimize(mean_loss)
-
-  # Store Model in Dictionary
-  model = {}
-  model['X'] = X
-  model['y'] = y
-  model['is_training'] = is_training
-  model['y_out'] = y_out
-  model['loss_val'] = mean_loss
-  model['train_step'] = train_step
-
+                batch_size=64, is_training=False, log_freq=100, plot_loss=False):
   with tf.device(device):
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -59,7 +23,7 @@ def train_model(device, model, X_data, labels, epochs=1,
 
     # Populate TensorFlow Variables
     variables = [model['loss_val'], correct_prediction, accuracy]
-    if training:
+    if is_training:
       variables[-1] = model['train_step']
 
     # Iteration Counter 
@@ -80,7 +44,7 @@ def train_model(device, model, X_data, labels, epochs=1,
         # Feed Dictionary for Batch
         feed_dict = {model['X']: X_data[idx,:],
                      model['y']: labels[idx],
-                     model['is_training']: training}
+                     model['is_training']: is_training}
 
         # Run TF Session (Returns Loss and Correct Predictions)
         loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
@@ -88,7 +52,7 @@ def train_model(device, model, X_data, labels, epochs=1,
         epoch_loss += loss
 
         # Print Loss and Accuracies
-        if training and (iter_cnt % log_freq) == 0:
+        if is_training and (iter_cnt % log_freq) == 0:
           print("Iteration {0}: Training Loss = {1:.3g} and Accuracy = {2:.2g}"\
                 .format(iter_cnt + 1, loss, np.sum(corr) / float(actual_batch_size)))
         iter_cnt += 1
@@ -132,19 +96,18 @@ def main():
 
   # Create Model
   print("Setting up model...")
-  # model = setup_model()
-  model = {}
+  model = setup_model()
 
   # Train Model
   print("Training model...")
-  train_model('/cpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=128,
-              training=True, log_freq=100, plot_loss=False)
+  train_model('/gpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=128,
+              is_training=True, log_freq=100, plot_loss=False)
   print("Final Training Accuracy:")
-  train_model('/cpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=64,
-              training=False, log_freq=100, plot_loss=False)
+  train_model('/gpu:0', model, data['X_train'], data['y_train'], epochs=1, batch_size=64,
+              is_training=False, log_freq=100, plot_loss=False)
   print('Final Validation Accuracy:')
-  train_model('/cpu:0', model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
-              training=False, log_freq=100, plot_loss=False)
+  train_model('/gpu:0', model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
+              is_training=False, log_freq=100, plot_loss=False)
 
 main()
 exit(0)
