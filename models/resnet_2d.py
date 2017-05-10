@@ -110,4 +110,4 @@ def setup_model():
   model['train_step'] = train_step
 
   return model
-  
+
