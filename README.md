@@ -18,8 +18,24 @@
         * `save_single_object_images_to_disk()` creates 894 sub-folders under `./single-object-images` and put all images containing a specific object type in one of these 894 sub-folders
         * `save_cropped_single_object_images_to_disk()` crops all pixels of an image that are labeled as a specific object class using a `rectangle` and save this cropped image to 894 individual sub-folders under `./cropped-single-object-images`. Since these images vary in sizes, we are not yet sure how this could be useful. 
         * more functions to come based on necessity
-2. [U-WASH RGB-D Dataset](http://rgbd-dataset.cs.washington.edu/dataset/rgbd-scenes-v2/)
-    * Analyzing currently.
+2. [U-WASH RGB-D Object Dataset](https://rgbd-dataset.cs.washington.edu/dataset/) 
+    * Dataset info
+        * [University of Washington RGB-D Object Dataset](https://rgbd-dataset.cs.washington.edu/dataset/rgbd-dataset/rgbd-dataset.tar)
+        * Contains 30 household single object classes like apple, towels, etc.
+            * these images have different heights and widths and need to be resized
+    * `data/UWASH-RGBD/load_data.py` (DON'T USE IT YET, DEV NOT YET FINISHED)
+        * `get_np_arrays_from_dataset(data_dir, height, width, save)` generates:
+            * X in np.array of shape (?, H, W, 4), where the 4th channel is depth
+            * Y in list of english labels
+        * Parameters:
+            * data_dir: `str` Directory of the UWash dataset
+            * height: `int` arbitrary resized image height
+            * width: `int` arbitrary resized image width
+            * save: `bool` whether to save the new, resized image to disk
+                * if save is `True`, then new folders with suffix "_resized" are created with the same file structures as the original dataset folders.
+                * e.g. resized rgb file saved to: `rgbd-dataset/apple_resized/apple_1/apple_1_1_1_crop.png`
+                * e.g. resized depth file saved to `rgbd-dataset/apple_resized/apple_1/apple_1_1_1_depthcrop.png`
+          
 3. [Princeton the SUN RGB-D Dataset](http://rgbd.cs.princeton.edu/challenge.html)
     * Dataset info
         * The Training Set, [SUNRGBD](http://rgbd.cs.princeton.edu/data/SUNRGBD.zip), contains 10355 RGB-D scene images: office, bookstore, etc.

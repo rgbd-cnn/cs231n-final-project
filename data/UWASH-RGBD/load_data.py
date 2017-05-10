@@ -10,7 +10,6 @@ def parse_arguments(argv):
     parser.add_argument('--data_dir', type=str,
                         help='Directory of the UWash dataset.',
                         default='./rgbd-dataset')
-
     parser.add_argument('--target_img_height', type=int,
                         help='Target image height with which to resize images',
                         default=256)
