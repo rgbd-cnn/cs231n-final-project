@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import numpy as np
@@ -71,76 +72,8 @@ def run_model(session, predict, loss_val, Xd, yd,
             plt.show()
     return total_loss,total_correct
 
-def residual_layers(input, num_filters, is_training, num):
-    with tf.variable_scope("res_layers" + str(num)):
-        # Batch Normalization
-        out = slim.batch_norm(input,
-                              decay=0.999,
-                              center=True,
-                              scale=True,
-                              epsilon=1e-8,
-                              activation_fn=None,
-                              is_training=is_training,
-                              trainable=True)
-        
-        # ReLU Activation
-        out = tf.nn.relu(out)
-        
-        # Convolutional Layer (3x3)
-        out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
-        out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
-        
-        # Batch Normalization
-        out = slim.batch_norm(out,
-                              decay=0.999,
-                              center=True,
-                              scale=True,
-                              epsilon=1e-8,
-                              activation_fn=None,
-                              is_training=is_training,
-                              trainable=True)
-        
-        # ReLU Activation
-        out = tf.nn.relu(out)
-        
-        # Convolutional Layer (3x3)
-        out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
-        out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
-        
-        # Residual Addition
-        output = out + input
-        
-        return output
-
-def my_model(X,y,is_training):
-    num_layers = 3
-    divisions = 3
-    res_layers = num_layers / divisions
-    num_filters = 16
-
-    layer = slim.conv2d(X, num_filters, [3,3], scope='conv' + str(0))
-    # Create Residual Sections
-    for i in range(divisions):
-        # Create Residual Layers
-        for j in range(res_layers):
-            layer = residual_layers(layer, num_filters, is_training, res_layers * i + j)
-        # Increase Filter Size
-        num_filters *= 2
-        
-        # Pooling Convolutional Layer (Stride = 2)
-        layer = slim.conv2d(layer, num_filters, [3,3], stride=[2,2], normalizer_fn=slim.batch_norm, scope='conv_pool' + str(i))
-        layer = slim.dropout(layer, keep_prob=0.75, is_training=is_training)
-        
-    # ReLU Activation
-    layer = tf.nn.relu(layer)
-    
-    # Average Pooling (2x2)
-    layer = slim.avg_pool2d(layer, kernel_size=[2,2], stride=2)
-    
-    # Fully-Connected Layer
-    y_out = slim.fully_connected(slim.layers.flatten(layer), 10, activation_fn=None)
-    
-    return y_out
+# Suppress Annoying TensorFlow Logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # Reset Network
 tf.reset_default_graph()
