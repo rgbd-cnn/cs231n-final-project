@@ -49,7 +49,7 @@ def train_model(device, model, X_data, labels, epochs=1,
         # Run TF Session (Returns Loss and Correct Predictions)
         loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
         num_correct += np.sum(corr)
-        epoch_loss += loss
+        epoch_loss += loss * actual_batch_size
 
         # Print Loss and Accuracies
         if is_training and (iter_cnt % log_freq) == 0:
