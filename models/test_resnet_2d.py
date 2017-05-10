@@ -87,6 +87,42 @@ def recover_model_checkpoint(session, saver, filename):
   print("Model restored!")
 
 # def main():
+# Reset Network
+tf.reset_default_graph()
+
+# Create Placeholder Variables
+X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+y = tf.placeholder(tf.int64, [None])
+is_training = tf.placeholder(tf.bool)
+
+# Specify Learning Rate
+learning_rate=1e-3
+
+# Define Output and Calculate Loss
+y_out = resnet_2d_model(X, y, is_training)
+total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, 10), logits=y_out)
+mean_loss = tf.reduce_mean(total_loss)
+
+# Adam Optimizer
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
+                                   beta1=0.9,
+                                   beta2=0.999,
+                                   epsilon=1e-08)
+
+# Required for Batch Normalization
+extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+with tf.control_dependencies(extra_update_ops):
+    train_step = optimizer.minimize(mean_loss)
+
+# Store Model in Dictionary
+model = {}
+model['X'] = X
+model['y'] = y
+model['is_training'] = is_training
+model['y_out'] = y_out
+model['loss_val'] = mean_loss
+model['train_step'] = train_step
+  
 # Suppress Annoying TensorFlow Logs
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
@@ -109,5 +145,5 @@ print('Final Validation Accuracy:')
 train_model('/gpu:0', model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
             is_training=False, log_freq=100, plot_loss=False)
 
-main()
+# main()
 exit(0)
