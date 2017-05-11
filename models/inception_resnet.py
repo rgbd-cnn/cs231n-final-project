@@ -4,7 +4,7 @@ import tensorflow.contrib.slim as slim
 def inception_res_C(input, counter, is_training):
   with tf.variable_scope("inc_res_C" + str(counter)):
     # Batch Normalization
-    out = slim.batch_norm(input, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
 
     # ReLU Activation
@@ -15,18 +15,18 @@ def inception_res_C(input, counter, is_training):
 
     # Inception Path 2
     out_2 = slim.conv2d(out_relu, 192, [1,1], activation_fn=None)
-    out_2 = slim.batch_norm(out_2, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_2 = slim.batch_norm(out_2, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_2 = tf.nn.relu(out_2)
     out_2 = slim.conv2d(out_2, 224, [1,3], activation_fn=None)
-    out_2 = slim.batch_norm(out_2, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_2 = slim.batch_norm(out_2, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_2 = tf.nn.relu(out_2)
     out_2 = slim.conv2d(out_2, 256, [3,1], activation_fn=None)
 
     # Inception Path Concatenation
     out = tf.concat([out_1, out_2], axis=3)
-    out = slim.batch_norm(out, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out = tf.nn.relu(out)
 
@@ -41,7 +41,7 @@ def inception_res_C(input, counter, is_training):
 def reduction_B(input, is_training):
   with tf.variable_scope("reduction_B"):
     # Batch Normalization
-    out = slim.batch_norm(input, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
     
     # ReLU Activation
@@ -52,25 +52,25 @@ def reduction_B(input, is_training):
 
     # Inception Path 2
     out_2 = slim.conv2d(out_relu, 128, [1,1], activation_fn=None)
-    out_2 = slim.batch_norm(out_2, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_2 = slim.batch_norm(out_2, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_2 = tf.nn.relu(out_2)
     out_2 = slim.conv2d(out_2, 256, [3,3], stride=2, padding='VALID', activation_fn=None)
 
     # Inception Path 3
     out_3 = slim.conv2d(out_relu, 128, [1,1], activation_fn=None)
-    out_3 = slim.batch_norm(out_3, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_3 = slim.batch_norm(out_3, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_3 = tf.nn.relu(out_3)
     out_3 = slim.conv2d(out_3, 256, [3,3], stride=2, padding='VALID', activation_fn=None)
 
     # Inception Path 4
     out_4 = slim.conv2d(out_relu, 128, [1,1], activation_fn=None)
-    out_4 = slim.batch_norm(out_4, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_4 = slim.batch_norm(out_4, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_4 = tf.nn.relu(out_4)
     out_4 = slim.conv2d(out_4, 256, [3,3], activation_fn=None)
-    out_4 = slim.batch_norm(out_4, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_4 = slim.batch_norm(out_4, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_4 = tf.nn.relu(out_4)
     out_4 = slim.conv2d(out_4, 256, [3,3], stride=2, padding='VALID', activation_fn=None)
@@ -83,7 +83,7 @@ def reduction_B(input, is_training):
 def inception_res_B(input, counter, is_training):
   with tf.variable_scope("inc_res_B" + str(counter)):
     # Batch Normalization
-    out = slim.batch_norm(input, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
 
     # ReLU Activation
@@ -94,11 +94,11 @@ def inception_res_B(input, counter, is_training):
 
     # Inception Path 2
     out_2 = slim.conv2d(out_relu, 128, [1,1], activation_fn=None)
-    out_2 = slim.batch_norm(out_2, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_2 = slim.batch_norm(out_2, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_2 = tf.nn.relu(out_2)
     out_2 = slim.conv2d(out_2, 160, [1,7], activation_fn=None)
-    out_2 = slim.batch_norm(out_2, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_2 = slim.batch_norm(out_2, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_2 = tf.nn.relu(out_2)
     out_2 = slim.conv2d(out_2, 192, [7,1], activation_fn=None)
@@ -106,7 +106,7 @@ def inception_res_B(input, counter, is_training):
     # Inception Path Concatenation
     out = tf.concat([out_1, out_2], axis=3)
 
-    out = slim.batch_norm(out, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
     out = tf.nn.relu(out)
 
@@ -121,7 +121,7 @@ def inception_res_B(input, counter, is_training):
 def reduction_A(input, is_training):
   with tf.variable_scope("reduction_A"):
     # Batch Normalization
-    out = slim.batch_norm(input, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
     
     # ReLU Activation
@@ -135,11 +135,11 @@ def reduction_A(input, is_training):
 
     # Inception Path 3
     out_3 = slim.conv2d(out_relu, 128, [1,1], activation_fn=None)
-    out_3 = slim.batch_norm(out_3, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_3 = slim.batch_norm(out_3, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_3 = tf.nn.relu(out_3)
     out_3 = slim.conv2d(out_3, 128, [3,3], activation_fn=None)
-    out_3 = slim.batch_norm(out_3, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_3 = slim.batch_norm(out_3, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_3 = tf.nn.relu(out_3)
     out_3 = slim.conv2d(out_3, 256, [3,3], stride=2, padding='VALID', activation_fn=None)
@@ -152,7 +152,7 @@ def reduction_A(input, is_training):
 def inception_res_A(input, counter, is_training):
   with tf.variable_scope("inc_res_A" + str(counter)):
     # Batch Normalization
-    out = slim.batch_norm(input, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
     
     # ReLU Activation
@@ -168,7 +168,7 @@ def inception_res_A(input, counter, is_training):
     # Inception Path 3
     out_3 = slim.conv2d(out_relu, 32, [1,1], activation_fn=None)
     out_3 = slim.conv2d(out_3, 48, [3,3], activation_fn=None)
-    out_3 = slim.batch_norm(out_3, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out_3 = slim.batch_norm(out_3, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_3 = tf.nn.relu(out_3)
     out_3 = slim.conv2d(out_3, 64, [3,3], activation_fn=None)
@@ -176,7 +176,7 @@ def inception_res_A(input, counter, is_training):
     # Inception Path Concatenation
     out = tf.concat([out_1, out_2, out_3], axis=3)
 
-    out = slim.batch_norm(out, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
     out = tf.nn.relu(out)
 
