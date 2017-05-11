@@ -48,7 +48,7 @@ def resnet_2d_model(X, num_classes, is_training):
   res_layers = num_layers / divisions
   num_filters = 16
 
-  layer = slim.conv2d(X, num_filters, [3,3], scope='conv' + str(0))
+  layer = slim.conv2d(X, num_filters, [3,3], activation_fn=None, scope='conv' + str(0))
   # Create Residual Sections
   for i in range(divisions):
     # Create Residual Layers
