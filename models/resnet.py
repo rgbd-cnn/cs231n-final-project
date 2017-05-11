@@ -42,7 +42,7 @@ def residual_unit(input, num_filters, counter, is_training):
       
   return output
 
-def resnet_2d_model(X, y, is_training):
+def resnet_2d_model(X, num_classes, is_training):
   num_layers = 3
   divisions = 3
   res_layers = num_layers / divisions
@@ -68,7 +68,7 @@ def resnet_2d_model(X, y, is_training):
   layer = slim.avg_pool2d(layer, kernel_size=[2,2], stride=2)
   
   # Fully-Connected Layer
-  y_out = slim.fully_connected(slim.layers.flatten(layer), 10, activation_fn=None)
+  y_out = slim.fully_connected(slim.layers.flatten(layer), num_classes, activation_fn=None)
   
   return y_out
 
@@ -83,7 +83,7 @@ def setup_resnet_2d_model(image_size, num_classes, learning_rate=1e-3):
   is_training = tf.placeholder(tf.bool)
 
   # Define Output and Calculate Loss
-  y_out = resnet_2d_model(X, y, is_training)
+  y_out = resnet_2d_model(X, num_classes, is_training)
   total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, num_classes),
                                                        logits=y_out)
   mean_loss = tf.reduce_mean(total_loss)
@@ -109,4 +109,3 @@ def setup_resnet_2d_model(image_size, num_classes, learning_rate=1e-3):
   model['train_step'] = train_step
 
   return model
-

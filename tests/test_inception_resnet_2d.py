@@ -1,19 +1,9 @@
 import os
 import tensorflow as tf
 import numpy as np
-from models.resnet_2d import setup_resnet_2d_model
+from models.inception_resnet import setup_resnet_inception_model
 from utilities.train import *
 from data.cs231n.data_utils import get_CIFAR10_data
-
-# Save Checkpoint of Model
-def save_model_checkpoint(session, saver, filename):
-  save_path = saver.save(session, filename)
-  print("Model checkpoint saved in file: %s" % save_path)
-
-# Recover Saved Model Checkpoint
-def recover_model_checkpoint(session, saver, filename):
-  saver.restore(session, filename)
-  print("Model restored!")
 
 def main():
   # Suppress Annoying TensorFlow Logs
@@ -25,7 +15,7 @@ def main():
 
   # Create Model
   print("Setting up model...")
-  model = setup_resnet_2d_model([32, 32, 3], 10, learning_rate=1e-3)
+  model = setup_resnet_inception_model([32, 32, 3], 10, 1, 2, 1, learning_rate=1e-3)
 
   # Create Session
   sess = tf.Session()
@@ -36,12 +26,12 @@ def main():
 
   # Train Model
   print("Training model...")
-  train_model(device, sess, model, data['X_train'], data['y_train'], epochs=1, batch_size=128,
+  train_model(device, sess, model, data['X_train'][0:100], data['y_train'][0:100], epochs=20, batch_size=64,
               is_training=True, log_freq=100, plot_loss=False)
-  print("Final Training Accuracy:")
-  train_model(device, sess, model, data['X_train'], data['y_train'], epochs=1, batch_size=64,
+  print("\nFinal Training Accuracy:")
+  train_model(device, sess, model, data['X_train'][0:100], data['y_train'][0:100], epochs=1, batch_size=64,
               is_training=False, log_freq=100, plot_loss=False)
-  print('Final Validation Accuracy:')
+  print('\nFinal Validation Accuracy:')
   train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
               is_training=False, log_freq=100, plot_loss=False)
 

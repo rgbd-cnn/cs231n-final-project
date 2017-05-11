@@ -3,6 +3,16 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Save Checkpoint of Model
+def save_model_checkpoint(session, saver, filename):
+  save_path = saver.save(session, filename)
+  print("Model checkpoint saved in file: %s" % save_path)
+
+# Recover Saved Model Checkpoint
+def recover_model_checkpoint(session, saver, filename):
+  saver.restore(session, filename)
+  print("Model restored!")
+
 # Train the Model
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 is_training=False, log_freq=100, plot_loss=False):
@@ -30,7 +40,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
       epoch_loss = 0
 
       # Iterate Over the Entire Dataset Once
-      for i in range(int(math.ceil(X_data.shape[0] / batch_size))):
+      for i in range(int(math.ceil(X_data.shape[0] / float(batch_size)))):
         # Indices for Batch
         start_idx = (i * batch_size) % X_data.shape[0]
         idx = train_indicies[start_idx:start_idx + batch_size]
@@ -43,6 +53,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
         # Run TF Session (Returns Loss and Correct Predictions)
         loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
+        # print(loss)
         num_correct += np.sum(corr)
         epoch_loss += loss * actual_batch_size
 
