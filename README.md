@@ -35,6 +35,7 @@
                 * if save is `True`, then new folders with suffix "_resized" are created with the same file structures as the original dataset folders.
                 * e.g. resized rgb file saved to: `rgbd-dataset/apple_resized/apple_1/apple_1_1_1_crop.png`
                 * e.g. resized depth file saved to `rgbd-dataset/apple_resized/apple_1/apple_1_1_1_depthcrop.png`
+            * load_resized: `bool` whether to load resized images from disk (given that they exist) instead of loading and resizing original images from disk
           
 3. `SCENES ONLY` [Princeton the SUN RGB-D Dataset](http://rgbd.cs.princeton.edu/challenge.html)
     * Dataset info

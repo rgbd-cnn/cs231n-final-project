@@ -63,7 +63,7 @@ def save_file(data_dir, object, folder, rgb_file, depth_file, rgb, depth):
     print("Saved to disk: %s and %s" % (rgb_dir, depth_dir))
 
 
-def load_original(data_dir, height, width, save, load_resized):
+def load_original(data_dir, height, width, save):
     X = []
     Y = []
     for object in os.listdir(data_dir):
@@ -95,7 +95,7 @@ def load_original(data_dir, height, width, save, load_resized):
     return X, Y
 
 
-def load_resized(data_dir, height, width, save, load_resized):
+def load_resized(data_dir, height, width):
     X = []
     Y = []
     for object in os.listdir(data_dir):
@@ -126,9 +126,9 @@ def load_resized(data_dir, height, width, save, load_resized):
 
 def get_np_arrays_from_dataset(data_dir, height, width, save, load_resized):
     if load_resized:
-        X, Y = load_resized(data_dir, height, width, save, load_resized)
+        X, Y = load_resized(data_dir, height, width)
     else:
-        X, Y = load_original(data_dir, height, width, save, load_resized)
+        X, Y = load_original(data_dir, height, width, save)
 
     return np.array(X), Y
 
