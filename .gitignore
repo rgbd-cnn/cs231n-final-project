@@ -1,7 +1,11 @@
+**/.DS_Store
 data/**/*.mat
 **/*.png
+**/*.pyc
 **/*.jpeg
 **/SUNRGBDv2Test
+data/princeton_sunrgbd/SUNRGBD
+data/cifar-10-batches-py/*
 data/Princeton-SUNRGB-D/SUNRGBD
 data/UWASH-RGBD/rgbd-dataset
 **/data.json
