@@ -58,7 +58,8 @@ def resnet_2d_model(X, num_classes, is_training):
     num_filters *= 2
     
     # Pooling Convolutional Layer (Stride = 2)
-    layer = slim.conv2d(layer, num_filters, [3,3], stride=[2,2], normalizer_fn=slim.batch_norm, scope='conv_pool' + str(i))
+    layer = slim.conv2d(layer, num_filters, [3,3], stride=[2,2], normalizer_fn=slim.batch_norm,
+                        normalizer_params={'is_training': is_training}, scope='conv_pool' + str(i))
     layer = slim.dropout(layer, keep_prob=0.75, is_training=is_training)
       
   # ReLU Activation
