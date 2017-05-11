@@ -5,7 +5,7 @@ def residual_unit(input, num_filters, counter, is_training):
   with tf.variable_scope("res_unit" + str(counter)):
     # Batch Normalization
     out = slim.batch_norm(input,
-                          decay=0.999,
+                          decay=0.99,
                           center=True,
                           scale=True,
                           epsilon=1e-8,
@@ -18,11 +18,11 @@ def residual_unit(input, num_filters, counter, is_training):
     
     # Convolutional Layer (3x3)
     out = slim.conv2d(out, num_filters, [3,3], activation_fn=None, scope='conv1')
-    out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
+    out = slim.dropout(out, keep_prob=0.75, is_training=is_training, scope='drop1')
     
     # Batch Normalization
     out = slim.batch_norm(out,
-                          decay=0.999,
+                          decay=0.99,
                           center=True,
                           scale=True,
                           epsilon=1e-8,
@@ -35,7 +35,7 @@ def residual_unit(input, num_filters, counter, is_training):
     
     # Convolutional Layer (3x3)
     out = slim.conv2d(out, num_filters, [3,3], activation_fn=None, scope='conv2')
-    out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
+    out = slim.dropout(out, keep_prob=0.75, is_training=is_training, scope='drop2')
     
     # Residual Addition
     output = out + input
@@ -60,7 +60,7 @@ def resnet_2d_model(X, num_classes, is_training):
     # Pooling Convolutional Layer (Stride = 2)
     layer = slim.conv2d(layer, num_filters, [3,3], stride=[2,2], normalizer_fn=slim.batch_norm,
                         normalizer_params={'is_training': is_training}, scope='conv_pool' + str(i))
-    layer = slim.dropout(layer, keep_prob=0.75, is_training=is_training)
+    layer = slim.dropout(layer, keep_prob=0.75, is_training=is_training, scope='drop_end')
       
   # ReLU Activation
   layer = tf.nn.relu(layer)
@@ -98,7 +98,7 @@ def setup_resnet_2d_model(image_size, num_classes, learning_rate=1e-3):
   # Required for Batch Normalization
   extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
   with tf.control_dependencies(extra_update_ops):
-      train_step = optimizer.minimize(mean_loss)
+    train_step = optimizer.minimize(mean_loss)
 
   # Store Model in Dictionary
   model = {}

@@ -194,8 +194,8 @@ def stem_unit(input, is_training):
     out = slim.conv2d(input, 32, [3,3], activation_fn=None)
 
     # Batch Normalization
-    out = slim.batch_norm(out, decay=0.999, center=True, scale=True, epsilon=1e-8,
-                          activation_fn=None, is_training=is_training, trainable=True)
+    out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                          activation_fn=None, is_training=is_training, trainable=True, scope='bn1')
     
     # ReLU Activation
     out = tf.nn.relu(out)
@@ -204,8 +204,8 @@ def stem_unit(input, is_training):
     out = slim.conv2d(out, 64, [3,3], activation_fn=None)
 
     # Batch Normalization
-    out = slim.batch_norm(out, decay=0.999, center=True, scale=True, epsilon=1e-8,
-                          activation_fn=None, is_training=is_training, trainable=True)
+    out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                          activation_fn=None, is_training=is_training, trainable=True, scope='bn2')
     
     # ReLU Activation
     out = tf.nn.relu(out)
@@ -217,7 +217,7 @@ def stem_unit(input, is_training):
     out = slim.conv2d(out, 80, [1,1], activation_fn=None)
 
     # Batch Normalization
-    out = slim.batch_norm(out, decay=0.999, center=True, scale=True, epsilon=1e-8,
+    out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
     
     # ReLU Activation

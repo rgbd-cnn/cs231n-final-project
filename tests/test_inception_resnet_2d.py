@@ -26,10 +26,10 @@ def main():
 
   # Train Model
   print("Training model...")
-  train_model(device, sess, model, data['X_train'][0:100], data['y_train'][0:100], epochs=20, batch_size=64,
+  train_model(device, sess, model, data['X_train'][0:1000], data['y_train'][0:1000], epochs=20, batch_size=64,
               is_training=True, log_freq=100, plot_loss=False)
   print("\nFinal Training Accuracy:")
-  train_model(device, sess, model, data['X_train'][0:100], data['y_train'][0:100], epochs=1, batch_size=64,
+  train_model(device, sess, model, data['X_train'][0:1000], data['y_train'][0:1000], epochs=1, batch_size=64,
               is_training=False, log_freq=100, plot_loss=False)
   print('\nFinal Validation Accuracy:')
   train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1, batch_size=64,
