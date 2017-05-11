@@ -17,7 +17,7 @@ def residual_unit(input, num_filters, counter, is_training):
     out = tf.nn.relu(out)
     
     # Convolutional Layer (3x3)
-    out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
+    out = slim.conv2d(out, num_filters, [3,3], activation_fn=None, scope='conv1')
     out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
     
     # Batch Normalization
@@ -34,7 +34,7 @@ def residual_unit(input, num_filters, counter, is_training):
     out = tf.nn.relu(out)
     
     # Convolutional Layer (3x3)
-    out = slim.conv2d(out, num_filters, [3,3], activation_fn=None)
+    out = slim.conv2d(out, num_filters, [3,3], activation_fn=None, scope='conv2')
     out = slim.dropout(out, keep_prob=0.75, is_training=is_training)
     
     # Residual Addition

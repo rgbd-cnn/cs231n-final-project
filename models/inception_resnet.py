@@ -256,6 +256,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
   # Dropout
   out = slim.dropout(out, keep_prob=0.80, is_training=is_training)
 
+  # Fully Connected Layer
   output = slim.fully_connected(slim.layers.flatten(out), num_classes, activation_fn=None)
 
   return output
