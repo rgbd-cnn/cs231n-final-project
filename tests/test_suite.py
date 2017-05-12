@@ -81,13 +81,29 @@ def main():
     else:
       print("Invalid choice...")
       ask = True
+
+  # Specify Debug Mode
+  ask = True
+  while ask:
+    debug = input("\nWould you like to run in debug mode?\n" +
+                  "   1. Normal\n" +
+                  "   2. Debug\n" +
+                  "Please select number: ")
+    ask = False
+    if debug == 1:
+      debug = False
+    elif debug == 2:
+      debug = True
+    else:
+      print("Invalid choice...")
+      ask = True
   print('')
 
   # Run Appropriate Network
   if network == 'resnet':
-    run_resnet_2d_test(device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
+    run_resnet_2d_test(device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
   elif network == 'inception_resnet':
-    run_inception_resnet_2d_test(device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
+    run_inception_resnet_2d_test(device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
   else:
     print("Error: Invalid network...")
   
