@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import sys
+import pickle
 
 import numpy as np
 from PIL import Image
@@ -134,11 +135,9 @@ def get_np_arrays_from_dataset(data_dir, height, width, save, load_resized):
 
 
 def save_X_and_Y_json_to_disk(x, y):
-    with open('data.json', 'w') as f:
-        json.dump({"X": x.tolist(), "Y": y}, f)
-
-    f.close()
-
+    with open('data.pkl', 'wb') as f:
+        pickle.dump(x, f, -1)
+        pickle.dump(y, f, -1)
 
 if __name__ == '__main__':
     args = parse_arguments(sys.argv[1:])
