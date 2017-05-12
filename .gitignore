@@ -4,6 +4,10 @@ data/**/*.mat
 **/*.pyc
 **/*.jpeg
 **/SUNRGBDv2Test
+**/cropped-single-object-images
+**/raw-images
+**/single-object-images
+**/rgbd-dataset
 data/princeton_sunrgbd/SUNRGBD
 data/cifar-10-batches-py/*
 data/Princeton-SUNRGB-D/SUNRGBD
