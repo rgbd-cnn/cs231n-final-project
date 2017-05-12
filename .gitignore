@@ -9,3 +9,5 @@ data/cifar-10-batches-py/*
 data/Princeton-SUNRGB-D/SUNRGBD
 data/UWASH-RGBD/rgbd-dataset
 **/data.json
+**/.idea
+
