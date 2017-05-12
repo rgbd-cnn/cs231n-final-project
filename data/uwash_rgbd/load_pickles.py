@@ -3,7 +3,6 @@ import pickle
 
 import numpy as np
 
-
 def load_data():
     X = []
     Y = []
@@ -23,3 +22,4 @@ def load_data():
             dict[index] = y
             pkl.close()
     return np.concatenate(X), np.array(Y), dict
+
