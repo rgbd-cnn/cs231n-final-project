@@ -4,13 +4,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Save Checkpoint of Model
-def save_model_checkpoint(session, saver, filename):
-  save_path = saver.save(session, filename)
+def save_model_checkpoint(session, saver, filename, epoch_num):
+  save_path = saver.save(session, filename, epoch_num)
   print("Model checkpoint saved in file: %s" % save_path)
 
 # Recover Saved Model Checkpoint
-def recover_model_checkpoint(session, saver, filename):
-  saver.restore(session, filename)
+def recover_model_checkpoint(session, saver, checkpoint_path):
+  saver.restore(session, tf.train.latest_checkpoint(checkpoint_path))
   print("Model restored!")
 
 # Train the Model
