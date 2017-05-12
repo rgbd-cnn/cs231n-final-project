@@ -1,5 +1,4 @@
 **/.DS_Store
-checkpoints/*
 data/**/*.mat
 **/*.png
 **/*.pyc
