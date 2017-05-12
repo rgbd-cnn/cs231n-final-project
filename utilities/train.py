@@ -60,7 +60,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
         # Print Loss and Accuracies
         if is_training and (iter_cnt % log_freq) == 0:
           print("Iteration {0}: Training Loss = {1:.3g} and Accuracy = {2:.2g}"\
-                .format(iter_cnt + 1, loss, np.sum(corr) / float(actual_batch_size)))
+                .format(iter_cnt, loss, np.sum(corr) / float(actual_batch_size)))
         iter_cnt += 1
 
       # Calculate Performance
