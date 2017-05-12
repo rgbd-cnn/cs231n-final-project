@@ -23,7 +23,7 @@
         * [University of Washington RGB-D Object Dataset](https://rgbd-dataset.cs.washington.edu/dataset/rgbd-dataset/rgbd-dataset.tar)
         * Contains 30 household single object classes like apple, towels, etc.
             * these images have different heights and widths and need to be resized
-    * `data/UWASH-RGBD/load_data.py` (DON'T USE IT YET, DEV NOT YET FINISHED)
+    * `data/UWASH-RGBD/load_data.py`
         * `get_np_arrays_from_dataset(data_dir, height, width, save)` generates:
             * X in np.array of shape (?, H, W, 4), where the 4th channel is depth
             * Y in list of english labels
