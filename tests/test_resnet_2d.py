@@ -4,14 +4,11 @@ from utilities.train import *
 from models.resnet import setup_resnet_2d_model
 from data.cs231n.data_utils import get_CIFAR10_data
 
-def run_resnet_2d_test(device, recover, ckpt_path, prev_epochs, epochs, debug):
-  # Test with CIFAR-10 Data
-  data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
-                          subtract_mean=True)
-
+def run_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, debug):
   # Create Model
   print("Setting up model...")
-  model = setup_resnet_2d_model([32, 32, 3], 10, learning_rate=1e-3)
+  data_shape = list(data['X_train'][0].shape)
+  model = setup_resnet_2d_model(data_shape, num_classes, learning_rate=1e-3)
   saver = tf.train.Saver()
   sess = tf.Session()
   sess.run(tf.global_variables_initializer())
