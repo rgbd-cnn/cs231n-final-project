@@ -65,12 +65,12 @@ def save_file(data_dir, object, folder, rgb_file, depth_file, rgb, depth):
 
 
 def load_original(data_dir, height, width, save):
-    X = []
-    Y = []
     for object in os.listdir(data_dir):
         if "_resized" not in object:
             object_dir = os.path.join(data_dir, object)
             if os.path.isdir(object_dir):
+                X = []
+                Y = []
                 for folder in os.listdir(object_dir):
                     folder_dir = os.path.join(object_dir, folder)
                     if os.path.isdir(folder_dir):
@@ -92,7 +92,12 @@ def load_original(data_dir, height, width, save):
                                     if save:
                                         save_file(data_dir, object, folder,
                                                   file, depth_file, rgb, depth)
-
+                X = np.array(X)
+                print("Writing pickleeeee :)")
+                print(object)
+                with open(object + '.pkl', 'wb') as f:
+                    pickle.dump(X, f, -1)
+                    pickle.dump(Y, f, -1)
     return X, Y
 
 
@@ -104,6 +109,8 @@ def load_resized(data_dir, height, width):
         if "_resized" in object:
             object_dir = os.path.join(data_dir, object)
             if os.path.isdir(object_dir):
+                X = []
+                Y = []
                 for folder in os.listdir(object_dir):
                     folder_dir = os.path.join(object_dir, folder)
                     if os.path.isdir(folder_dir):
@@ -122,6 +129,11 @@ def load_resized(data_dir, height, width):
                                     print(
                                         "Loaded: %s, %s" % (
                                             file_dir, depth_dir))
+                X = np.array(X)
+                print("Writing pickleeeee :)")
+                with open(object + '.pkl', 'wb') as f:
+                    pickle.dump(X, f, -1)
+                    pickle.dump(Y, f, -1)
     return X, Y
 
 
@@ -148,4 +160,3 @@ if __name__ == '__main__':
     load_resized = args.load_from_resized_images
     X, Y = get_np_arrays_from_dataset(data_dir, height, width, save,
                                       load_resized)
-    save_X_and_Y_json_to_disk(X, Y)
