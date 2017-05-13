@@ -38,6 +38,7 @@
                 * e.g. resized depth file saved to `rgbd-dataset/apple_resized/apple_1/apple_1_1_1_depthcrop.png`
             * overwrite: `bool` whether to overwrite pickles are already exist in the directory
         * Number of training examples: 600k, number of classes: 51-ish
+        * Script use horizontal flip and vertical flip for data augmentation
           
 3. `SCENES ONLY` [Princeton the SUN RGB-D Dataset](http://rgbd.cs.princeton.edu/challenge.html)
     * Dataset info
