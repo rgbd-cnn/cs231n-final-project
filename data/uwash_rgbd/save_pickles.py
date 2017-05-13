@@ -6,6 +6,8 @@ import sys
 import numpy as np
 from PIL import Image
 
+import load_pickles
+
 
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
@@ -22,6 +24,9 @@ def parse_arguments(argv):
     parser.add_argument('--save_resized_images_to_disk', type=bool,
                         help='whether to save resized images to disk',
                         default=False)
+    parser.add_argument('--overwrite', type=bool,
+                        help='whether to rewrite existing pickles',
+                        default=False)
     return parser.parse_args(argv)
 
 
@@ -33,13 +38,14 @@ def is_rgb_file(file):
 def read_and_resize_image(file_dir, depth_dir, height, width):
     xs, rgbs, depths, suffices = [], [], [], []
     desired_dimension = (width, height)
+
     im = Image.open(file_dir)
     out_rgb = im.resize(desired_dimension, Image.ANTIALIAS)
+    im = Image.open(depth_dir)
+    out_depth = im.resize(desired_dimension, Image.ANTIALIAS)
 
     # original_image
     rgb = np.array(out_rgb)
-    im = Image.open(depth_dir)
-    out_depth = im.resize(desired_dimension, Image.ANTIALIAS)
     depth = np.reshape(np.array(out_depth), (height, width, 1))
 
     xs.append(np.concatenate((rgb, depth), axis=2))
@@ -50,6 +56,7 @@ def read_and_resize_image(file_dir, depth_dir, height, width):
     # horizontally flipped image
     rgb_horizontal = np.flip(rgb, 1)
     depth_horizontal = np.flip(depth, 1)
+
     xs.append(np.concatenate((rgb_horizontal, depth_horizontal), axis=2))
     rgbs.append(rgb_horizontal)
     depths.append(depth_horizontal)
@@ -58,6 +65,7 @@ def read_and_resize_image(file_dir, depth_dir, height, width):
     # vertically flipped image
     rgb_vertical = np.flip(rgb, 0)
     depth_vertical = np.flip(depth, 0)
+
     xs.append(np.concatenate((rgb_vertical, depth_vertical), axis=2))
     rgbs.append(rgb_vertical)
     depths.append(depth_vertical)
@@ -74,8 +82,10 @@ def save_file(data_dir, object, folder, rgb_file, depth_file, rgb, depth,
     if not os.path.exists(resized_folder_dir):
         os.mkdir(resized_folder_dir)
 
-    rgb_dir = os.path.join(resized_folder_dir, rgb_file[:-4] + suffix + rgb_file[-4:])
-    depth_dir = os.path.join(resized_folder_dir, depth_file[:-4] + suffix + depth_file[-4:])
+    rgb_dir = os.path.join(resized_folder_dir,
+                           rgb_file[:-4] + suffix + rgb_file[-4:])
+    depth_dir = os.path.join(resized_folder_dir,
+                             depth_file[:-4] + suffix + depth_file[-4:])
 
     im = Image.fromarray(rgb, 'RGB')
     im.save(rgb_dir)
@@ -121,9 +131,11 @@ def save_pkl(object_dir, object, height, width, save):
         print("saved:", pickle_f)
 
 
-def save_original_images_to_disk_as_pkls(data_dir, height, width, save):
+def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
+                                         overwrite):
     for object in os.listdir(data_dir):
-        if "_resized" not in object:
+        if "_resized" not in object and (
+                overwrite or object + '.pkl' not in os.listdir('./pickles')):
             object_dir = os.path.join(data_dir, object)
             if os.path.isdir(object_dir):
                 save_pkl(object_dir, object, height, width, save)
@@ -135,8 +147,12 @@ if __name__ == '__main__':
     height = args.target_img_height
     width = args.target_img_width
     save = args.save_resized_images_to_disk
+    overwrite = args.overwrite
 
     if 'pickles' not in os.listdir('./'):
         os.mkdir('./pickles')
 
-    save_original_images_to_disk_as_pkls(data_dir, height, width, save)
+    save_original_images_to_disk_as_pkls(data_dir, height, width, save,
+                                         overwrite)
+    X, Y, labels = load_pickles.load_data()
+    print(X, Y, labels)
