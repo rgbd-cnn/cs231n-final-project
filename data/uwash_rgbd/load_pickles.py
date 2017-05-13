@@ -5,7 +5,7 @@ import numpy as np
 def load_all_the_shit():
     X = []
     Y = []
-    base = os.path.dirname(os.path.abspath(__file__))
+    base = os.path.join('pickles', os.path.dirname(os.path.abspath(__file__)))
     pickles = os.listdir(base)
     for piggle in pickles:
         if "pkl" in piggle:
