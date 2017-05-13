@@ -17,10 +17,10 @@ def parse_arguments(argv):
                         default='./rgbd-dataset')
     parser.add_argument('--target_img_height', type=int,
                         help='Target image height with which to resize images',
-                        default=32)
+                        default=64)
     parser.add_argument('--target_img_width', type=int,
                         help='Target image width with which to resize images',
-                        default=32)
+                        default=64)
     parser.add_argument('--save_resized_images_to_disk', type=bool,
                         help='whether to save resized images to disk',
                         default=False)

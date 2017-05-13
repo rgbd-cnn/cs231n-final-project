@@ -25,8 +25,9 @@
             * these images have different heights and widths and need to be resized
     * `data/UWASH-RGBD/load_data.py`
         * `get_np_arrays_from_dataset(data_dir, height, width, save)` generates:
-            * X in np.array of shape (?, H, W, 4), where the 4th channel is depth
-            * Y in list of english labels
+            * X: np.array of shape (?, H, W, 4), where the 4th channel is depth
+            * Y: list of label indices, 0, 1, 2, .... etc.
+            * labels: dict where key = label index, value = label name (apple, banana, etc.) 
         * Parameters:
             * data_dir: `str` Directory of the UWash dataset
             * height: `int` arbitrary resized image height
@@ -35,7 +36,8 @@
                 * if save is `True`, then new folders with suffix "_resized" are created with the same file structures as the original dataset folders.
                 * e.g. resized rgb file saved to: `rgbd-dataset/apple_resized/apple_1/apple_1_1_1_crop.png`
                 * e.g. resized depth file saved to `rgbd-dataset/apple_resized/apple_1/apple_1_1_1_depthcrop.png`
-            * load_resized: `bool` whether to load resized images from disk (given that they exist) instead of loading and resizing original images from disk
+            * overwrite: `bool` whether to overwrite pickles are already exist in the directory
+        * Number of training examples: 600k, number of classes: 51-ish
           
 3. `SCENES ONLY` [Princeton the SUN RGB-D Dataset](http://rgbd.cs.princeton.edu/challenge.html)
     * Dataset info
