@@ -8,7 +8,6 @@ from PIL import Image
 
 import load_pickles
 
-
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
@@ -54,8 +53,8 @@ def read_and_resize_image(file_dir, depth_dir, height, width):
     suffices.append("_original")
 
     # horizontally flipped image
-    rgb_horizontal = np.flip(rgb, 1)
-    depth_horizontal = np.flip(depth, 1)
+    rgb_horizontal = rgb[:, ::-1, :]
+    depth_horizontal = depth[:, ::-1, :]
 
     xs.append(np.concatenate((rgb_horizontal, depth_horizontal), axis=2))
     rgbs.append(rgb_horizontal)
