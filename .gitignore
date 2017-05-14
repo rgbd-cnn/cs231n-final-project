@@ -17,3 +17,4 @@ data/UWASH-RGBD/rgbd-dataset
 **/.idea
 **/*.pkl
 **/*.icloud
+**/*.0
