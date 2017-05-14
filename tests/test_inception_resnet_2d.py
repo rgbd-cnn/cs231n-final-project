@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import datetime
 from utilities.train import *
 from models.inception_resnet import setup_resnet_inception_model
 from data.cs231n.data_utils import get_CIFAR10_data
@@ -15,6 +16,9 @@ def run_inception_resnet_2d_test(device, recover, ckpt_path, prev_epochs, epochs
   saver = tf.train.Saver()
   sess = tf.Session()
   sess.run(tf.global_variables_initializer())
+  time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+  train_writer = tf.summary.FileWriter('inception_train_' + time, sess.graph)
+  test_writer = tf.summary.FileWriter('inception_test_' + time)
 
   # Recover Saved Model (if available)
   if recover:

@@ -1,4 +1,5 @@
 import numpy as np
+import datetime
 import tensorflow as tf
 from utilities.train import *
 from models.resnet import setup_resnet_2d_model
@@ -15,6 +16,9 @@ def run_resnet_2d_test(device, recover, ckpt_path, prev_epochs, epochs, debug):
   saver = tf.train.Saver()
   sess = tf.Session()
   sess.run(tf.global_variables_initializer())
+  time = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+  train_writer = tf.summary.FileWriter('resnet_train_2d_' + time, sess.graph)
+  test_writer = tf.summary.FileWriter('resnet_test_' + time)
 
   # Recover Saved Model (if available)
   if recover:

@@ -88,7 +88,10 @@ def setup_resnet_2d_model(image_size, num_classes, learning_rate=1e-3):
   total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, num_classes),
                                                        logits=y_out)
   mean_loss = tf.reduce_mean(total_loss)
+  correct_prediction = tf.equal(tf.argmax(y_out, 1), y)
+  accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+  tf.summary.scalar('accuracy', accuracy)
   # Adam Optimizer
   optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
                                      beta1=0.9,
