@@ -3,6 +3,8 @@ import re
 import fnmatch
 from tests.test_resnet_2d import *
 from tests.test_inception_resnet_2d import *
+from data.cs231n.data_utils import get_CIFAR10_data
+from data.uwash_rgbd.load_pickles import load_uwash_rgbd
 
 def main():
   # Suppress Annoying TensorFlow Logs
@@ -124,6 +126,7 @@ def main():
     data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
                             subtract_mean=True)
     num_classes = 10
+    print(data['y_train'][0])
   elif dataset == 'uwash_2d':
     # Get UWASH Dataset (Without Depth)
     print("Not yet supported...")

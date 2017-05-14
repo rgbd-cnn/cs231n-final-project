@@ -2,7 +2,6 @@ import numpy as np
 import tensorflow as tf
 from utilities.train import *
 from models.resnet import setup_resnet_2d_model
-from data.cs231n.data_utils import get_CIFAR10_data
 
 def run_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, debug):
   # Create Model
