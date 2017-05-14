@@ -3,7 +3,7 @@ import tensorflow as tf
 from utilities.train import *
 from models.resnet import setup_resnet_2d_model
 
-def run_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, debug):
+def run_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs):
   # Create Model
   print("Setting up model...")
   data_shape = list(data['X_train'][0].shape)
@@ -16,13 +16,6 @@ def run_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epoch
   if recover:
     print("Recovering model...")
     recover_model_checkpoint(sess, saver, 'checkpoints/')
-
-  # Debug Mode: Run on Smaller Dataset
-  if debug:
-    data['X_train'] = data['X_train'][0:1000]
-    data['y_train'] = data['y_train'][0:1000]
-    data['X_val'] = data['X_val'][0:1000]
-    data['y_val'] = data['y_val'][0:1000]
 
   # Train Model
   print("Training model...")

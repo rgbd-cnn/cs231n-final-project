@@ -126,18 +126,24 @@ def main():
     data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
                             subtract_mean=True)
     num_classes = 10
-    print(data['y_train'][0])
   elif dataset == 'uwash_2d':
     # Get UWASH Dataset (Without Depth)
     data = load_uwash_rgbd(depth=False)
-    num_classes = 30
+    num_classes = 51
   elif dataset == 'uwash_3d':
     # Get UWASH Dataset (With Depth)
     data = load_uwash_rgbd(depth=True)
-    num_classes = 30
+    num_classes = 51
   else:
     print("Error: Invalid dataset...")
     exit(-1)
+
+  # Debug Mode: Run on Smaller Dataset
+  if debug:
+    data['X_train'] = data['X_train'][0:500]
+    data['y_train'] = data['y_train'][0:500]
+    data['X_val'] = data['X_val'][0:500]
+    data['y_val'] = data['y_val'][0:500]
 
   print("Finished loading data...")
   print("   Training Size:   %d" % data['y_train'].shape[0])
@@ -147,9 +153,9 @@ def main():
 
   # Run Appropriate Network
   if network == 'resnet':
-    run_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
+    run_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   elif network == 'inception_resnet':
-    run_inception_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
+    run_inception_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   else:
     print("Error: Invalid network...")
     exit(-1)

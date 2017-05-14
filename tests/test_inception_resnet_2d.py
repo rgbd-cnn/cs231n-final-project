@@ -3,11 +3,11 @@ import tensorflow as tf
 from utilities.train import *
 from models.inception_resnet import setup_resnet_inception_model
 
-def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, debug):
+def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs):
   # Create Model
   print("Setting up model...")
   data_shape = list(data['X_train'][0].shape)
-  model = setup_resnet_inception_model(data_shape, num_classes, 2, 3, 2, learning_rate=1e-4)
+  model = setup_resnet_inception_model(data_shape, num_classes, 1, 2, 1, learning_rate=1e-3)
   saver = tf.train.Saver()
   sess = tf.Session()
   sess.run(tf.global_variables_initializer())
@@ -16,13 +16,6 @@ def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, 
   if recover:
     print("Recovering model...")
     recover_model_checkpoint(sess, saver, 'checkpoints/')
-
-  # Debug Mode: Run on Smaller Dataset
-  if debug:
-    data['X_train'] = data['X_train'][0:500]
-    data['y_train'] = data['y_train'][0:500]
-    data['X_val'] = data['X_val'][0:500]
-    data['y_val'] = data['y_val'][0:500]
 
   # Train Model
   print("Training model...")
