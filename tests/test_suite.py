@@ -118,8 +118,8 @@ def main():
     else:
       print("Invalid choice...")
       ask = True
-  print('')
 
+  print("\nLoading data...")
   # Get Appropriate Data
   if dataset == 'cifar':
     # Get CIFAR-10 Dataset
@@ -129,15 +129,21 @@ def main():
     print(data['y_train'][0])
   elif dataset == 'uwash_2d':
     # Get UWASH Dataset (Without Depth)
-    print("Not yet supported...")
-    exit(-1)
+    data = load_uwash_rgbd(depth=False)
+    num_classes = 30
   elif dataset == 'uwash_3d':
     # Get UWASH Dataset (With Depth)
-    print("Not yet supported...")
-    exit(-1)
+    data = load_uwash_rgbd(depth=True)
+    num_classes = 30
   else:
     print("Error: Invalid dataset...")
     exit(-1)
+
+  print("Finished loading data...")
+  print("   Training Size:   %d" % data['y_train'].shape[0])
+  print("   Validation Size: %d" % data['y_val'].shape[0])
+  print("   Test Size:       %d" % data['y_test'].shape[0])
+  print('')
 
   # Run Appropriate Network
   if network == 'resnet':

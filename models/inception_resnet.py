@@ -211,7 +211,7 @@ def stem_unit(input, is_training):
     out = tf.nn.relu(out)
 
     # Max Pooling
-    # out = max_pool2d(out, [3, 3], stride=2, padding='VALID')
+    out = slim.max_pool2d(out, [3, 3], stride=2, padding='VALID')
 
     # BottleNeck
     out = slim.conv2d(out, 80, [1,1], activation_fn=None)

@@ -53,13 +53,13 @@ def read_and_resize_image(file_dir, depth_dir, height, width):
     suffices.append("_original")
 
     # horizontally flipped image
-    rgb_horizontal = rgb[:, ::-1, :]
-    depth_horizontal = depth[:, ::-1, :]
+    # rgb_horizontal = rgb[:, ::-1, :]
+    # depth_horizontal = depth[:, ::-1, :]
 
-    xs.append(np.concatenate((rgb_horizontal, depth_horizontal), axis=2))
-    rgbs.append(rgb_horizontal)
-    depths.append(depth_horizontal)
-    suffices.append("_horizontal_flip")
+    # xs.append(np.concatenate((rgb_horizontal, depth_horizontal), axis=2))
+    # rgbs.append(rgb_horizontal)
+    # depths.append(depth_horizontal)
+    # suffices.append("_horizontal_flip")
 
     # vertically flipped image
     # rgb_vertical = np.flip(rgb, 0)
@@ -153,5 +153,5 @@ if __name__ == '__main__':
 
     save_original_images_to_disk_as_pkls(data_dir, height, width, save,
                                          overwrite)
-    X, Y, labels = load_pickles.load_data()
+    X, Y, labels = load_pickles.load_uwash_rgbd()
     print(X, Y, labels)
