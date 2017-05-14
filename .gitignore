@@ -18,3 +18,4 @@ data/UWASH-RGBD/rgbd-dataset
 **/*.pkl
 **/*.icloud
 **/*.0
+**/*.zip

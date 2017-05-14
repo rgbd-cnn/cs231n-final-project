@@ -342,8 +342,7 @@ def setup_resnet_inception_model(image_size, num_classes, A, B, C,
     # Define Output and Calculate Loss
     y_out = inception_res_model(X, A, B, C, num_classes, is_training)
     total_loss = tf.nn.softmax_cross_entropy_with_logits(
-        labels=tf.one_hot(y, num_classes),
-        logits=y_out)
+        labels=tf.one_hot(y, num_classes), logits=y_out)
     mean_loss = tf.reduce_mean(total_loss)
 
     # Adam Optimizer

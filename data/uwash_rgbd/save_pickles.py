@@ -133,7 +133,7 @@ def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
             if os.path.isdir(object_dir):
                 print(object_dir)
                 tasks.append((object_dir, object, height, width, save))
-    pool = multiprocessing.Pool(3)
+    pool = multiprocessing.Pool(4)
     results = []
     r = pool.map_async(save_pkl, tasks, callback=results.append)
     r.wait()
@@ -154,5 +154,5 @@ if __name__ == '__main__':
 
     save_original_images_to_disk_as_pkls(data_dir, height, width, save,
                                          overwrite)
-    X, Y, labels = load_pickles.load_uwash_rgbd()
-    print(X, Y, labels)
+    data = load_pickles.load_uwash_rgbd(size=500)
+    print data

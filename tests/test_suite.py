@@ -131,12 +131,12 @@ def main():
         print(data['y_train'][0])
     elif dataset == 'uwash_2d':
         # Get UWASH Dataset (Without Depth)
-        data = load_uwash_rgbd(depth=False)
-        num_classes = 30
+        data = load_uwash_rgbd(depth=False, size=500)
+        num_classes = 51
     elif dataset == 'uwash_3d':
         # Get UWASH Dataset (With Depth)
-        data = load_uwash_rgbd(depth=True)
-        num_classes = 30
+        data = load_uwash_rgbd(depth=True, size=500)
+        num_classes = 51
     else:
         print("Error: Invalid dataset...")
         exit(-1)
@@ -155,7 +155,7 @@ def main():
     elif network == 'inception_resnet':
         run_inception_resnet_2d_test(data, num_classes, device, recover,
                                      'checkpoints/' + model_name,
-                                     highest_epochs, epochs, debug)
+                                     highest_epochs, epochs)
     else:
         print("Error: Invalid network...")
         exit(-1)

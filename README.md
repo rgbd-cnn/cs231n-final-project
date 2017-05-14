@@ -21,7 +21,7 @@
 2. `SINGLE OBJECTS` [U-WASH RGB-D Object Dataset](https://rgbd-dataset.cs.washington.edu/dataset/) 
     * Dataset info
         * [University of Washington RGB-D Object Dataset](https://rgbd-dataset.cs.washington.edu/dataset/rgbd-dataset/rgbd-dataset.tar)
-        * Contains 30 household single object classes like apple, towels, etc.
+        * Contains 51 household single object classes like apple, towels, etc.
             * these images have different heights and widths and need to be resized
     * `data/UWASH-RGBD/load_data.py`
         * `get_np_arrays_from_dataset(data_dir, height, width, save)` generates:
