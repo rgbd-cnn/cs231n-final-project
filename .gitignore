@@ -14,4 +14,5 @@ data/Princeton-SUNRGB-D/SUNRGBD
 data/UWASH-RGBD/rgbd-dataset
 **/data.json
 **/.idea
-
+**/*.pkl
+**/*.icloud
