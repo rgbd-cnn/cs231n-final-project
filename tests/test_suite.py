@@ -3,6 +3,8 @@ import re
 import fnmatch
 from tests.test_resnet_2d import *
 from tests.test_inception_resnet_2d import *
+from data.cs231n.data_utils import get_CIFAR10_data
+from data.uwash_rgbd.load_pickles import load_uwash_rgbd
 
 def main():
   # Suppress Annoying TensorFlow Logs
@@ -22,6 +24,25 @@ def main():
       network = 'resnet'
     elif network == 2:
       network = 'inception_resnet'
+    else:
+      print("Invalid choice...")
+      ask = True
+
+  # Specify Dataset
+  ask = True
+  while ask:
+    dataset = input("\nWhich dataset would you like to use?\n" +
+                    "   1. CIFAR-10 (2D)\n" +
+                    "   2. UWASH (2D)\n" +
+                    "   3. UWASH (3D)\n" +
+                    "Please select number: ")
+    ask = False
+    if dataset == 1:
+      dataset = 'cifar'
+    elif dataset == 2:
+      dataset = 'uwash_2d'
+    elif dataset == 3:
+      dataset = 'uwash_3d'
     else:
       print("Invalid choice...")
       ask = True
@@ -99,13 +120,33 @@ def main():
       ask = True
   print('')
 
+  # Get Appropriate Data
+  if dataset == 'cifar':
+    # Get CIFAR-10 Dataset
+    data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
+                            subtract_mean=True)
+    num_classes = 10
+    print(data['y_train'][0])
+  elif dataset == 'uwash_2d':
+    # Get UWASH Dataset (Without Depth)
+    print("Not yet supported...")
+    exit(-1)
+  elif dataset == 'uwash_3d':
+    # Get UWASH Dataset (With Depth)
+    print("Not yet supported...")
+    exit(-1)
+  else:
+    print("Error: Invalid dataset...")
+    exit(-1)
+
   # Run Appropriate Network
   if network == 'resnet':
-    run_resnet_2d_test(device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
+    run_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
   elif network == 'inception_resnet':
-    run_inception_resnet_2d_test(device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
+    run_inception_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs, debug)
   else:
     print("Error: Invalid network...")
+    exit(-1)
   
 if __name__ == '__main__':
   main()

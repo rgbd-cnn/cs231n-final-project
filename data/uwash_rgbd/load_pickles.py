@@ -3,8 +3,7 @@ import pickle
 
 import numpy as np
 
-
-def load_data():
+def load_uwash_rgbd():
     X = []
     Y = []
     base = os.path.join(os.path.dirname(os.path.abspath(__file__)), './pickles')
@@ -23,3 +22,4 @@ def load_data():
             dict[index] = y
             pkl.close()
     return np.concatenate(X), np.array(Y), dict
+

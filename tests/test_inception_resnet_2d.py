@@ -2,16 +2,12 @@ import numpy as np
 import tensorflow as tf
 from utilities.train import *
 from models.inception_resnet import setup_resnet_inception_model
-from data.cs231n.data_utils import get_CIFAR10_data
 
-def run_inception_resnet_2d_test(device, recover, ckpt_path, prev_epochs, epochs, debug):
-  # Test with CIFAR-10 Data
-  data = get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
-                          subtract_mean=True)
-
+def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, debug):
   # Create Model
   print("Setting up model...")
-  model = setup_resnet_inception_model([32, 32, 3], 10, 1, 2, 1, learning_rate=1e-3)
+  data_shape = list(data['X_train'][0].shape)
+  model = setup_resnet_inception_model(data_shape, num_classes, 1, 2, 1, learning_rate=1e-3)
   saver = tf.train.Saver()
   sess = tf.Session()
   sess.run(tf.global_variables_initializer())
@@ -23,10 +19,10 @@ def run_inception_resnet_2d_test(device, recover, ckpt_path, prev_epochs, epochs
 
   # Debug Mode: Run on Smaller Dataset
   if debug:
-    data['X_train'] = data['X_train'][0:1000]
-    data['y_train'] = data['y_train'][0:1000]
-    data['X_val'] = data['X_val'][0:1000]
-    data['y_val'] = data['y_val'][0:1000]
+    data['X_train'] = data['X_train'][0:100]
+    data['y_train'] = data['y_train'][0:100]
+    data['X_val'] = data['X_val'][0:100]
+    data['y_val'] = data['y_val'][0:100]
 
   # Train Model
   print("Training model...")
