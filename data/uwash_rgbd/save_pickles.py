@@ -1,12 +1,13 @@
 import argparse
+import multiprocessing
+import numpy as np
 import os
 import pickle
 import sys
-
-import numpy as np
 from PIL import Image
 
 import load_pickles
+
 
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
@@ -94,7 +95,8 @@ def save_file(data_dir, object, folder, rgb_file, depth_file, rgb, depth,
     print("Saved to disk: %s and %s" % (rgb_dir, depth_dir))
 
 
-def save_pkl(object_dir, object, height, width, save):
+def save_pkl(tup):
+    object_dir, object, height, width, save = tup
     X = []
     for folder in os.listdir(object_dir):
         folder_dir = os.path.join(object_dir, folder)
@@ -132,12 +134,19 @@ def save_pkl(object_dir, object, height, width, save):
 
 def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
                                          overwrite):
+    tasks = []
     for object in os.listdir(data_dir):
         if "_resized" not in object and (
                 overwrite or object + '.pkl' not in os.listdir('./pickles')):
             object_dir = os.path.join(data_dir, object)
             if os.path.isdir(object_dir):
-                save_pkl(object_dir, object, height, width, save)
+                print(object_dir)
+                tasks.append((object_dir, object, height, width, save))
+    pool = multiprocessing.Pool(None)
+    results = []
+    r = pool.map_async(save_pkl, tasks, callback=results.append)
+    r.wait()
+    print results
 
 
 if __name__ == '__main__':
