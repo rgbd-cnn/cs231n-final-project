@@ -58,7 +58,7 @@ def reduction_B(input, is_training):
     out_2 = slim.conv2d(out_2, 256, [3,3], stride=2, padding='VALID', activation_fn=None)
 
     # Inception Path 3
-    out_3 = slim.conv2d(out_relu, 256, [1,1], activation_fn=None)
+    out_3 = slim.conv2d(out_relu, 128, [1,1], activation_fn=None)
     out_3 = slim.batch_norm(out_3, decay=0.99, center=True, scale=True, epsilon=1e-8,
                             activation_fn=None, is_training=is_training, trainable=True)
     out_3 = tf.nn.relu(out_3)
@@ -233,7 +233,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
   out = stem_unit(input, is_training)
 
   # Dropout
-  out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
   
   # Inception-A Block
   for i in range(num_A):
@@ -243,7 +243,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
   out = reduction_A(out, is_training)
 
   # Dropout
-  out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
 
   # Inception-B Block
   for i in range(num_B):
@@ -253,7 +253,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
   out = reduction_B(out, is_training)
 
   # Dropout
-  out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
 
   # Inception-C Block
   for i in range(num_C):
