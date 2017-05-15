@@ -144,6 +144,8 @@ def main():
     data['y_train'] = data['y_train'][0:500]
     data['X_val'] = data['X_val'][0:500]
     data['y_val'] = data['y_val'][0:500]
+    data['X_test'] = data['X_test'][0:500]
+    data['y_test'] = data['y_test'][0:500]
 
   print("Finished loading data...")
   print("   Training Size:   %d" % data['y_train'].shape[0])
