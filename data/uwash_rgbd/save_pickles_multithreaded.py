@@ -26,7 +26,7 @@ def parse_arguments(argv):
                         default=False)
     parser.add_argument('--overwrite', type=bool,
                         help='whether to rewrite existing pickles',
-                        default=False)
+                        default=True)
     parser.add_argument('--num_threads', type=int,
                         help='number of work threads',
                         default=4)
@@ -94,7 +94,7 @@ def save_pkl(tup):
     for folder in os.listdir(object_dir):
         X = []
         folder_dir = os.path.join(object_dir, folder)
-        if os.path.isdir(folder_dir):
+        if os.path.isdir(folder_dir) and '.DS_store' not in folder_dir:
             dirs = os.listdir(folder_dir)
             for file in dirs:
                 if is_rgb_file(file):

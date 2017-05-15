@@ -124,6 +124,7 @@ def load_uwash_rgbd(depth=False):
             cucumber_count = 0
             for cucumber in cucumbers:
                 if "pkl" in cucumber:
+                    print("loading: ", cucumber)
                     pkl = open(os.path.join(base, piggle, cucumber))
                     x = pickle.load(pkl)
                     y = pickle.load(pkl)
@@ -137,6 +138,7 @@ def load_uwash_rgbd(depth=False):
                     dict[index] = y
                     pkl.close()
             index += 1
+    print([i.shape for i in X_train])
     X_train = np.concatenate(X_train).astype("float")
     X_test_val = np.concatenate(X_test_val).astype("float")
     y_train = np.array(y_train)
