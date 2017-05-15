@@ -118,7 +118,7 @@ def load_uwash_rgbd(depth=False):
     X_test_val = []
     y_test_val = []
     for piggle in pickles:
-        cucumbers = os.listdir(base + "/" + piggle)
+        cucumbers = os.listdir(os.path.join(base, piggle))
         training_set_indices = random.sample(range(0, len(cucumbers)), 2)
         cucumber_count = 0
         for cucumber in cucumbers:
