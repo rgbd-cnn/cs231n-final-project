@@ -76,10 +76,10 @@ def load_uwash_rgbd(depth=False):
                 else:
                     data['X_test_val'].append(x)
                     data['y_test_val'] += [index for i in range(x.shape[0])]
-                index += 1
                 cucumber_count += 1
                 dict[index] = y
                 pkl.close()
+        index += 1
     data['X_train'] = np.concatenate(data['X_train'])
     data['X_test_val'] = np.concatenate(data['X_test_val'])
     if (depth):
