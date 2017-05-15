@@ -55,22 +55,29 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
         X_train = X_train[:, :, :, 0:3]
         X_test_val = X_test_val[:, :, :, 0:3]
 
-    # Normalize Depth Data (0 to 255)
-    X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
-    X_test_val[:, :, :, 3] *= (255.0 / np.max(X_test_val[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+    else:
+        pass
+        # Normalize Depth Data (0 to 255)
+        # print("Normalize Depth Data (0 to 255)")
+        # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+        # X_test_val[:, :, :, 3] *= (255.0 / np.max(X_test_val[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+
+    train_size = y_train.shape[0]
+    test_val_size = y_test_val.shape[0]
 
     # Shuffle Training Data
     print("Shuffling training data...")
-    permutation = np.random.permutation(y_train.shape[0])
+    permutation = np.random.permutation(train_size)
     X_train_shuffled = X_train[permutation]
     y_train_shuffled = y_train[permutation]
 
     # Create Training Set
     print("Augmenting training data...")
-    train_size = y_train.shape[0]
     X_train_hflip = X_train_shuffled[:, :, ::-1, :]
     X_train = np.concatenate((X_train_shuffled, X_train_hflip), axis=0)
+    X_train_shuffled, X_train_hflip = None, None
     y_train = np.concatenate((y_train_shuffled, y_train_shuffled), axis=0)
+    y_train_shuffled = None
 
     # Normalize the Data
     print("Normalizing data...")
@@ -80,28 +87,32 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
 
     # Shuffle Validation and Test Data
     print("Shuffling validation and test data...")
-    permutation = np.random.permutation(y_test_val.shape[0])
+    permutation = np.random.permutation(test_val_size)
     X_test_val_shuffled = X_test_val[permutation]
     y_test_val_shuffled = y_test_val[permutation]
+    X_test_val, y_test_val = None, None
 
     # Create Validation Set
     print("Creating validation set...")
-    val_size = int(0.5 * float(y_test_val.shape[0]))
-    X_val = X_test_val_shuffled[range(val_size)]
-    y_val = y_test_val_shuffled[range(val_size)]
+    val_size = int(0.5 * float(test_val_size))
+    X_val = X_test_val_shuffled[:val_size]
+    y_val = y_test_val_shuffled[:val_size]
 
     # Create Test Set
     print("Creating test set...")
-    X_test = X_test_val_shuffled[range(val_size, y_test_val.shape[0])]
-    y_test = y_test_val_shuffled[range(val_size, y_test_val.shape[0])]
+    X_test = X_test_val_shuffled[val_size:]
+    y_test = y_test_val_shuffled[val_size:]
+
+    X_test_val_shuffled, y_test_val_shuffled = None, None
 
     #Save Data in Dictionary
+    print("Save Data in Dictionary...")
     data = {}
     data['X_train'] = X_train
     data['y_train'] = y_train
     data['X_val'] = X_val
     data['y_val'] = y_val
-    data['x_test'] = X_test
+    data['X_test'] = X_test
     data['y_test'] = y_test
 
     return data
@@ -118,24 +129,27 @@ def load_uwash_rgbd(depth=False):
     X_test_val = []
     y_test_val = []
     for piggle in pickles:
-        cucumbers = os.listdir(base + "/" + piggle)
-        training_set_indices = random.sample(range(0, len(cucumbers)), 2)
-        cucumber_count = 0
-        for cucumber in cucumbers:
-            if "pkl" in cucumber:
-                pkl = open(os.path.join(base, piggle, cucumber))
-                x = pickle.load(pkl)
-                y = pickle.load(pkl)
-                if cucumber_count in training_set_indices:
-                    X_train.append(x)
-                    y_train += [index for i in range(x.shape[0])]
-                else:
-                    X_test_val.append(x)
-                    y_test_val += [index for i in range(x.shape[0])]
-                cucumber_count += 1
-                dict[index] = y
-                pkl.close()
-        index += 1
+        if os.path.isdir(os.path.join(base, piggle)):
+            cucumbers = os.listdir(os.path.join(base, piggle))
+            training_set_indices = random.sample(range(0, len(cucumbers)), 2)
+            cucumber_count = 0
+            for cucumber in cucumbers:
+                if "pkl" in cucumber:
+                    print("loading: ", cucumber)
+                    pkl = open(os.path.join(base, piggle, cucumber))
+                    x = pickle.load(pkl)
+                    y = pickle.load(pkl)
+                    if cucumber_count in training_set_indices:
+                        X_train.append(x)
+                        y_train += [index for i in range(x.shape[0])]
+                    else:
+                        X_test_val.append(x)
+                        y_test_val += [index for i in range(x.shape[0])]
+                    cucumber_count += 1
+                    dict[index] = y
+                    pkl.close()
+            index += 1
+    print([i.shape for i in X_train])
     X_train = np.concatenate(X_train).astype("float")
     X_test_val = np.concatenate(X_test_val).astype("float")
     y_train = np.array(y_train)
