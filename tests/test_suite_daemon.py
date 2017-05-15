@@ -9,6 +9,10 @@ from tests.test_inception_resnet_2d import *
 from tests.test_resnet_2d import *
 
 
+# run example: "python -m tests.test_suite_daemon --network inception_resnet
+# --dataset uwash_3d --load False --model_name 1 --epochs 100 --device /gpu:0
+#  --debug False 2>error.txt > log.txt"
+
 def parse_arguments(argv):
     parser = argparse.ArgumentParser()
 
@@ -16,16 +20,16 @@ def parse_arguments(argv):
                         default='inception_resnet')
     parser.add_argument('--dataset', type=str, help='dataset to test',
                         default='uwash_3d')
-    parser.add_argument('--load', type=bool,
-                        help='whether to load existing model', default=False)
+    parser.add_argument('--load', type=int,
+                        help='whether to load existing model', default=0)
     parser.add_argument('--model_name', type=str, help='model name',
                         default=None)
     parser.add_argument('--epochs', type=int,
                         help='number of epochs', default=None)
     parser.add_argument('--device', type=str,
                         help='CPU or GPU', default='/cpu:0')
-    parser.add_argument('--debug', type=bool,
-                        help='debug mode', default=False)
+    parser.add_argument('--debug', type=int,
+                        help='debug mode', default=0)
     return parser.parse_args(argv)
 
 
