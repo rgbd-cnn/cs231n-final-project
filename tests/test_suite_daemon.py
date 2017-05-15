@@ -22,7 +22,7 @@ def parse_arguments(argv):
                         default=None)
     parser.add_argument('--epochs', type=int,
                         help='number of epochs', default=None)
-    parser.add_argument('--device', type=int,
+    parser.add_argument('--device', type=str,
                         help='CPU or GPU', default='/cpu:0')
     parser.add_argument('--debug', type=bool,
                         help='debug mode', default=False)
