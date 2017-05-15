@@ -34,7 +34,7 @@ def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, 
 
   # Check Test Accuracy
   print('\nFinal Test Accuracy:')
-  train_model(device, sess, model, data['x_test'], data['y_test'], epochs=1,
+  train_model(device, sess, model, data['X_test'], data['y_test'], epochs=1,
               batch_size=64, is_training=False, log_freq=100, plot_loss=False)
 
   # Save Model Checkpoint
