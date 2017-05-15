@@ -118,24 +118,25 @@ def load_uwash_rgbd(depth=False):
     X_test_val = []
     y_test_val = []
     for piggle in pickles:
-        cucumbers = os.listdir(os.path.join(base, piggle))
-        training_set_indices = random.sample(range(0, len(cucumbers)), 2)
-        cucumber_count = 0
-        for cucumber in cucumbers:
-            if "pkl" in cucumber:
-                pkl = open(os.path.join(base, piggle, cucumber))
-                x = pickle.load(pkl)
-                y = pickle.load(pkl)
-                if cucumber_count in training_set_indices:
-                    X_train.append(x)
-                    y_train += [index for i in range(x.shape[0])]
-                else:
-                    X_test_val.append(x)
-                    y_test_val += [index for i in range(x.shape[0])]
-                cucumber_count += 1
-                dict[index] = y
-                pkl.close()
-        index += 1
+        if os.path.isdir(os.path.join(base, piggle)):
+            cucumbers = os.listdir(os.path.join(base, piggle))
+            training_set_indices = random.sample(range(0, len(cucumbers)), 2)
+            cucumber_count = 0
+            for cucumber in cucumbers:
+                if "pkl" in cucumber:
+                    pkl = open(os.path.join(base, piggle, cucumber))
+                    x = pickle.load(pkl)
+                    y = pickle.load(pkl)
+                    if cucumber_count in training_set_indices:
+                        X_train.append(x)
+                        y_train += [index for i in range(x.shape[0])]
+                    else:
+                        X_test_val.append(x)
+                        y_test_val += [index for i in range(x.shape[0])]
+                    cucumber_count += 1
+                    dict[index] = y
+                    pkl.close()
+            index += 1
     X_train = np.concatenate(X_train).astype("float")
     X_test_val = np.concatenate(X_test_val).astype("float")
     y_train = np.array(y_train)
