@@ -62,6 +62,10 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
         # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
         # X_test_val[:, :, :, 3] *= (255.0 / np.max(X_test_val[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
 
+    print(np.max(X_train[:, :, :, 3]))
+    print(np.min(X_train[:, :, :, 3]))
+    print(np.mean(X_train[:, :, :, 3]))
+
     train_size = y_train.shape[0]
     test_val_size = y_test_val.shape[0]
 
@@ -135,7 +139,7 @@ def load_uwash_rgbd(depth=False):
             cucumber_count = 0
             for cucumber in cucumbers:
                 if "pkl" in cucumber:
-                    print("loading: ", cucumber)
+                    # print("loading: ", cucumber)
                     pkl = open(os.path.join(base, piggle, cucumber))
                     x = pickle.load(pkl)
                     y = pickle.load(pkl)
@@ -149,7 +153,7 @@ def load_uwash_rgbd(depth=False):
                     dict[index] = y
                     pkl.close()
             index += 1
-    print([i.shape for i in X_train])
+    # print([i.shape for i in X_train])
     X_train = np.concatenate(X_train).astype("float")
     X_test_val = np.concatenate(X_test_val).astype("float")
     y_train = np.array(y_train)
