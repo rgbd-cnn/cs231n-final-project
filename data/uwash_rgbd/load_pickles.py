@@ -55,6 +55,10 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
         X_train = X_train[:, :, :, 0:3]
         X_test_val = X_test_val[:, :, :, 0:3]
 
+    # Normalize Depth Data (0 to 255)
+    X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+    X_test_val[:, :, :, 3] *= (255.0 / np.max(X_test_val[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+
     # Shuffle Training Data
     print("Shuffling training data...")
     permutation = np.random.permutation(y_train.shape[0])
