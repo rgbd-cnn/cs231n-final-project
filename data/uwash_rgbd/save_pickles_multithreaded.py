@@ -88,8 +88,8 @@ def save_file(data_dir, object, folder, rgb_file, depth_file, rgb, depth,
 
 def save_pkl(tup):
     object_dir, object, height, width, save = tup
-    X = []
     for folder in os.listdir(object_dir):
+        X = []
         folder_dir = os.path.join(object_dir, folder)
         if os.path.isdir(folder_dir):
             dirs = os.listdir(folder_dir)
@@ -112,15 +112,17 @@ def save_pkl(tup):
                             if save:
                                 save_file(data_dir, object, folder, file,
                                           depth_file, rgb, depth, suffix)
-    X = np.array(X)
-    print("Writing pickleeeee :)")
-    print(object)
+        X = np.array(X)
+        print("Writing pickleeeee :)")
+        print(folder)
+        if not os.path.exists(os.path.dirname('pickles/' + object + '/' + folder)):
+            os.makedirs(os.path.dirname('pickles/' + object + '/' + folder))
 
-    pickle_f = 'pickles/' + object + '.pkl'
-    with open(pickle_f, 'wb') as f:
-        pickle.dump(X, f, -1)
-        pickle.dump(object, f, -1)
-        print("saved:", pickle_f)
+        pickle_f = 'pickles/' + object + '/' + folder + '.pkl'
+        with open(pickle_f, 'wb') as f:
+            pickle.dump(X, f, -1)
+            pickle.dump(object, f, -1)
+            print("saved:", pickle_f)
 
 
 def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
