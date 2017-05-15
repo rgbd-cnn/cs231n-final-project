@@ -27,6 +27,9 @@ def parse_arguments(argv):
     parser.add_argument('--overwrite', type=bool,
                         help='whether to rewrite existing pickles',
                         default=False)
+    parser.add_argument('--num_threads', type=int,
+                        help='number of work threads',
+                        default=4)
     return parser.parse_args(argv)
 
 
@@ -126,7 +129,7 @@ def save_pkl(tup):
 
 
 def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
-                                         overwrite):
+                                         overwrite, num_threads):
     tasks = []
     for object in os.listdir(data_dir):
         if "_resized" not in object and (
@@ -135,7 +138,7 @@ def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
             if os.path.isdir(object_dir):
                 print(object_dir)
                 tasks.append((object_dir, object, height, width, save))
-    pool = multiprocessing.Pool(4)
+    pool = multiprocessing.Pool(num_threads)
     results = []
     r = pool.map_async(save_pkl, tasks, callback=results.append)
     r.wait()
@@ -150,11 +153,12 @@ if __name__ == '__main__':
     width = args.target_img_width
     save = args.save_resized_images_to_disk
     overwrite = args.overwrite
+    num_threads = args.num_threads
 
     if 'pickles' not in os.listdir('./'):
         os.mkdir('./pickles')
 
     save_original_images_to_disk_as_pkls(data_dir, height, width, save,
-                                         overwrite)
+                                         overwrite, num_threads)
     data = load_pickles.load_uwash_rgbd()
     print data
