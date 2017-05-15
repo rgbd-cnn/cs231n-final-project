@@ -112,7 +112,7 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     data['y_train'] = y_train
     data['X_val'] = X_val
     data['y_val'] = y_val
-    data['x_test'] = X_test
+    data['X_test'] = X_test
     data['y_test'] = y_test
 
     return data
