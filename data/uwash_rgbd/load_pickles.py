@@ -56,17 +56,38 @@ def load_uwash_rgbd(depth=False):
     pickles = os.listdir(base)
     index = 0
     dict = {}
+    data = {}
+    data['X_train'] = []
+    data['y_train'] = []
+    data['X_test_val'] = []
+    data['y_test_val'] = []
     for piggle in pickles:
-        if "pkl" in piggle:
-            # print('loading', piggle)
-            pkl = open(os.path.join(base, piggle))
-            x = pickle.load(pkl)
-            X.append(x)
-            y = pickle.load(pkl)
-            Y += [index for i in range(x.shape[0])]
-            index += 1
-            dict[index] = y
-            pkl.close()
+        cucumbers = os.listdir(base + "/" + piggle)
+        training_set_indices = random.sample(range(0, len(cucumbers)), 2)
+        cucumber_count = 0
+        for cucumber in cucumbers:
+            if "pkl" in cucumber:
+                pkl = open(os.path.join(base, piggle, cucumber))
+                x = pickle.load(pkl)
+                y = pickle.load(pkl)
+                if cucumber_count in training_set_indices:
+                    data['X_train'].append(x)
+                    data['y_train'] += [index for i in range(x.shape[0])]
+                else:
+                    data['X_test_val'].append(x)
+                    data['y_test_val'] += [index for i in range(x.shape[0])]
+                index += 1
+                cucumber_count += 1
+                dict[index] = y
+                pkl.close()
+    data['X_train'] = np.concatenate(data['X_train'])
+    data['X_test_val'] = np.concatenate(data['X_test_val'])
+    if (depth):
+        data['X_train'] = data['X_train'][:, :, :, 0:3]
+        data['X_test_val'] = data['X_test_val'][:, :, :, 0:3]
 
-    data = split_data(np.concatenate(X), np.array(Y), depth)
+    mean_image = np.mean(data['X_train'], axis=0)
+    data['X_train'] -= mean_image
+    data['X_test_val'] -= mean_image
+    # data = split_data(np.concatenate(X), np.array(Y), depth)
     return data
