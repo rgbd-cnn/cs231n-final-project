@@ -128,10 +128,10 @@ def load_uwash_rgbd(depth=False):
                 else:
                     X_test_val.append(x)
                     y_test_val += [index for i in range(x.shape[0])]
-                index += 1
                 cucumber_count += 1
                 dict[index] = y
                 pkl.close()
+          index += 1
     X_train = np.concatenate(X_train).astype("float")
     X_test_val = np.concatenate(X_test_val).astype("float")
     y_train = np.array(y_train)
