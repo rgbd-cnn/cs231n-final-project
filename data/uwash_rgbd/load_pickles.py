@@ -131,7 +131,7 @@ def load_uwash_rgbd(depth=False):
                 cucumber_count += 1
                 dict[index] = y
                 pkl.close()
-          index += 1
+        index += 1
     X_train = np.concatenate(X_train).astype("float")
     X_test_val = np.concatenate(X_test_val).astype("float")
     y_train = np.array(y_train)
