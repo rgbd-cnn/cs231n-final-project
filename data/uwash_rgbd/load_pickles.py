@@ -62,10 +62,6 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
         # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
         # X_test_val[:, :, :, 3] *= (255.0 / np.max(X_test_val[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
 
-    print(np.max(X_train[:, :, :, 3]))
-    print(np.min(X_train[:, :, :, 3]))
-    print(np.mean(X_train[:, :, :, 3]))
-
     train_size = y_train.shape[0]
     test_val_size = y_test_val.shape[0]
 
@@ -163,4 +159,4 @@ def load_uwash_rgbd(depth=False):
 
     # data = split_data(np.concatenate(X), np.array(Y), depth)
     return data
-
+load_uwash_rgbd()
