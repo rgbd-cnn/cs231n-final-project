@@ -51,7 +51,7 @@ import random
 
 def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     # Check Depth Requirement
-    if depth:
+    if not depth:
         X_train = X_train[:, :, :, 0:3]
         X_test_val = X_test_val[:, :, :, 0:3]
 
