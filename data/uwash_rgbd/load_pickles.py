@@ -159,4 +159,3 @@ def load_uwash_rgbd(depth=False):
 
     # data = split_data(np.concatenate(X), np.array(Y), depth)
     return data
-load_uwash_rgbd()
