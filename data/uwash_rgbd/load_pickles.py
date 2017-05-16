@@ -51,7 +51,7 @@ import random
 
 def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     # Check Depth Requirement
-    if not depth:
+    if depth:
         X_train = X_train[:, :, :, 0:3]
         X_test_val = X_test_val[:, :, :, 0:3]
 
@@ -163,3 +163,4 @@ def load_uwash_rgbd(depth=False):
 
     # data = split_data(np.concatenate(X), np.array(Y), depth)
     return data
+
