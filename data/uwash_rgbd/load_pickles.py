@@ -2,6 +2,7 @@ import os
 import pickle
 import numpy as np
 import random
+import scipy as sp
 
 # def split_data(X, y, depth):
 #     # Shuffle Data
@@ -57,9 +58,11 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
 
     else:
         pass
-        # Normalize Depth Data (0 to 255)
-        # print("Normalize Depth Data (0 to 255)")
-        # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+        # Normalize Depth Data
+        # X_train[:, :, :, 3] = 1 / X_train[:, :, :, 3]
+        # X_train[:, :, :, 3] -= np.mean(X_train[:, :, :, 3])
+        # X_train[:, :, :, 3] /= np.var(X_train[:, :, :, 3])
+        # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(0,1,2)))
         # X_test_val[:, :, :, 3] *= (255.0 / np.max(X_test_val[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
 
     train_size = y_train.shape[0]
@@ -79,11 +82,11 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     y_train = np.concatenate((y_train_shuffled, y_train_shuffled), axis=0)
     y_train_shuffled = None
 
-    # Normalize the Data
+    # Normalize the Data (RGB)
     print("Normalizing data...")
-    mean_image = np.mean(X_train, axis=0)
-    X_train -= mean_image
-    X_test_val -= mean_image
+    mean_image = np.mean(X_train[:, :, :, 0:3], axis=0)
+    X_train[:, :, :, 0:3] -= mean_image
+    X_test_val[:, :, :, 0:3] -= mean_image
 
     # Shuffle Validation and Test Data
     print("Shuffling validation and test data...")
