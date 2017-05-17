@@ -43,7 +43,7 @@ def reduction_B(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out_relu = tf.nn.relu(out)
 
@@ -123,7 +123,7 @@ def reduction_A(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out_relu = tf.nn.relu(out)
 
@@ -154,7 +154,7 @@ def inception_res_A(input, counter, is_training):
     # Batch Normalization
     out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out_relu = tf.nn.relu(out)
 
@@ -196,7 +196,7 @@ def stem_unit(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True, scope='bn1')
-    
+
     # ReLU Activation
     out = tf.nn.relu(out)
 
@@ -206,7 +206,7 @@ def stem_unit(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True, scope='bn2')
-    
+
     # ReLU Activation
     out = tf.nn.relu(out)
 
@@ -219,7 +219,7 @@ def stem_unit(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out = tf.nn.relu(out)
 
@@ -234,7 +234,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
 
   # Dropout
   #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
-  
+
   # Inception-A Block
   for i in range(num_A):
     out = inception_res_A(out, i, is_training)
@@ -270,7 +270,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
 
   return output
 
-def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3):
+def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3, reg=0):
   # Reset Network
   tf.reset_default_graph()
 
