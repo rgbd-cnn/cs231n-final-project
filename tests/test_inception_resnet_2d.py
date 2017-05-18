@@ -22,8 +22,8 @@ def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, 
   num_train_val_cycles = epochs / train_epochs_per_validation
 
   if tensorboard_log_dir:
-    train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-reg-%s-lr-%s-train" % (reg, lr))
-    val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-reg-%s-lr-%s-val" % (reg, lr))
+    train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-reg-%s-lr-%s-train" % (dataset, reg, lr))
+    val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-reg-%s-lr-%s-val" % (dataset, reg, lr))
 
     if os.path.exists(train_dir):
       os.remove(train_dir)
