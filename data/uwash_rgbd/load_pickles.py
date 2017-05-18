@@ -2,6 +2,7 @@ import os
 import pickle
 import numpy as np
 import random
+import scipy as sp
 
 # def split_data(X, y, depth):
 #     # Shuffle Data
@@ -57,10 +58,17 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
 
     else:
         pass
-        # Normalize Depth Data (0 to 255)
-        # print("Normalize Depth Data (0 to 255)")
-        # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+        # Normalize Depth Data
+        # print("Normalizing depth data...")
+        # X_train[:, :, :, 3] = 1 / X_train[:, :, :, 3]
+        # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(0,1,2)))
+        # X_train[:, :, :, 3] -= np.mean(X_train[:, :, :, 3], axis=0)
+        # X_train[:, :, :, 3] /= np.var(X_train[:, :, :, 3])
+        # X_train[:, :, :, 3] *= (255.0 / np.max(X_train[:, :, :, 3], axis=(0,1,2)))
         # X_test_val[:, :, :, 3] *= (255.0 / np.max(X_test_val[:, :, :, 3], axis=(1,2)))[:, np.newaxis, np.newaxis]
+        # print(np.max(X_train[:, :, :, 3]))
+        # print(np.min(X_train[:, :, :, 3]))
+        # print(np.mean(X_train[:, :, :, 3]))
 
     train_size = y_train.shape[0]
     test_val_size = y_test_val.shape[0]
@@ -81,9 +89,26 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
 
     # Normalize the Data
     print("Normalizing data...")
+    if depth:
+        max_train = np.max(X_train[:, :, :, 3], axis=(0,1,2))
+        X_train[:, :, :, 3] *= (255.0 / max_train)
+        X_test_val[:, :, :, 3] *= (255.0 / max_train)
     mean_image = np.mean(X_train, axis=0)
     X_train -= mean_image
     X_test_val -= mean_image
+
+    # Normalize the Depth Data
+    # if depth:
+    #     print("Normalizing depth data...")
+    #     # Scale Values
+    #     max_train = np.max(X_train[:, :, :, 3], axis=(0,1,2))
+    #     X_train[:, :, :, 3] *= (255.0 / max_train)
+    #     X_test_val[:, :, :, 3] *= (255.0 / max_train)
+
+        # Subtract Mean Depth Image
+        # mean_depth = np.mean(X_train[:, :, :, 3], axis=0)
+        # X_train[:, :, :, 3] -= mean_depth
+        # X_test_val[:, :, :, 3] -= mean_depth
 
     # Shuffle Validation and Test Data
     print("Shuffling validation and test data...")
