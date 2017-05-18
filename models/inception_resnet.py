@@ -270,7 +270,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
 
   return output
 
-def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3, reg=0):
+def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3):
   # Reset Network
   tf.reset_default_graph()
 

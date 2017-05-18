@@ -29,7 +29,7 @@ def parse_arguments(argv):
                         default=True)
     parser.add_argument('--num_threads', type=int,
                         help='number of work threads',
-                        default=4)
+                        default=48)
     return parser.parse_args(argv)
 
 

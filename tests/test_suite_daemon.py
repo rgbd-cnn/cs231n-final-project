@@ -35,9 +35,9 @@ def parse_arguments(argv):
                       default=None)
   parser.add_argument('--lr', type=float,
                       help='learning rate', default=1e-3)
-  parser.add_argument('--reg', type=float,
-                      help='L2 regularization', default=0)
-  parser.add_argument('--train_epochs_per_validation', type=float,
+  parser.add_argument('--dropout_keep_prob', type=float,
+                      help='dropout keep probability', default=0.5)
+  parser.add_argument('--train_epochs_per_validation', type=int,
                       help='How many epochs to train before validating once', default=100)
   return parser.parse_args(argv)
 
@@ -124,8 +124,7 @@ def main(args):
                        'checkpoints/' + model_name, highest_epochs, epochs)
   elif network == 'inception_resnet':
     run_inception_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs,
-                                 epochs, lr=args.lr, reg=args.reg,
-                                 train_epochs_per_validation=args.train_epochs_per_validation,
+                                 epochs, lr=args.lr, train_epochs_per_validation=args.train_epochs_per_validation,
                                  tensorboard_log_dir=args.tensorboard_log_dir, dataset=dataset)
   else:
     print("Error: Invalid network...")

@@ -19,7 +19,6 @@ def recover_model_checkpoint(session, saver, checkpoint_path):
 # Train the Model
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None):
-
   with tf.device(device):
     # Calculate Prediction Accuracy
     correct_prediction = tf.equal(tf.argmax(model['y_out'], 1), model['y'])
