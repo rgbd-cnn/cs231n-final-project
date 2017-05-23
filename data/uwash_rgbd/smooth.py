@@ -1,8 +1,11 @@
+import os
+import time
 from scipy import misc
 from scipy import stats
 from scipy import ndimage
 import numpy as np
 import matplotlib.pyplot as plt
+import multiprocessing
 
 def apply_style(subplot):
     subplot.tick_params(which='both', bottom='off', top='off', left='off', right='off',
@@ -12,7 +15,9 @@ def apply_style(subplot):
     subplot.spines['left'].set_visible(False)
     subplot.spines['right'].set_visible(False)
     
-def fix_image(im):
+def fix_image(args):
+    file, save = args
+    im = misc.imread(file)
     filter_size = 3
     pad = int((filter_size - 1) / 2)
     im = np.pad(im, pad, 'edge')
@@ -43,19 +48,55 @@ def fix_image(im):
                 correct[i, j] = mode
 
     correct = correct[pad:-pad, pad:-pad]
-    inv = 1.0 / np.copy(correct)
-    im_med = ndimage.median_filter(inv, 9)
+    im_med = ndimage.median_filter(correct, 9)
+    
+    if save:
+        img = misc.toimage(im_med, high=np.max(im_med), low=0, mode='I')
+        filename = str(file).split('.')[0] + '_corr.png'
+        print(filename)
+        img.save(filename)
+
+    # Invert Images for Display
+    inv = 1.0 / np.copy(im_med)
+    im_med = 1.0 / im_med
 
     return im, correct, inv, im_med
 
-def main():
+def depth_preprocess(data_dir, num_threads, save=False):
+    tasks = []
+    count = 0
+    for category in os.listdir(data_dir):
+        category_dir = os.path.join(data_dir, category)
+
+        if os.path.isdir(category_dir):
+            for instance in os.listdir(category_dir):
+                instance_dir = os.path.join(category_dir, instance)
+                if os.path.isdir(instance_dir):
+                    if not instance == '.DS_Store':
+                        for obj_file in os.listdir(instance_dir):
+                            if 'depthcrop.png' in obj_file:
+                                depth_dir = os.path.join(instance_dir, obj_file)
+                                count += 1
+                                if count < 100:
+                                    tasks.append((depth_dir, save))
+                                else:
+                                    break
+
+    pool = multiprocessing.Pool(num_threads)
+    results = []
+    r = pool.map_async(fix_image, tasks, callback=None)
+    r.wait()
+
+    return
+
+def test_preprocessing():
     images = []
-    images.append(misc.imread("rgbd_dataset/cereal_box/cereal_box_1/cereal_box_1_2_144_depthcrop.png"))
-    images.append(misc.imread("rgbd_dataset/peach/peach_2/peach_2_1_1_depthcrop.png"))
-    images.append(misc.imread("rgbd_dataset/scissors/scissors_3/scissors_3_1_1_depthcrop.png"))
-    images.append(misc.imread("rgbd_dataset/soda_can/soda_can_4/soda_can_4_1_1_depthcrop.png"))
-    # images.append(misc.imread("rgbd_dataset/water_bottle/water_bottle_4/water_bottle_4_1_1_depthcrop.png"))
-    images.append(misc.imread("rgbd_dataset/keyboard/keyboard_2/keyboard_2_1_138_depthcrop.png"))
+    images.append("rgbd-dataset/cereal_box/cereal_box_1/cereal_box_1_2_144_depthcrop.png")
+    # images.append("rgbd-dataset/peach/peach_2/peach_2_1_1_depthcrop.png")
+    # images.append("rgbd-dataset/scissors/scissors_3/scissors_3_1_1_depthcrop.png")
+    # images.append("rgbd-dataset/soda_can/soda_can_4/soda_can_4_1_1_depthcrop.png")
+    # images.append("rgbd-dataset/water_bottle/water_bottle_4/water_bottle_4_1_1_depthcrop.png")
+    # images.append("rgbd-dataset/keyboard/keyboard_2/keyboard_2_1_138_depthcrop.png")
 
     num_images = len(images)
     plt.figure()
@@ -85,5 +126,13 @@ def main():
     plt.tight_layout()
     plt.show()
 
-main()
-exit(0)
+def main():
+    start = time.time()
+    # test_preprocessing()
+    depth_preprocess("rgbd-dataset", 16, save=True)
+    end = time.time()
+    print("Completed in %f seconds!" % (end - start))
+
+if __name__ == '__main__':
+    main()
+    exit(0)
