@@ -3,9 +3,11 @@ from models.inception_resnet import inception_res_features
 import tensorflow.contrib.slim as slim
 
 def two_branch_cnn(X, A, B, C, num_classes, is_training):
-    inception_res_features_3d = inception_res_features(X, A, B, C, is_training)
+    with tf.variable_scope("branch2"):
+        inception_res_features_3d = inception_res_features(X, A, B, C, is_training)
 
-    inception_res_features_2d = inception_res_features(X[:, :, :, :3], A, B, C, is_training)
+    with tf.variable_scope("branch1"):
+        inception_res_features_2d = inception_res_features(X[:, :, :, :3], A, B, C, is_training)
 
     stacked = tf.stack([inception_res_features_2d, inception_res_features_3d], axis=1)
 
