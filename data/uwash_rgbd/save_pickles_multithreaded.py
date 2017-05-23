@@ -95,6 +95,7 @@ def save_pkl(tup):
                     if count % 5 == 0:
                         count += 1
                         depth_file = file[:-8] + "depthcrop_corr.png"
+
                         if depth_file in dirs:
                             file_dir = os.path.join(folder_dir, file)
                             depth_dir = os.path.join(folder_dir,
