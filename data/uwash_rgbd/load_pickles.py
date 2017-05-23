@@ -156,7 +156,7 @@ def load_uwash_rgbd(depth=False):
     for piggle in pickles:
         if os.path.isdir(os.path.join(base, piggle)):
             cucumbers = os.listdir(os.path.join(base, piggle))
-            training_set_indices = random.sample(range(0, len(cucumbers)), 2)
+            training_set_indices = range(1, len(cucumbers))
             cucumber_count = 0
             for cucumber in cucumbers:
                 if "pkl" in cucumber:
