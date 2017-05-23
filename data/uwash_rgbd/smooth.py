@@ -124,7 +124,7 @@ def test_preprocessing(save=False):
 def main():
     # test_preprocessing(save=True)
     start = time.time()
-    depth_preprocess("rgbd-dataset", 50, save=True)
+    depth_preprocess("rgbd-dataset", 48, save=True)
     end = time.time()
     print("Completed in %f seconds!" % (end - start))
 
