@@ -228,45 +228,54 @@ def stem_unit(input, is_training):
 
   return out
 
+
+def inception_res_features(input, num_A, num_B, num_C, is_training):
+    # Stem Layers
+    out = stem_unit(input, is_training)
+
+    # Dropout
+    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    # Inception-A Block
+    for i in range(num_A):
+        out = inception_res_A(out, i, is_training)
+
+    # Reduction-A Block
+    out = reduction_A(out, is_training)
+
+    # Dropout
+    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    # Inception-B Block
+    for i in range(num_B):
+        out = inception_res_B(out, i, is_training)
+
+    # Reduction-B Block
+    out = reduction_B(out, is_training)
+
+    # Dropout
+    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    # Inception-C Block
+    for i in range(num_C):
+        out = inception_res_C(out, i, is_training)
+
+    # Average Pooling
+    out = slim.avg_pool2d(out, [2, 2], stride=2)
+
+    # Dropout
+    out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    flat = slim.layers.flatten(out)
+
+    return flat
+
+
 def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
-  # Stem Layers
-  out = stem_unit(input, is_training)
-
-  # Dropout
-  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
-
-  # Inception-A Block
-  for i in range(num_A):
-    out = inception_res_A(out, i, is_training)
-
-  # Reduction-A Block
-  out = reduction_A(out, is_training)
-
-  # Dropout
-  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
-
-  # Inception-B Block
-  for i in range(num_B):
-    out = inception_res_B(out, i, is_training)
-
-  # Reduction-B Block
-  out = reduction_B(out, is_training)
-
-  # Dropout
-  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
-
-  # Inception-C Block
-  for i in range(num_C):
-    out = inception_res_C(out, i, is_training)
-
-  # Average Pooling
-  out = slim.avg_pool2d(out, [2, 2], stride=2)
-
-  # Dropout
-  out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+  features = inception_res_features(input, num_A, num_B, num_C, is_training)
 
   # Fully Connected Layer
-  output = slim.fully_connected(slim.layers.flatten(out), num_classes, activation_fn=None)
+  output = slim.fully_connected(features, num_classes, activation_fn=None)
 
   return output
 

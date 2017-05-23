@@ -1,11 +1,19 @@
 import tensorflow as tf
+from models.inception_resnet import inception_res_features
 import tensorflow.contrib.slim as slim
 
-from models.inception_resnet import setup_resnet_inception_model
+def two_branch_cnn(X, A, B, C, num_classes, is_training):
+    inception_res_features_3d = inception_res_features(X, A, B, C, is_training)
 
+    inception_res_features_2d = inception_res_features(X[:, :, :, :3], A, B, C, is_training)
 
+    stacked = tf.stack([inception_res_features_2d, inception_res_features_3d], axis=1)
 
-def setup_two_branch_CNN_model(image_size, num_classes, A, B, C, learning_rate=1e-3):
+    output = slim.fully_connected(stacked, num_classes, activation_fn=None)
+
+    return output
+
+def setup_two_branch_cnn_model(image_size, num_classes, A, B, C, learning_rate=1e-3):
     # Reset Network
     tf.reset_default_graph()
 
@@ -17,8 +25,10 @@ def setup_two_branch_CNN_model(image_size, num_classes, A, B, C, learning_rate=1
 
     # Define Output and Calculate Loss
     y_out = two_branch_cnn(X, A, B, C, num_classes, is_training)
-    total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, num_classes),
-                                                         logits=y_out)
+
+    total_loss = tf.nn.softmax_cross_entropy_with_logits(
+        labels=tf.one_hot(y, num_classes),
+        logits=y_out)
     mean_loss = tf.reduce_mean(total_loss)
 
     # Adam Optimizer
