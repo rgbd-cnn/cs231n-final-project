@@ -97,25 +97,28 @@ def save_pkl(tup):
         folder_dir = os.path.join(object_dir, folder)
         if os.path.isdir(folder_dir) and '.DS_store' not in folder_dir:
             dirs = os.listdir(folder_dir)
+            count = 0
             for file in dirs:
                 if is_rgb_file(file):
-                    depth_file = file[:-8] + "depthcrop.png"
-                    if depth_file in dirs:
-                        file_dir = os.path.join(folder_dir, file)
-                        depth_dir = os.path.join(folder_dir,
-                                                 depth_file)
-                        xs, rgbs, depths, suffices = read_and_resize_image(
-                            file_dir, depth_dir, height, width)
-                        print("Loaded: %s, %s" % (file_dir, depth_dir))
-                        for i in range(len(xs)):
-                            x = xs[i]
-                            rgb = rgbs[i]
-                            depth = depths[i]
-                            suffix = suffices[i]
-                            X.append(x)
-                            if save:
-                                save_file(data_dir, object, folder, file,
-                                          depth_file, rgb, depth, suffix)
+                    if count % 5 == 0:
+                        count += 1
+                        depth_file = file[:-8] + "depthcrop.png"
+                        if depth_file in dirs:
+                            file_dir = os.path.join(folder_dir, file)
+                            depth_dir = os.path.join(folder_dir,
+                                                     depth_file)
+                            xs, rgbs, depths, suffices = read_and_resize_image(
+                                file_dir, depth_dir, height, width)
+                            print("Loaded: %s, %s" % (file_dir, depth_dir))
+                            for i in range(len(xs)):
+                                x = xs[i]
+                                rgb = rgbs[i]
+                                depth = depths[i]
+                                suffix = suffices[i]
+                                X.append(x)
+                                if save:
+                                    save_file(data_dir, object, folder, file,
+                                              depth_file, rgb, depth, suffix)
         X = np.array(X)
         print("Writing pickleeeee :)")
         print(folder)
