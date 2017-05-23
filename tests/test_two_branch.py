@@ -4,7 +4,6 @@ import tensorflow as tf
 from models.two_branch_cnn import setup_two_branch_cnn_model
 from utilities.train import *
 
-
 def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, lr=1e-3,
                                  train_epochs_per_validation=100, tensorboard_log_dir=None, dataset=None):
     # Create Model

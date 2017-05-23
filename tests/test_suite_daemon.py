@@ -7,8 +7,7 @@ from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
 from tests.test_inception_resnet_2d import *
 from tests.test_resnet_2d import *
-from tests.test_two_branch_cnn import *
-
+from tests.test_two_branch import *
 
 # run example: "python -m tests.test_suite_daemon --network inception_resnet
 # --dataset uwash_3d --load False --model_name 1 --epochs 100 --device /gpu:0
