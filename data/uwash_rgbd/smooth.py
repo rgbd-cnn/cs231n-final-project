@@ -51,7 +51,7 @@ def fix_image(args):
     im_med = ndimage.median_filter(correct, 9)
     
     if save:
-        img = misc.toimage(im_med, high=np.max(im_med), low=0, mode='I')
+        img = misc.toimage(im_med, high=np.max(im_med), low=np.min(im_med), mode='I')
         filename = str(file).split('.')[0] + '_corr.png'
         print(filename)
         img.save(filename)
@@ -84,7 +84,7 @@ def depth_preprocess(data_dir, num_threads, save=False):
 
     return
 
-def test_preprocessing():
+def test_preprocessing(save=False):
     images = []
     images.append("rgbd-dataset/cereal_box/cereal_box_1/cereal_box_1_2_144_depthcrop.png")
     # images.append("rgbd-dataset/peach/peach_2/peach_2_1_1_depthcrop.png")
@@ -96,7 +96,7 @@ def test_preprocessing():
     num_images = len(images)
     plt.figure()
     for i in range(num_images):
-        im, correct, inv, im_med = fix_image(images[i])
+        im, correct, inv, im_med = fix_image((images[i], save))
 
         original = plt.subplot(num_images, 4, 4 * i + 1)
         apply_style(original)
@@ -122,7 +122,7 @@ def test_preprocessing():
     plt.show()
 
 def main():
-    # test_preprocessing()
+    # test_preprocessing(save=True)
     start = time.time()
     depth_preprocess("rgbd-dataset", 50, save=True)
     end = time.time()
