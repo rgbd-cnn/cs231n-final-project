@@ -64,7 +64,6 @@ def fix_image(args):
 
 def depth_preprocess(data_dir, num_threads, save=False):
     tasks = []
-    count = 0
     for category in os.listdir(data_dir):
         category_dir = os.path.join(data_dir, category)
 
@@ -76,11 +75,7 @@ def depth_preprocess(data_dir, num_threads, save=False):
                         for obj_file in os.listdir(instance_dir):
                             if 'depthcrop.png' in obj_file:
                                 depth_dir = os.path.join(instance_dir, obj_file)
-                                count += 1
-                                if count < 100:
-                                    tasks.append((depth_dir, save))
-                                else:
-                                    break
+                                tasks.append((depth_dir, save))
 
     pool = multiprocessing.Pool(num_threads)
     results = []
@@ -127,9 +122,9 @@ def test_preprocessing():
     plt.show()
 
 def main():
-    start = time.time()
     # test_preprocessing()
-    depth_preprocess("rgbd-dataset", 16, save=True)
+    start = time.time()
+    depth_preprocess("rgbd-dataset", 50, save=True)
     end = time.time()
     print("Completed in %f seconds!" % (end - start))
 
