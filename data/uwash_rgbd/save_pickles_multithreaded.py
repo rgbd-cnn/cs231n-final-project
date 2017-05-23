@@ -93,7 +93,6 @@ def save_pkl(tup):
             for file in dirs:
                 if is_rgb_file(file):
                     if count % 5 == 0:
-                        count += 1
                         depth_file = file[:-8] + "depthcrop_corr.png"
 
                         if depth_file in dirs:
@@ -112,6 +111,7 @@ def save_pkl(tup):
                                 if save:
                                     save_file(data_dir, object, folder, file,
                                               depth_file, rgb, depth, suffix)
+                    count += 1
         X = np.array(X)
         print("Writing pickleeeee :)")
         print(folder)
@@ -139,7 +139,7 @@ def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
     results = []
     r = pool.map_async(save_pkl, tasks, callback=results.append)
     r.wait()
-    print results
+    # print results
     return
 
 
@@ -158,4 +158,4 @@ if __name__ == '__main__':
     save_original_images_to_disk_as_pkls(data_dir, height, width, save,
                                          overwrite, num_threads)
     data = load_pickles.load_uwash_rgbd()
-    print data
+    # print data
