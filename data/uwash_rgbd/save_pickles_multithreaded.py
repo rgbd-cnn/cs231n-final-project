@@ -57,14 +57,6 @@ def read_and_resize_image(file_dir, depth_dir, height, width):
     depths.append(depth)
     suffices.append("_original")
 
-    # vertically flipped image
-    # rgb_vertical = np.flip(rgb, 0)
-    # depth_vertical = np.flip(depth, 0)
-    #
-    # xs.append(np.concatenate((rgb_vertical, depth_vertical), axis=2))
-    # rgbs.append(rgb_vertical)
-    # depths.append(depth_vertical)
-    # suffices.append("_vertical_flip")
     return xs, rgbs, depths, suffices
 
 
