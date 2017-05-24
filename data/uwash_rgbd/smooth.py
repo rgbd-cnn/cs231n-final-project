@@ -58,7 +58,7 @@ def fix_image(args):
 
     # Invert Images for Display
     inv = 1.0 / np.copy(im_med)
-    im_med = 1.0 / im_med
+    # im_med = 1.0 / im_med
 
     return im, correct, inv, im_med
 
@@ -91,38 +91,38 @@ def test_preprocessing(save=False):
     # images.append("rgbd-dataset/scissors/scissors_3/scissors_3_1_1_depthcrop.png")
     # images.append("rgbd-dataset/soda_can/soda_can_4/soda_can_4_1_1_depthcrop.png")
     # images.append("rgbd-dataset/water_bottle/water_bottle_4/water_bottle_4_1_1_depthcrop.png")
-    # images.append("rgbd-dataset/keyboard/keyboard_2/keyboard_2_1_138_depthcrop.png")
+    images.append("rgbd-dataset/keyboard/keyboard_2/keyboard_2_1_138_depthcrop.png")
 
     num_images = len(images)
     plt.figure()
     for i in range(num_images):
         im, correct, inv, im_med = fix_image((images[i], save))
 
-        original = plt.subplot(num_images, 4, 4 * i + 1)
+        threshold = 900
+        im[im > threshold] = threshold
+        correct[correct > threshold] = threshold
+        im_med[im_med > threshold] = threshold
+
+        original = plt.subplot(num_images, 3, 3 * i + 1)
         apply_style(original)
         original.set_xlabel("(a) Original")
-        plt.imshow(im)
+        plt.imshow(im, cmap='viridis_r')
 
-        corrected = plt.subplot(num_images, 4, 4 * i + 2)
+        corrected = plt.subplot(num_images, 3, 3 * i + 2)
         apply_style(corrected)
         corrected.set_xlabel("(b) Corrected")
-        plt.imshow(correct)
+        plt.imshow(correct, cmap='viridis_r')
 
-        inversed = plt.subplot(num_images, 4, 4 * i + 3)
-        apply_style(inversed)
-        inversed.set_xlabel("(c) Inversed")
-        plt.imshow(inv)
-
-        smoothed = plt.subplot(num_images, 4, 4 * i + 4)
+        smoothed = plt.subplot(num_images, 3, 3 * i + 3)
         apply_style(smoothed)
-        smoothed.set_xlabel("(d) Smoothed")
-        plt.imshow(im_med)
+        smoothed.set_xlabel("(c) Smoothed")
+        plt.imshow(im_med, cmap='viridis_r')
 
     plt.tight_layout()
     plt.show()
 
 def main():
-    # test_preprocessing(save=True)
+    # test_preprocessing(save=False)
     start = time.time()
     depth_preprocess("rgbd-dataset", 48, save=True)
     end = time.time()
