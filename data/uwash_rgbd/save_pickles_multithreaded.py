@@ -57,14 +57,6 @@ def read_and_resize_image(file_dir, depth_dir, height, width):
     depths.append(depth)
     suffices.append("_original")
 
-    # vertically flipped image
-    # rgb_vertical = np.flip(rgb, 0)
-    # depth_vertical = np.flip(depth, 0)
-    #
-    # xs.append(np.concatenate((rgb_vertical, depth_vertical), axis=2))
-    # rgbs.append(rgb_vertical)
-    # depths.append(depth_vertical)
-    # suffices.append("_vertical_flip")
     return xs, rgbs, depths, suffices
 
 
@@ -97,25 +89,29 @@ def save_pkl(tup):
         folder_dir = os.path.join(object_dir, folder)
         if os.path.isdir(folder_dir) and '.DS_store' not in folder_dir:
             dirs = os.listdir(folder_dir)
+            count = 0
             for file in dirs:
                 if is_rgb_file(file):
-                    depth_file = file[:-8] + "depthcrop.png"
-                    if depth_file in dirs:
-                        file_dir = os.path.join(folder_dir, file)
-                        depth_dir = os.path.join(folder_dir,
-                                                 depth_file)
-                        xs, rgbs, depths, suffices = read_and_resize_image(
-                            file_dir, depth_dir, height, width)
-                        print("Loaded: %s, %s" % (file_dir, depth_dir))
-                        for i in range(len(xs)):
-                            x = xs[i]
-                            rgb = rgbs[i]
-                            depth = depths[i]
-                            suffix = suffices[i]
-                            X.append(x)
-                            if save:
-                                save_file(data_dir, object, folder, file,
-                                          depth_file, rgb, depth, suffix)
+                    if count % 5 == 0:
+                        depth_file = file[:-8] + "depthcrop_corr.png"
+
+                        if depth_file in dirs:
+                            file_dir = os.path.join(folder_dir, file)
+                            depth_dir = os.path.join(folder_dir,
+                                                     depth_file)
+                            xs, rgbs, depths, suffices = read_and_resize_image(
+                                file_dir, depth_dir, height, width)
+                            print("Loaded: %s, %s" % (file_dir, depth_dir))
+                            for i in range(len(xs)):
+                                x = xs[i]
+                                rgb = rgbs[i]
+                                depth = depths[i]
+                                suffix = suffices[i]
+                                X.append(x)
+                                if save:
+                                    save_file(data_dir, object, folder, file,
+                                              depth_file, rgb, depth, suffix)
+                    count += 1
         X = np.array(X)
         print("Writing pickleeeee :)")
         print(folder)
@@ -143,7 +139,7 @@ def save_original_images_to_disk_as_pkls(data_dir, height, width, save,
     results = []
     r = pool.map_async(save_pkl, tasks, callback=results.append)
     r.wait()
-    print results
+    # print results
     return
 
 
@@ -162,4 +158,4 @@ if __name__ == '__main__':
     save_original_images_to_disk_as_pkls(data_dir, height, width, save,
                                          overwrite, num_threads)
     data = load_pickles.load_uwash_rgbd()
-    print data
+    # print data

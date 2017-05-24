@@ -90,12 +90,20 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     # Normalize the Data
     print("Normalizing data...")
     if depth:
-        max_train = np.max(X_train[:, :, :, 3], axis=(0,1,2))
+        min_train = np.min(X_train[:, :, :, 3])
+        X_train[:, :, :, 3] -= min_train
+
+        max_train = np.max(X_train[:, :, :, 3])
         X_train[:, :, :, 3] *= (255.0 / max_train)
+
+        X_test_val[:, :, :, 3] -= min_train
         X_test_val[:, :, :, 3] *= (255.0 / max_train)
     mean_image = np.mean(X_train, axis=0)
+    std_image = np.std(X_train, axis=0)
     X_train -= mean_image
+    X_train /= std_image
     X_test_val -= mean_image
+    X_test_val /= std_image
 
     # Normalize the Depth Data
     # if depth:
@@ -156,7 +164,7 @@ def load_uwash_rgbd(depth=False):
     for piggle in pickles:
         if os.path.isdir(os.path.join(base, piggle)):
             cucumbers = os.listdir(os.path.join(base, piggle))
-            training_set_indices = random.sample(range(0, len(cucumbers)), 2)
+            training_set_indices = range(1, len(cucumbers))
             cucumber_count = 0
             for cucumber in cucumbers:
                 if "pkl" in cucumber:
