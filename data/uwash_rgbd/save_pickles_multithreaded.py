@@ -46,7 +46,7 @@ def read_and_resize_image(file_dir, depth_dir, height, width):
     out_rgb = im.resize(desired_dimension, Image.ANTIALIAS)
     im = Image.open(depth_dir)
     out_depth = im.resize(desired_dimension, Image.NEAREST)
-
+    
     assert np.min(out_depth) >= 0
     # original_image
     rgb = np.array(out_rgb)

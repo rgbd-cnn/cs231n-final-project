@@ -98,7 +98,6 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
 
         X_test_val[:, :, :, 3] -= min_train
         X_test_val[:, :, :, 3] *= (255.0 / max_train)
-        max_train = None
     mean_image = np.mean(X_train, axis=0)
     std_image = np.std(X_train, axis=0)
     X_train -= mean_image
