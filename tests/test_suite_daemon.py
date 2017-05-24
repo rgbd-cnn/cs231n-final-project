@@ -39,6 +39,10 @@ def parse_arguments(argv):
                       help='dropout keep probability', default=0.5)
   parser.add_argument('--train_epochs_per_validation', type=int,
                       help='How many epochs to train before validating once', default=100)
+  parser.add_argument('--branch1', type=str,
+                      help='model of the first branch', default="IR2d")
+  parser.add_argument('--branch2', type=str,
+                      help='model of the second branch', default="IR3d")
   return parser.parse_args(argv)
 
 
@@ -130,7 +134,7 @@ def main(args):
   elif network == 'two_branch':
     run_two_branch_cnn_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs,
                                  epochs, lr=args.lr, train_epochs_per_validation=args.train_epochs_per_validation,
-                                 tensorboard_log_dir=args.tensorboard_log_dir, dataset=dataset)
+                                 tensorboard_log_dir=args.tensorboard_log_dir, dataset=dataset, branch1=args.branch1, branch2=args.branch2)
 
   else:
     print("Error: Invalid network...")
