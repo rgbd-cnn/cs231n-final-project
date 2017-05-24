@@ -19,3 +19,5 @@ data/UWASH-RGBD/rgbd-dataset
 **/*.icloud
 **/*.zip
 **/*.0
+**/*.txt
+checkpoints/*
