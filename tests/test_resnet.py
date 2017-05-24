@@ -3,7 +3,7 @@ import tensorflow as tf
 from utilities.train import *
 from models.resnet import setup_resnet_2d_model
 
-def run_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs):
+def run_resnet_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs):
   # Create Model
   print("Setting up model...")
   data_shape = list(data['X_train'][0].shape)

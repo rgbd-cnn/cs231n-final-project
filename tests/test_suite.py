@@ -1,8 +1,8 @@
 import os
 import re
 import fnmatch
-from tests.test_resnet_2d import *
-from tests.test_inception_resnet_2d import *
+from tests.test_resnet import *
+from tests.test_inception_resnet import *
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
 
@@ -63,26 +63,29 @@ def main():
       print("Invalid choice...")
       ask = True
 
-  # Specify Model Name
-  model_name = raw_input("\nPlease specify model name: ")
+  ask = True
+  while ask:
+    # Specify Model Name
+    model_name = raw_input("\nPlease specify model name: ")
 
-  # Find Checkpoint
-  recover = False
-  highest_epochs = 0
-  for file in os.listdir('checkpoints'):
-    if fnmatch.fnmatch(file, model_name + '*.data*'):
-      recover = True
-      num_epochs = int(re.split('\W+', file)[1])
+    # Find Checkpoint
+    recover = False
+    highest_epochs = 0
+    for file in os.listdir('checkpoints'):
+      if fnmatch.fnmatch(file, model_name + '*.data*'):
+        recover = True
+        num_epochs = int(re.split('\W+', file)[1])
 
-      if num_epochs > highest_epochs:
-        highest_epochs = num_epochs
-        # most_recent_file = file
+        if num_epochs > highest_epochs:
+          highest_epochs = num_epochs
+          # most_recent_file = file
+    ask = False
 
-  if load and not recover:
-    print("Checkpoint not found. Creating new model...")
-  if recover and not load:
-    print("Checkpoint already exists...")
-    exit(-1);
+    if load and not recover:
+      print("Checkpoint not found. Creating new model...")
+    if recover and not load:
+      print("Checkpoint already exists...")
+      ask = True
 
   # Specify Number of Epochs
   epochs = input("\nNumber of Epochs: ")
@@ -155,9 +158,9 @@ def main():
 
   # Run Appropriate Network
   if network == 'resnet':
-    run_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
+    run_resnet_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   elif network == 'inception_resnet':
-    run_inception_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
+    run_inception_resnet_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   else:
     print("Error: Invalid network...")
     exit(-1)
