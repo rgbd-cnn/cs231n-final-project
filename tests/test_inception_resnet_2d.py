@@ -6,11 +6,11 @@ from utilities.train import *
 
 
 def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, lr=1e-3,
-                                 train_epochs_per_validation=1, tensorboard_log_dir=None, dataset=None):
+                                 train_epochs_per_validation=1, tensorboard_log_dir=None, dataset=None, reg=None):
   # Create Model
   print("Setting up model...")
   data_shape = list(data['X_train'][0].shape)
-  model = setup_resnet_inception_model(data_shape, num_classes, 1, 2, 1, learning_rate=lr)
+  model = setup_resnet_inception_model(data_shape, num_classes, 1, 2, 1, learning_rate=lr, reg=reg)
   saver = tf.train.Saver()
   sess = tf.Session()
   sess.run(tf.global_variables_initializer())
@@ -23,8 +23,8 @@ def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, 
   num_train_val_cycles = epochs / train_epochs_per_validation
 
   if tensorboard_log_dir:
-    train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-lr-%s-train" % (dataset, lr))
-    val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-lr-%s-val" % (dataset, lr))
+    train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-lr-%s-reg-%s-train" % (dataset, lr, reg))
+    val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir), "IR-%s-lr-%s-reg-%s-val" % (dataset, lr, reg))
 
     if os.path.exists(train_dir):
       shutil.rmtree(train_dir)

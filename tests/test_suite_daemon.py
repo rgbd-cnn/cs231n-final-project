@@ -1,13 +1,14 @@
 import argparse
 import fnmatch
-import os
 import re
 import sys
+
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
 from tests.test_inception_resnet_2d import *
 from tests.test_resnet_2d import *
 from tests.test_two_branch_cnn import *
+
 
 # run example: "python -m tests.test_suite_daemon --network inception_resnet
 # --dataset uwash_3d --load False --model_name 1 --epochs 100 --device /gpu:0
@@ -31,14 +32,19 @@ def parse_arguments(argv):
     parser.add_argument('--debug', type=int,
                         help='debug mode', default=0)
     parser.add_argument('--tensorboard_log_dir', type=str,
-                        help='Where to save Tensorboard Logs for visualization, setting it to None means disable Tensorboard',
+                        help='Where to save Tensorboard Logs for '
+                             'visualization, setting it to None means disable '
+                             'Tensorboard',
                         default=None)
     parser.add_argument('--lr', type=float,
                         help='learning rate', default=1e-3)
     parser.add_argument('--dropout_keep_prob', type=float,
                         help='dropout keep probability', default=0.5)
+    parser.add_argument('--reg', type=float,
+                        help='regularization', default=0.0)
     parser.add_argument('--train_epochs_per_validation', type=int,
-                        help='How many epochs to train before validating once', default=100)
+                        help='How many epochs to train before validating once',
+                        default=1)
     parser.add_argument('--branch1', type=str,
                         help='model of the first branch', default="IR2d")
     parser.add_argument('--branch2', type=str,
@@ -127,14 +133,22 @@ def main(args):
         run_resnet_2d_test(data, num_classes, device, recover,
                            'checkpoints/' + model_name, highest_epochs, epochs)
     elif network == 'inception_resnet':
-        run_inception_resnet_2d_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs,
-                                     epochs, lr=args.lr, train_epochs_per_validation=args.train_epochs_per_validation,
-                                     tensorboard_log_dir=args.tensorboard_log_dir, dataset=dataset)
+        run_inception_resnet_2d_test(data, num_classes, device, recover,
+                                     'checkpoints/' + model_name,
+                                     highest_epochs,
+                                     epochs, lr=args.lr,
+                                     train_epochs_per_validation=args.train_epochs_per_validation,
+                                     tensorboard_log_dir=args.tensorboard_log_dir,
+                                     dataset=dataset, reg=args.reg)
 
     elif network == 'two_branch':
-        run_two_branch_cnn_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs,
-                                epochs, lr=args.lr, train_epochs_per_validation=args.train_epochs_per_validation,
-                                tensorboard_log_dir=args.tensorboard_log_dir, dataset=dataset, branch1=args.branch1, branch2=args.branch2)
+        run_two_branch_cnn_test(data, num_classes, device, recover,
+                                'checkpoints/' + model_name, highest_epochs,
+                                epochs, lr=args.lr,
+                                train_epochs_per_validation=args.train_epochs_per_validation,
+                                tensorboard_log_dir=args.tensorboard_log_dir,
+                                dataset=dataset, branch1=args.branch1,
+                                branch2=args.branch2, reg=args.reg)
 
     else:
         print("Error: Invalid network...")
