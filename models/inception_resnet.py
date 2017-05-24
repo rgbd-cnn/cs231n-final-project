@@ -43,7 +43,7 @@ def reduction_B(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out_relu = tf.nn.relu(out)
 
@@ -123,7 +123,7 @@ def reduction_A(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out_relu = tf.nn.relu(out)
 
@@ -154,7 +154,7 @@ def inception_res_A(input, counter, is_training):
     # Batch Normalization
     out = slim.batch_norm(input, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out_relu = tf.nn.relu(out)
 
@@ -196,7 +196,7 @@ def stem_unit(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True, scope='bn1')
-    
+
     # ReLU Activation
     out = tf.nn.relu(out)
 
@@ -206,7 +206,7 @@ def stem_unit(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True, scope='bn2')
-    
+
     # ReLU Activation
     out = tf.nn.relu(out)
 
@@ -219,7 +219,7 @@ def stem_unit(input, is_training):
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
                           activation_fn=None, is_training=is_training, trainable=True)
-    
+
     # ReLU Activation
     out = tf.nn.relu(out)
 
@@ -228,49 +228,58 @@ def stem_unit(input, is_training):
 
   return out
 
+
+def inception_res_features(input, num_A, num_B, num_C, is_training):
+    # Stem Layers
+    out = stem_unit(input, is_training)
+
+    # Dropout
+    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    # Inception-A Block
+    for i in range(num_A):
+        out = inception_res_A(out, i, is_training)
+
+    # Reduction-A Block
+    out = reduction_A(out, is_training)
+
+    # Dropout
+    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    # Inception-B Block
+    for i in range(num_B):
+        out = inception_res_B(out, i, is_training)
+
+    # Reduction-B Block
+    out = reduction_B(out, is_training)
+
+    # Dropout
+    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    # Inception-C Block
+    for i in range(num_C):
+        out = inception_res_C(out, i, is_training)
+
+    # Average Pooling
+    out = slim.avg_pool2d(out, [2, 2], stride=2)
+
+    # Dropout
+    out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+
+    flat = slim.layers.flatten(out)
+
+    return flat
+
+
 def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
-  # Stem Layers
-  out = stem_unit(input, is_training)
-
-  # Dropout
-  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
-  
-  # Inception-A Block
-  for i in range(num_A):
-    out = inception_res_A(out, i, is_training)
-
-  # Reduction-A Block
-  out = reduction_A(out, is_training)
-
-  # Dropout
-  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
-
-  # Inception-B Block
-  for i in range(num_B):
-    out = inception_res_B(out, i, is_training)
-
-  # Reduction-B Block
-  out = reduction_B(out, is_training)
-
-  # Dropout
-  #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
-
-  # Inception-C Block
-  for i in range(num_C):
-    out = inception_res_C(out, i, is_training)
-
-  # Average Pooling
-  out = slim.avg_pool2d(out, [2, 2], stride=2)
-
-  # Dropout
-  out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+  features = inception_res_features(input, num_A, num_B, num_C, is_training)
 
   # Fully Connected Layer
-  output = slim.fully_connected(slim.layers.flatten(out), num_classes, activation_fn=None)
+  output = slim.fully_connected(features, num_classes, activation_fn=None)
 
   return output
 
-def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3):
+def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3, reg=None):
   # Reset Network
   tf.reset_default_graph()
 
@@ -281,10 +290,14 @@ def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate
   is_training = tf.placeholder(tf.bool)
 
   # Define Output and Calculate Loss
-  y_out = inception_res_model(X, A, B, C, num_classes, is_training)
+  with slim.arg_scope([slim.conv2d, slim.fully_connected], weights_regularizer=slim.l2_regularizer(reg)):
+    y_out = inception_res_model(X, A, B, C, num_classes, is_training)
+
   total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, num_classes),
                                                        logits=y_out)
   mean_loss = tf.reduce_mean(total_loss)
+
+  loss = mean_loss + tf.add_n(slim.losses.get_regularization_losses())
 
   # Adam Optimizer
   optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
@@ -295,7 +308,7 @@ def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate
   # Required for Batch Normalization
   extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
   with tf.control_dependencies(extra_update_ops):
-      train_step = optimizer.minimize(mean_loss)
+      train_step = optimizer.minimize(loss)
 
   # Store Model in Dictionary
   model = {}
@@ -303,7 +316,7 @@ def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate
   model['y'] = y
   model['is_training'] = is_training
   model['y_out'] = y_out
-  model['loss_val'] = mean_loss
+  model['loss_val'] = loss
   model['train_step'] = train_step
 
   return model
