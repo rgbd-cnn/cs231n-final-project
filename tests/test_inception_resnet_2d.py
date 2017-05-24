@@ -41,9 +41,9 @@ def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, 
 
   global_step = 0
 
+  print("Training model...")
   for i in range(num_train_val_cycles):
     # Train Model
-    print("Training model...")
     train_model(device, sess, model, data['X_train'], data['y_train'], epochs=train_epochs_per_validation,
                 batch_size=64, is_training=True, log_freq=100, plot_loss=False, global_step=global_step,
                 writer=train_writer)
@@ -51,9 +51,10 @@ def run_inception_resnet_2d_test(data, num_classes, device, recover, ckpt_path, 
     global_step += train_epochs_per_validation - 1
 
     # Validate Model
-    print("Validating model...")
-    train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1, batch_size=64, is_training=False,
-                log_freq=100, plot_loss=False, global_step=global_step, writer=val_writer)
+    if tensorboard_log_dir:
+      print("Validating model...")
+      train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1, batch_size=64, is_training=False,
+                  log_freq=100, plot_loss=False, global_step=global_step, writer=val_writer)
 
     global_step += 1
 

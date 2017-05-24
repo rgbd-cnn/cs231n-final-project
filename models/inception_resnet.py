@@ -267,8 +267,6 @@ def inception_res_features(input, num_A, num_B, num_C, is_training):
     out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
 
     flat = slim.layers.flatten(out)
-    print(out.get_shape().as_list())
-    print(flat.get_shape().as_list())
 
     return flat
 
