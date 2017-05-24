@@ -1,25 +1,27 @@
 import math
-import tensorflow as tf
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+
 
 # Save Checkpoint of Model
 def save_model_checkpoint(session, saver, filename, epoch_num):
   save_path = saver.save(session, filename, epoch_num)
   print("\nCheckpoint saved in file: %s" % save_path)
 
+
 # Recover Saved Model Checkpoint
 def recover_model_checkpoint(session, saver, checkpoint_path):
   saver.restore(session, tf.train.latest_checkpoint(checkpoint_path))
   print("Model restored!\n")
 
-# Train the Model
-def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
-                is_training=False, log_freq=100, plot_loss=False):
 
+# Train the Model
+def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is_training=False, log_freq=100,
+                plot_loss=False, global_step=None, writer=None):
   with tf.device(device):
     # Calculate Prediction Accuracy
-    correct_prediction = tf.equal(tf.argmax(model['y_out'],1), model['y'])
+    correct_prediction = tf.equal(tf.argmax(model['y_out'], 1), model['y'])
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     # Shuffle Training Data
@@ -31,7 +33,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
     if is_training:
       variables[-1] = model['train_step']
 
-    # Iteration Counter 
+    # Iteration Counter
     iter_cnt = 0
     losses = []
     for epoch in range(epochs):
@@ -47,7 +49,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
         actual_batch_size = labels[i:i + batch_size].shape[0]
 
         # Feed Dictionary for Batch
-        feed_dict = {model['X']: X_data[idx,:],
+        feed_dict = {model['X']: X_data[idx, :],
                      model['y']: labels[idx],
                      model['is_training']: is_training}
 
@@ -59,7 +61,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
         # Print Loss and Accuracies
         if is_training and (iter_cnt % log_freq) == 0:
-          print("Iteration {0}: Training Loss = {1:.3g} and Accuracy = {2:.2g}"\
+          print("Iteration {0}: Training Loss = {1:.3g} and Accuracy = {2:.2g}" \
                 .format(iter_cnt, loss, np.sum(corr) / float(actual_batch_size)))
         iter_cnt += 1
 
@@ -68,8 +70,15 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
       total_loss = epoch_loss / float(X_data.shape[0])
       losses.append(total_loss)
 
-      print("Epoch {0}: Overall Loss = {1:.3g} and Accuracy = {2:.3g}"\
+      print("Epoch {0}: Overall Loss = {1:.3g} and Accuracy = {2:.3g}" \
             .format(epoch + 1, total_loss, accuracy))
+
+      if writer is not None:
+        global_step += 1
+        summary = tf.Summary()
+        summary.value.add(tag="Accuracy", simple_value=accuracy)
+        summary.value.add(tag="Loss", simple_value=total_loss)
+        writer.add_summary(summary, global_step=global_step)
 
     if plot_loss:
       plt.plot(losses)
