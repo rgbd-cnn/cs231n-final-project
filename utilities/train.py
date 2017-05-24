@@ -21,6 +21,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is
                 plot_loss=False, global_step=None, writer=None):
   with tf.device(device):
     # Calculate Prediction Accuracy
+    print(model['y_out'].get_shape().as_list())
     correct_prediction = tf.equal(tf.argmax(model['y_out'], 1), model['y'])
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 

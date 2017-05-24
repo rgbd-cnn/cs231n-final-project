@@ -9,10 +9,12 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training):
     with tf.variable_scope("branch1"):
         inception_res_features_2d = inception_res_features(X[:, :, :, :3], A, B, C, is_training)
 
-    stacked = tf.stack([inception_res_features_2d, inception_res_features_3d], axis=1)
+    stacked = tf.concat([inception_res_features_2d, inception_res_features_3d], 1)
+    print(stacked.get_shape().as_list())
 
     output = slim.fully_connected(stacked, num_classes, activation_fn=None)
 
+    print(output.get_shape().as_list())
     return output
 
 def setup_two_branch_cnn_model(image_size, num_classes, A, B, C, learning_rate=1e-3):
