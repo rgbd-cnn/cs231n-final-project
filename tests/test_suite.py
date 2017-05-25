@@ -167,7 +167,7 @@ def main():
     run_inception_resnet_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   elif network == 'two_branch':
     run_two_branch_cnn_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs,
-                            train_epochs_per_validation=1)
+                            train_epochs_per_validation=1, dataset=model_name)
   else:
     print("Error: Invalid network...")
     exit(-1)
