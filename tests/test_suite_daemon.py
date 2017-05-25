@@ -50,6 +50,8 @@ def parse_arguments(argv):
                         help='model of the first branch', default="IR2d")
     parser.add_argument('--branch2', type=str,
                         help='model of the second branch', default="IR3d")
+    parser.add_argument('--feature_op', type=str,
+                        help='how to fuse two features', default="stack")
     return parser.parse_args(argv)
 
 
@@ -151,7 +153,7 @@ def main(args):
                                 tensorboard_log_dir=args.tensorboard_log_dir,
                                 dataset=dataset, branch1=args.branch1,
                                 branch2=args.branch2, reg=args.reg,
-                                keep_prob=args.dropout_keep_prob)
+                                keep_prob=args.dropout_keep_prob, feature_op=args.feature_op)
 
     else:
         print("Error: Invalid network...")

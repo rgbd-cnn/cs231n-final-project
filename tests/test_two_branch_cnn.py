@@ -10,14 +10,15 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
                             train_epochs_per_validation=100,
                             tensorboard_log_dir=None, dataset=None,
                             branch1='IR2d', branch2='IRd', reg=0.0,
-                            keep_prob=None):
+                            keep_prob=None, feature_op="stack"):
     # Create Model
     print("Setting up model...")
     data_shape = list(data['X_train'][0].shape)
     model = setup_two_branch_cnn_model(data_shape, num_classes, 1, 2, 1,
                                        learning_rate=lr, branch1=branch1,
                                        branch2=branch2, reg=reg,
-                                       keep_prob=keep_prob)
+                                       keep_prob=keep_prob,
+                                       feature_op=feature_op)
     saver = tf.train.Saver()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -31,11 +32,13 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     if tensorboard_log_dir:
         train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                                 "TB-%s-%s-%s-lr-%s-reg-%s-prob-%s-train" % (
-                                     branch1, branch2, dataset, lr, reg, keep_prob))
+                                 "TB-%s-%s-%s-lr-%s-reg-%s-prob-%s-FeatOp-%s-train" % (
+                                     branch1, branch2, dataset, lr, reg,
+                                     keep_prob, feature_op))
         val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                               "TB-%s-%s-%s-lr-%s-reg-%s-prob-%s-val" % (
-                                   branch1, branch2, dataset, lr, reg, keep_prob))
+                               "TB-%s-%s-%s-lr-%s-reg-%s-prob-%s-FeatOp-%s-val" % (
+                                   branch1, branch2, dataset, lr, reg,
+                                   keep_prob, feature_op))
 
         if os.path.exists(train_dir):
             shutil.rmtree(train_dir)

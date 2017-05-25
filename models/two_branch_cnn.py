@@ -5,7 +5,7 @@ from models.inception_resnet import inception_res_features
 
 
 def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
-                   branch2=None, keep_prob=None):
+                   branch2=None, keep_prob=None, feature_op=None):
 
     with tf.variable_scope(branch1):
         if branch1 == "IR2d":
@@ -27,18 +27,32 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
         else:
             raise Exception()
 
-    stacked = tf.concat([feature1, feature2], 1)
-    # print(stacked.get_shape().as_list())
+    if feature_op == "stack":
+        embedding = tf.concat([feature1, feature2], 1)
+        output = slim.fully_connected(embedding, num_classes, activation_fn=None)
+    elif feature_op == "bn_add":
+        normalized1 = slim.batch_norm(feature1, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                                      activation_fn=None, is_training=is_training, trainable=True)
+        normalized2 = slim.batch_norm(feature2, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                                      activation_fn=None, is_training=is_training, trainable=True)
+        embedding = normalized1 + normalized2
+        output = slim.fully_connected(embedding, num_classes, activation_fn=None)
+    elif feature_op == "bn_stack":
+        normalized1 = slim.batch_norm(feature1, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                                      activation_fn=None, is_training=is_training, trainable=True)
+        normalized2 = slim.batch_norm(feature2, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                                      activation_fn=None, is_training=is_training, trainable=True)
+        embedding = tf.concat([normalized1, normalized2], 1)
+        output = slim.fully_connected(embedding, num_classes, activation_fn=None)
+    else:
+        raise Exception()
 
-    output = slim.fully_connected(stacked, num_classes, activation_fn=None)
-
-    # print(output.get_shape().as_list())
     return output
 
 
 def setup_two_branch_cnn_model(image_size, num_classes, A, B, C,
                                learning_rate=1e-3, branch1=None, branch2=None,
-                               reg=0.0, keep_prob=None):
+                               reg=0.0, keep_prob=None, feature_op=None):
     # Reset Network
     tf.reset_default_graph()
 
@@ -53,14 +67,17 @@ def setup_two_branch_cnn_model(image_size, num_classes, A, B, C,
                         weights_regularizer=slim.l2_regularizer(reg)):
         y_out = two_branch_cnn(X, A, B, C, num_classes, is_training,
                                branch1=branch1, branch2=branch2,
-                               keep_prob=keep_prob)
+                               keep_prob=keep_prob, feature_op=feature_op)
 
     total_loss = tf.nn.softmax_cross_entropy_with_logits(
         labels=tf.one_hot(y, num_classes),
         logits=y_out)
     mean_loss = tf.reduce_mean(total_loss)
 
-    loss = mean_loss # + tf.add_n(slim.losses.get_regularization_losses())
+    if reg > 0:
+        loss = mean_loss + tf.add_n(tf.losses.get_regularization_losses("reg_loss"))
+    else:
+        loss = mean_loss
 
     # Adam Optimizer
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,

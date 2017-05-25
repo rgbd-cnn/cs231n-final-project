@@ -299,7 +299,11 @@ def setup_resnet_inception_model(image_size, num_classes, A, B, C,
                                                        logits=y_out)
   mean_loss = tf.reduce_mean(total_loss)
 
-  loss = mean_loss # + tf.add_n(tf.losses.get_regularization_losses())
+
+  if reg > 0:
+    loss = mean_loss + tf.add_n(tf.losses.get_regularization_losses("reg_loss"))
+  else:
+    loss = mean_loss
 
   # Adam Optimizer
   optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
