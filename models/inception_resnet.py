@@ -234,7 +234,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=No
     out = stem_unit(input, is_training)
 
     # Dropout
-    out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
+    # out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
     # Inception-A Block
     for i in range(num_A):
@@ -244,7 +244,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=No
     out = reduction_A(out, is_training)
 
     # Dropout
-    out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
+    # out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
     # Inception-B Block
     for i in range(num_B):
@@ -254,7 +254,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=No
     out = reduction_B(out, is_training)
 
     # Dropout
-    out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
+    # out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
     # Inception-C Block
     for i in range(num_C):
