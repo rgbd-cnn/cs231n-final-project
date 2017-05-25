@@ -8,4 +8,4 @@ def huber_loss(y_pred, y_actual, c=1/5.):
     abs = tf.abs(x)
     quadratic = x ** 2 + c ** 2
     quadratic = tf.divide(quadratic, 2 * c)
-    return tf.where(x < c, quadratic, abs)
+    return tf.where(abs < c, abs, quadratic)
