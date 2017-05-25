@@ -3,10 +3,11 @@ import fnmatch
 import re
 import sys
 
+from tests.test_inception_resnet import *
+from tests.test_resnet import *
+
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
-from tests.test_inception_resnet_2d import *
-from tests.test_resnet_2d import *
 from tests.test_two_branch_cnn import *
 
 
@@ -39,7 +40,7 @@ def parse_arguments(argv):
     parser.add_argument('--lr', type=float,
                         help='learning rate', default=1e-3)
     parser.add_argument('--dropout_keep_prob', type=float,
-                        help='dropout keep probability', default=0.5)
+                        help='dropout keep probability', default=1.0)
     parser.add_argument('--reg', type=float,
                         help='regularization', default=0.0)
     parser.add_argument('--train_epochs_per_validation', type=int,
@@ -130,16 +131,17 @@ def main(args):
 
     # Run Appropriate Network
     if network == 'resnet':
-        run_resnet_2d_test(data, num_classes, device, recover,
+        run_resnet_test(data, num_classes, device, recover,
                            'checkpoints/' + model_name, highest_epochs, epochs)
     elif network == 'inception_resnet':
-        run_inception_resnet_2d_test(data, num_classes, device, recover,
+        run_inception_resnet_test(data, num_classes, device, recover,
                                      'checkpoints/' + model_name,
                                      highest_epochs,
                                      epochs, lr=args.lr,
                                      train_epochs_per_validation=args.train_epochs_per_validation,
                                      tensorboard_log_dir=args.tensorboard_log_dir,
-                                     dataset=dataset, reg=args.reg)
+                                     dataset=dataset, reg=args.reg,
+                                     keep_prob=args.dropout_keep_prob)
 
     elif network == 'two_branch':
         run_two_branch_cnn_test(data, num_classes, device, recover,
@@ -148,7 +150,8 @@ def main(args):
                                 train_epochs_per_validation=args.train_epochs_per_validation,
                                 tensorboard_log_dir=args.tensorboard_log_dir,
                                 dataset=dataset, branch1=args.branch1,
-                                branch2=args.branch2, reg=args.reg)
+                                branch2=args.branch2, reg=args.reg,
+                                keep_prob=args.dropout_keep_prob)
 
     else:
         print("Error: Invalid network...")

@@ -5,25 +5,25 @@ from models.inception_resnet import inception_res_features
 
 
 def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
-                   branch2=None):
+                   branch2=None, keep_prob=None):
 
     with tf.variable_scope(branch1):
         if branch1 == "IR2d":
-            feature1 = inception_res_features(X[:, :, :, :3], A, B, C, is_training)
+            feature1 = inception_res_features(X[:, :, :, :3], A, B, C, is_training, keep_prob=keep_prob)
         elif branch1 == "IR3d":
-            feature1 = inception_res_features(X, A, B, C, is_training)
+            feature1 = inception_res_features(X, A, B, C, is_training, keep_prob=keep_prob)
         elif branch1 == "IRd":
-            feature1 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training)
+            feature1 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training, keep_prob=keep_prob)
         else:
             raise Exception()
 
     with tf.variable_scope(branch2):
         if branch2 == "IR2d":
-            feature2 = inception_res_features(X[:, :, :, :3], A, B, C, is_training)
+            feature2 = inception_res_features(X[:, :, :, :3], A, B, C, is_training, keep_prob=keep_prob)
         elif branch2 == "IR3d":
-            feature2 = inception_res_features(X, A, B, C, is_training)
+            feature2 = inception_res_features(X, A, B, C, is_training, keep_prob=keep_prob)
         elif branch2 == "IRd":
-            feature2 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training)
+            feature2 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training, keep_prob=keep_prob)
         else:
             raise Exception()
 
@@ -37,7 +37,8 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
 
 
 def setup_two_branch_cnn_model(image_size, num_classes, A, B, C,
-                               learning_rate=1e-3, branch1=None, branch2=None, reg=0.0):
+                               learning_rate=1e-3, branch1=None, branch2=None,
+                               reg=0.0, keep_prob=None):
     # Reset Network
     tf.reset_default_graph()
 
@@ -48,8 +49,11 @@ def setup_two_branch_cnn_model(image_size, num_classes, A, B, C,
     is_training = tf.placeholder(tf.bool)
 
     # Define Output and Calculate Loss
-    with slim.arg_scope([slim.conv2d, slim.fully_connected], weights_regularizer=slim.l2_regularizer(reg)):
-        y_out = two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=branch1, branch2=branch2)
+    with slim.arg_scope([slim.conv2d, slim.fully_connected],
+                        weights_regularizer=slim.l2_regularizer(reg)):
+        y_out = two_branch_cnn(X, A, B, C, num_classes, is_training,
+                               branch1=branch1, branch2=branch2,
+                               keep_prob=keep_prob)
 
     total_loss = tf.nn.softmax_cross_entropy_with_logits(
         labels=tf.one_hot(y, num_classes),

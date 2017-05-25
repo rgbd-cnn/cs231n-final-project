@@ -9,14 +9,15 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
                             prev_epochs, epochs, lr=1e-3,
                             train_epochs_per_validation=100,
                             tensorboard_log_dir=None, dataset=None,
-                            branch1='IR2d', branch2='IRd', dropout_keep_prob=0.5,
-                            reg=0.0):
+                            branch1='IR2d', branch2='IRd', reg=0.0,
+                            keep_prob=None):
     # Create Model
     print("Setting up model...")
     data_shape = list(data['X_train'][0].shape)
     model = setup_two_branch_cnn_model(data_shape, num_classes, 1, 2, 1,
                                        learning_rate=lr, branch1=branch1,
-                                       branch2=branch2, reg=reg)
+                                       branch2=branch2, reg=reg,
+                                       keep_prob=keep_prob)
     saver = tf.train.Saver()
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
@@ -30,11 +31,11 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     if tensorboard_log_dir:
         train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                                 "TB-%s-%s-%s-lr-%s-reg-%s-train" % (
-                                     branch1, branch2, dataset, lr, reg))
+                                 "TB-%s-%s-%s-lr-%s-reg-%s-keepprob-%s-train" % (
+                                     branch1, branch2, dataset, lr, reg, keep_prob))
         val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                               "TB-%s-%s-%s-lr-%s-reg-%s-val" % (
-                                   branch1, branch2, dataset, lr, reg))
+                               "TB-%s-%s-%s-lr-%s-reg-%s-keepprob-%s-val" % (
+                                   branch1, branch2, dataset, lr, reg, keep_prob))
 
         if os.path.exists(train_dir):
             shutil.rmtree(train_dir)

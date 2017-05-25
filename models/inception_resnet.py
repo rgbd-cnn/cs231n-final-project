@@ -218,7 +218,7 @@ def stem_unit(input, is_training):
 
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
-                          activation_fn=None, is_training=is_training, trainable=True)
+                          activation_fn=None, is_training=is_training, trainable=True, scope='bn3')
 
     # ReLU Activation
     out = tf.nn.relu(out)
@@ -229,12 +229,12 @@ def stem_unit(input, is_training):
   return out
 
 
-def inception_res_features(input, num_A, num_B, num_C, is_training):
+def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=None):
     # Stem Layers
     out = stem_unit(input, is_training)
 
     # Dropout
-    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+    out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
     # Inception-A Block
     for i in range(num_A):
@@ -244,7 +244,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training):
     out = reduction_A(out, is_training)
 
     # Dropout
-    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+    out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
     # Inception-B Block
     for i in range(num_B):
@@ -254,7 +254,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training):
     out = reduction_B(out, is_training)
 
     # Dropout
-    #out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+    out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
     # Inception-C Block
     for i in range(num_C):
@@ -264,22 +264,24 @@ def inception_res_features(input, num_A, num_B, num_C, is_training):
     out = slim.avg_pool2d(out, [2, 2], stride=2)
 
     # Dropout
-    out = slim.dropout(out, keep_prob=0.50, is_training=is_training)
+    out = slim.dropout(out, keep_prob=0.50, is_training=is_training, scope='Dropout')
 
     flat = slim.layers.flatten(out)
 
     return flat
 
 
-def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
-  features = inception_res_features(input, num_A, num_B, num_C, is_training)
+def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training, keep_prob=None):
+  features = inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=keep_prob)
 
   # Fully Connected Layer
   output = slim.fully_connected(features, num_classes, activation_fn=None)
 
   return output
 
-def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3, reg=0.0):
+
+def setup_resnet_inception_model(image_size, num_classes, A, B, C,
+                                 learning_rate=1e-3, reg=0.0, keep_prob=None):
   # Reset Network
   tf.reset_default_graph()
 
@@ -291,7 +293,7 @@ def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate
 
   # Define Output and Calculate Loss
   with slim.arg_scope([slim.conv2d, slim.fully_connected], weights_regularizer=slim.l2_regularizer(reg)):
-    y_out = inception_res_model(X, A, B, C, num_classes, is_training)
+    y_out = inception_res_model(X, A, B, C, num_classes, is_training, keep_prob=keep_prob)
 
   total_loss = tf.nn.softmax_cross_entropy_with_logits(labels=tf.one_hot(y, num_classes),
                                                        logits=y_out)
