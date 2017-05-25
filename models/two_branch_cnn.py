@@ -28,16 +28,16 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
             raise Exception()
 
     stacked = tf.concat([feature1, feature2], 1)
-    print(stacked.get_shape().as_list())
+    # print(stacked.get_shape().as_list())
 
     output = slim.fully_connected(stacked, num_classes, activation_fn=None)
 
-    print(output.get_shape().as_list())
+    # print(output.get_shape().as_list())
     return output
 
 
 def setup_two_branch_cnn_model(image_size, num_classes, A, B, C,
-                               learning_rate=1e-3, branch1=None, branch2=None, reg=None):
+                               learning_rate=1e-3, branch1=None, branch2=None, reg=0.0):
     # Reset Network
     tf.reset_default_graph()
 
@@ -56,7 +56,7 @@ def setup_two_branch_cnn_model(image_size, num_classes, A, B, C,
         logits=y_out)
     mean_loss = tf.reduce_mean(total_loss)
 
-    loss = mean_loss + tf.add_n(slim.losses.get_regularization_losses())
+    loss = mean_loss # + tf.add_n(slim.losses.get_regularization_losses())
 
     # Adam Optimizer
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,

@@ -9,8 +9,8 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
                             prev_epochs, epochs, lr=1e-3,
                             train_epochs_per_validation=100,
                             tensorboard_log_dir=None, dataset=None,
-                            branch1=None, branch2=None, dropout_keep_prob=None,
-                            reg=None):
+                            branch1='IR2d', branch2='IRd', dropout_keep_prob=0.5,
+                            reg=0.0):
     # Create Model
     print("Setting up model...")
     data_shape = list(data['X_train'][0].shape)
@@ -51,9 +51,9 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     global_step = 0
 
+    # Train Model
+    print("Training model...")
     for i in range(num_train_val_cycles):
-        # Train Model
-        print("Training model...")
         train_model(device, sess, model, data['X_train'], data['y_train'],
                     epochs=train_epochs_per_validation,
                     batch_size=64, is_training=True, log_freq=100,
@@ -63,12 +63,12 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
         global_step += train_epochs_per_validation - 1
 
         # Validate Model
-        print("Validating model...")
+        print("\nValidating model...")
         train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
                     batch_size=64, is_training=False,
                     log_freq=100, plot_loss=False, global_step=global_step,
                     writer=val_writer)
-
+        print('')
         global_step += 1
 
     # Check Final Training Accuracy

@@ -279,7 +279,7 @@ def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training):
 
   return output
 
-def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3, reg=None):
+def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate=1e-3, reg=0.0):
   # Reset Network
   tf.reset_default_graph()
 
@@ -297,7 +297,7 @@ def setup_resnet_inception_model(image_size, num_classes, A, B, C, learning_rate
                                                        logits=y_out)
   mean_loss = tf.reduce_mean(total_loss)
 
-  loss = mean_loss + tf.add_n(slim.losses.get_regularization_losses())
+  loss = mean_loss # + tf.add_n(tf.losses.get_regularization_losses())
 
   # Adam Optimizer
   optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
