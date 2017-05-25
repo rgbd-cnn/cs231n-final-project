@@ -29,10 +29,10 @@ def run_inception_resnet_test(data, num_classes, device, recover, ckpt_path,
 
   if tensorboard_log_dir:
     train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                             "IR-%s-lr-%s-reg-%s-keepprob-%s-train" % (
+                             "IR-%s-lr-%s-reg-%s-prob-%s-train" % (
                              dataset, lr, reg, keep_prob))
     val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                           "IR-%s-lr-%s-reg-%s-keepprob-%s-val" % (
+                           "IR-%s-lr-%s-reg-%s-prob-%s-val" % (
                            dataset, lr, reg, keep_prob))
 
     if os.path.exists(train_dir):

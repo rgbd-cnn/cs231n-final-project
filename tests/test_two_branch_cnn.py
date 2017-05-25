@@ -31,10 +31,10 @@ def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     if tensorboard_log_dir:
         train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                                 "TB-%s-%s-%s-lr-%s-reg-%s-keepprob-%s-train" % (
+                                 "TB-%s-%s-%s-lr-%s-reg-%s-prob-%s-train" % (
                                      branch1, branch2, dataset, lr, reg, keep_prob))
         val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                               "TB-%s-%s-%s-lr-%s-reg-%s-keepprob-%s-val" % (
+                               "TB-%s-%s-%s-lr-%s-reg-%s-prob-%s-val" % (
                                    branch1, branch2, dataset, lr, reg, keep_prob))
 
         if os.path.exists(train_dir):

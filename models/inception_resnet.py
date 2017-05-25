@@ -264,7 +264,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=No
     out = slim.avg_pool2d(out, [2, 2], stride=2)
 
     # Dropout
-    out = slim.dropout(out, keep_prob=0.50, is_training=is_training, scope='Dropout')
+    out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
     flat = slim.layers.flatten(out)
 
