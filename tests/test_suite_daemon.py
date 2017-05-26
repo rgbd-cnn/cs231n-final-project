@@ -3,11 +3,10 @@ import fnmatch
 import re
 import sys
 
-from tests.test_inception_resnet import *
-from tests.test_resnet import *
-
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
+from tests.test_inception_resnet import *
+from tests.test_resnet import *
 from tests.test_two_branch_cnn import *
 
 
@@ -52,6 +51,8 @@ def parse_arguments(argv):
                         help='model of the second branch', default="IR3d")
     parser.add_argument('--feature_op', type=str,
                         help='how to fuse two features', default="stack")
+    parser.add_argument('--tag', type=str,
+                        help='information', default="")
     return parser.parse_args(argv)
 
 
@@ -134,16 +135,17 @@ def main(args):
     # Run Appropriate Network
     if network == 'resnet':
         run_resnet_test(data, num_classes, device, recover,
-                           'checkpoints/' + model_name, highest_epochs, epochs)
+                        'checkpoints/' + model_name, highest_epochs, epochs)
     elif network == 'inception_resnet':
         run_inception_resnet_test(data, num_classes, device, recover,
-                                     'checkpoints/' + model_name,
-                                     highest_epochs,
-                                     epochs, lr=args.lr,
-                                     train_epochs_per_validation=args.train_epochs_per_validation,
-                                     tensorboard_log_dir=args.tensorboard_log_dir,
-                                     dataset=dataset, reg=args.reg,
-                                     keep_prob=args.dropout_keep_prob)
+                                  'checkpoints/' + model_name,
+                                  highest_epochs,
+                                  epochs, lr=args.lr,
+                                  train_epochs_per_validation=args.train_epochs_per_validation,
+                                  tensorboard_log_dir=args.tensorboard_log_dir,
+                                  dataset=dataset, reg=args.reg,
+                                  keep_prob=args.dropout_keep_prob,
+                                  tag=args.tag)
 
     elif network == 'two_branch':
         run_two_branch_cnn_test(data, num_classes, device, recover,
@@ -153,7 +155,8 @@ def main(args):
                                 tensorboard_log_dir=args.tensorboard_log_dir,
                                 dataset=dataset, branch1=args.branch1,
                                 branch2=args.branch2, reg=args.reg,
-                                keep_prob=args.dropout_keep_prob, feature_op=args.feature_op)
+                                keep_prob=args.dropout_keep_prob,
+                                feature_op=args.feature_op, tag=args.tag)
 
     else:
         print("Error: Invalid network...")

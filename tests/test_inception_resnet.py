@@ -9,7 +9,7 @@ def run_inception_resnet_test(data, num_classes, device, recover, ckpt_path,
                               prev_epochs, epochs, lr=1e-3,
                               train_epochs_per_validation=1,
                               tensorboard_log_dir=None, dataset=None, reg=0.0,
-                              keep_prob=None):
+                              keep_prob=None, tag=None):
   # Create Model
   print("Setting up model...")
   data_shape = list(data['X_train'][0].shape)
@@ -29,11 +29,11 @@ def run_inception_resnet_test(data, num_classes, device, recover, ckpt_path,
 
   if tensorboard_log_dir:
     train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                             "IR-%s-lr-%s-reg-%s-prob-%s-train" % (
-                             dataset, lr, reg, keep_prob))
+                             "IR-%s-lr-%s-reg-%s-prob-%s-tag-%s-train" % (
+                             dataset, lr, reg, keep_prob, tag))
     val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                           "IR-%s-lr-%s-reg-%s-prob-%s-val" % (
-                           dataset, lr, reg, keep_prob))
+                           "IR-%s-lr-%s-reg-%s-prob-%s-tag-%s-val" % (
+                           dataset, lr, reg, keep_prob, tag))
 
     if os.path.exists(train_dir):
       shutil.rmtree(train_dir)
