@@ -87,14 +87,16 @@ def depth_preprocess(data_dir, num_threads, save=False):
 def test_preprocessing(save=False):
     images = []
     images.append("rgbd-dataset/cereal_box/cereal_box_1/cereal_box_1_2_144_depthcrop.png")
+    images.append("rgbd-dataset/bell_pepper/bell_pepper_1/bell_pepper_1_1_26_depthcrop.png")
     # images.append("rgbd-dataset/peach/peach_2/peach_2_1_1_depthcrop.png")
     # images.append("rgbd-dataset/scissors/scissors_3/scissors_3_1_1_depthcrop.png")
     # images.append("rgbd-dataset/soda_can/soda_can_4/soda_can_4_1_1_depthcrop.png")
     # images.append("rgbd-dataset/water_bottle/water_bottle_4/water_bottle_4_1_1_depthcrop.png")
-    images.append("rgbd-dataset/keyboard/keyboard_2/keyboard_2_1_138_depthcrop.png")
+    # images.append("rgbd-dataset/keyboard/keyboard_2/keyboard_2_1_138_depthcrop.png")
+    images.append("rgbd-dataset/keyboard/keyboard_2/keyboard_2_1_103_depthcrop.png")
 
     num_images = len(images)
-    plt.figure()
+    plt.figure(figsize=(8, 8))
     for i in range(num_images):
         im, correct, inv, im_med = fix_image((images[i], save))
 
@@ -104,18 +106,24 @@ def test_preprocessing(save=False):
         im_med[im_med > threshold] = threshold
 
         original = plt.subplot(num_images, 3, 3 * i + 1)
+        if i == 0:
+            original.set_title("Original", fontsize=16)
         apply_style(original)
-        original.set_xlabel("(a) Original")
+        # original.set_xlabel("(a) Original")
         plt.imshow(im, cmap='viridis_r')
 
         corrected = plt.subplot(num_images, 3, 3 * i + 2)
+        if i == 0:
+            corrected.set_title("Corrected", fontsize=16)
         apply_style(corrected)
-        corrected.set_xlabel("(b) Corrected")
+        # corrected.set_xlabel("(b) Corrected")
         plt.imshow(correct, cmap='viridis_r')
 
         smoothed = plt.subplot(num_images, 3, 3 * i + 3)
+        if i == 0:
+            smoothed.set_title("Smoothed", fontsize=16)
         apply_style(smoothed)
-        smoothed.set_xlabel("(c) Smoothed")
+        # smoothed.set_xlabel("(c) Smoothed")
         plt.imshow(im_med, cmap='viridis_r')
 
     plt.tight_layout()
