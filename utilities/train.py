@@ -16,6 +16,78 @@ def recover_model_checkpoint(session, saver, checkpoint_path):
   print("Model restored!\n")
 
 
+def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is_training=False,
+                    log_freq=100, plot_loss=False, global_step=None, writer=None):
+  with tf.device(device):
+    # Calculate Prediction Accuracy
+    y = tf.image.resize_images(model['y'], [32, 32],
+                                 method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+    mse = tf.reduce_mean(tf.squared_difference(model['y_out'], y))
+
+    # Shuffle Training Data
+    train_indicies = np.arange(X_data.shape[0])
+    np.random.shuffle(train_indicies)
+
+    # Populate TensorFlow Variables
+    variables = [tf.reduce_mean(model['loss_val']), mse]
+    if is_training:
+      variables[-1] = model['train_step']
+
+    # Iteration Counter
+    iter_cnt = 0
+    losses = []
+    for epoch in range(epochs):
+      # Keep Track of Loss and Number of Correct Predictions
+      num_correct = 0
+      epoch_loss = 0
+
+      # Iterate Over the Entire Dataset Once
+      for i in range(int(math.ceil(X_data.shape[0] / float(batch_size)))):
+        # Indices for Batch
+        start_idx = (i * batch_size) % X_data.shape[0]
+        idx = train_indicies[start_idx:start_idx + batch_size]
+        actual_batch_size = labels[i:i + batch_size].shape[0]
+
+        # Feed Dictionary for Batch
+        feed_dict = {model['X']: X_data[idx, :],
+                     model['y']: labels[idx],
+                     model['is_training']: is_training}
+
+        # Run TF Session (Returns Loss and Correct Predictions)
+        loss, mse = sess.run(variables, feed_dict=feed_dict)
+        # print(loss)
+        # num_correct += np.sum(corr)
+        epoch_loss += loss * actual_batch_size
+
+        # # Print Loss and Accuracies
+        if is_training and (iter_cnt % log_freq) == 0:
+          print("Iteration = ", iter_cnt, " Training Loss ", loss)
+        iter_cnt += 1
+
+      # Calculate Performance
+      # accuracy = num_correct / float(X_data.shape[0])
+      total_loss = epoch_loss / float(X_data.shape[0])
+      losses.append(total_loss)
+      print("Epoch = ", epoch, " Overall Loss ", total_loss)
+
+      if writer is not None:
+        global_step += 1
+        summary = tf.Summary()
+        # summary.value.add(tag="Accuracy", simple_value=accuracy)
+        summary.value.add(tag="Loss", simple_value=total_loss)
+        writer.add_summary(summary, global_step=global_step)
+
+    if plot_loss:
+      plt.plot(losses)
+      plt.grid(True)
+      plt.xlim(-10, 800)
+      plt.title('Total Loss vs. Epoch')
+      plt.xlabel('Epoch')
+      plt.ylabel('Total Loss')
+      plt.show()
+
+  return total_loss
+
 # Train the Model
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None):
