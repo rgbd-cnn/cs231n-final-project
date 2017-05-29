@@ -5,6 +5,7 @@ import sys
 
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
+from tests.test_depth_enhanced_cnn import run_depth_enhanced_cnn_test
 from tests.test_inception_resnet import *
 from tests.test_resnet import *
 from tests.test_two_branch_cnn import *
@@ -158,6 +159,16 @@ def main(args):
                                 keep_prob=args.dropout_keep_prob,
                                 feature_op=args.feature_op, tag=args.tag)
 
+    elif network == 'depth_enhanced':
+        run_depth_enhanced_cnn_test(data, num_classes, device, recover,
+                                    'checkpoints/' + model_name, highest_epochs,
+                                    epochs, lr=args.lr,
+                                    train_epochs_per_validation=args.train_epochs_per_validation,
+                                    tensorboard_log_dir=args.tensorboard_log_dir,
+                                    dataset=dataset, branch1=args.branch1,
+                                    branch2=args.branch2, reg=args.reg,
+                                    keep_prob=args.dropout_keep_prob,
+                                    feature_op=args.feature_op, tag=args.tag)
     else:
         print("Error: Invalid network...")
         exit(-1)

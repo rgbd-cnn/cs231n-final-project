@@ -90,9 +90,15 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=64
 
 # Train the Model
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is_training=False, log_freq=100,
-                plot_loss=False, global_step=None, writer=None):
+                plot_loss=False, global_step=None, writer=None, depth_enhanced=False):
   with tf.device(device):
     # Calculate Prediction Accuracy
+    if depth_enhanced:
+      num_train = X_data.shape[0]
+      num_train = num_train / batch_size * batch_size
+      X_data = X_data[:num_train]
+      labels = labels[:num_train]
+
     correct_prediction = tf.equal(tf.argmax(model['y_out'], 1), model['y'])
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
