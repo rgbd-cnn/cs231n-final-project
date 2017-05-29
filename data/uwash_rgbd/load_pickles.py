@@ -79,27 +79,27 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
         # Threshold Depth Data
         # X_train[:, :, :, 3][X_train[:, :, :, 3] > 5000] = 5000
         # X_test_val[:, :, :, 3][X_test_val[:, :, :, 3] > 5000] = 5000
-        
+
         # Invert Depth Data
-        X_train[:, :, :, 3] = 1.0 / X_train[:, :, :, 3]
-        X_test_val[:, :, :, 3] = 1.0 / X_test_val[:, :, :, 3]
-        # X_train[:, :, :, 3][X_train[:, :, :, 3] > 5000] = 5000
+        X_train[:, :, :, 3] /= 1000
+        X_test_val[:, :, :, 3] /= 1000
+        X_train[:, :, :, 3][X_train[:, :, :, 3] > 5] = 5
         # print(np.max(X_train[:, :, :, 3]))
 
-        min_train = np.min(X_train[:, :, :, 3])
-        X_train[:, :, :, 3] -= min_train
+        # min_train = np.min(X_train[:, :, :, 3])
+        # X_train[:, :, :, 3] -= min_train
 
-        max_train = np.max(X_train[:, :, :, 3])
-        X_train[:, :, :, 3] *= (255.0 / max_train)
+        # max_train = np.max(X_train[:, :, :, 3])
+        # X_train[:, :, :, 3] *= (255.0 / max_train)
 
-        X_test_val[:, :, :, 3] -= min_train
-        X_test_val[:, :, :, 3] *= (255.0 / max_train)
-    mean_image = np.mean(X_train, axis=0)
-    std_image = np.std(X_train, axis=0)
-    X_train -= mean_image
-    X_train /= std_image
-    X_test_val -= mean_image
-    X_test_val /= std_image
+        # X_test_val[:, :, :, 3] -= min_train
+        # X_test_val[:, :, :, 3] *= (255.0 / max_train)
+    # mean_image = np.mean(X_train[:, :, :, 1:3], axis=0)
+    # std_image = np.std(X_train[:, :, :, 1:3], axis=0)
+    # X_train[:, :, :, 1:3] -= mean_image
+    # X_train[:, :, :, 1:3] /= std_image
+    # X_test_val[:, :, :, 1:3] -= mean_image
+    # X_test_val[:, :, :, 1:3] /= std_image
 
     # Shuffle Validation and Test Data
     print("Shuffling validation and test data...")

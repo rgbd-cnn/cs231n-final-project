@@ -49,7 +49,7 @@ def fix_image(args):
 
     correct = correct[pad:-pad, pad:-pad]
     im_med = ndimage.median_filter(correct, 9)
-    
+
     if save:
         img = misc.toimage(im_med, high=np.max(im_med), low=np.min(im_med), mode='I')
         filename = str(file).split('.')[0] + '_corr.png'
