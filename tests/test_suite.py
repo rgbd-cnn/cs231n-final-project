@@ -4,6 +4,7 @@ import fnmatch
 from tests.test_resnet import *
 from tests.test_inception_resnet import *
 from tests.test_two_branch_cnn import *
+from tests.test_gen import *
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
 
@@ -20,6 +21,7 @@ def main():
                     "   1. Standard ResNet\n" +
                     "   2. Inception-ResNet\n" +
                     "   3. Two-Branch Inception-ResNet\n" +
+                    "   4. Generative Network \n" +
                     "Please select number: ")
     ask = False
     if network == 1:
@@ -28,12 +30,17 @@ def main():
       network = 'inception_resnet'
     elif network == 3:
       network = 'two_branch'
+    elif network == 4:
+      network = 'generative'
     else:
       print("Invalid choice...")
       ask = True
 
   # Specify Dataset
   ask = True
+  if network == 'generative':
+    dataset = 'uwash_3d'
+    ask = False
   while ask:
     dataset = input("\nWhich dataset would you like to use?\n" +
                     "   1. CIFAR-10 (2D)\n" +
@@ -168,6 +175,8 @@ def main():
   elif network == 'two_branch':
     run_two_branch_cnn_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs,
                             train_epochs_per_validation=1)
+  elif network == 'generative':
+    run_gen_test(data, 0, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   else:
     print("Error: Invalid network...")
     exit(-1)
