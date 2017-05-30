@@ -8,7 +8,7 @@ from utilities.train import *
 def run_two_branch_cnn_test(data, num_classes, device, recover, ckpt_path,
                             prev_epochs, epochs, lr=1e-3,
                             train_epochs_per_validation=100,
-                            tensorboard_log_dir=None, dataset=None,
+                            tensorboard_log_dir='logs', dataset='default',
                             branch1='IR2d', branch2='IRd', dropout_keep_prob=0.5,
                             reg=0.0):
     # Create Model
