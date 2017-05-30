@@ -3,7 +3,7 @@ import depth.tensorflow.models.fcrn as depth
 import os
 from huber import huber_loss
 
-def setup_depth_model(image_size=128, learning_rate=1e-3, reg=0.0, batch_size=1, sess=tf.Session()):
+def setup_depth_model(image_size=128, learning_rate=1e-4, reg=0.0, batch_size=1, sess=tf.Session()):
   # Create a placeholder for the input image
   model = {}
   model['X'] = tf.placeholder(tf.float32, shape=(None, image_size, image_size, 3))
@@ -21,17 +21,21 @@ def setup_depth_model(image_size=128, learning_rate=1e-3, reg=0.0, batch_size=1,
   y_res = tf.image.resize_images(y, [image_size / 2, image_size / 2],
                                  method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
   y_out = net.get_output()
-  c = tf.abs(tf.reduce_max(y_out - y_res) / 5)
+  c = tf.reduce_max(y_out - y_res) / 15
   loss = tf.reduce_mean(huber_loss(y_out, y_res, c))
+  # loss = tf.losses.mean_pairwise_squared_error(y_out, y_res)
   optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate,
                                beta1=0.9,
                                beta2=0.999,
                                epsilon=1e-08)
   # optimizer = tf.train.GradientDescentOptimizer(learning_rate)
- # Required for Batch Normalization
+  # Required for Batch Normalization
+  # mv extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+  # with tf.control_dependencies(extra_update_ops):
+  # train_step = optimizer.minimize(loss)
   extra_update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
   with tf.control_dependencies(extra_update_ops):
-      train_step = optimizer.minimize(loss)
+    train_step = optimizer.minimize(loss)
   uninitialized_vars = []
   for var in tf.global_variables():
       try:
@@ -41,6 +45,7 @@ def setup_depth_model(image_size=128, learning_rate=1e-3, reg=0.0, batch_size=1,
 
   init_new_vars_op = tf.variables_initializer(uninitialized_vars)
   sess.run(init_new_vars_op)
+
 
   # # Store Model in Dictionary
   model['y'] = y

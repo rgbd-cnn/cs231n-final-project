@@ -43,7 +43,7 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=1,
       epoch_loss = 0
 
       # Iterate Over the Entire Dataset Once
-      for i in range(int(math.ceil(X_data.shape[0] / float(batch_size)))):
+      for i in range(int(math.ceil(X_data.shape[0] / float(batch_size))) - 1):
         # Indices for Batch
         start_idx = (i * batch_size) % X_data.shape[0]
         idx = train_indicies[start_idx:start_idx + batch_size]
@@ -54,23 +54,26 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=1,
                      model['y']: labels[idx, :],
                      model['is_training']: is_training}
         # # 'Label' for image
-        if i == 0:
+        if i == -10:
           fig = plt.figure(0)
           fig.suptitle('Fed image', fontsize=20)
           plt.imshow(X_data[idx, :][0, :, :, :])
-          plt.show(block=False)
-          fig = plt.figure(1)
-          fig.suptitle('Original', fontsize=20)
-          ii = plt.imshow(labels[idx][0, :, :, 0], interpolation='nearest')
-          fig.colorbar(ii)
           plt.show(block=False)
 
         # Run TF Session (Returns Loss and Correct Predictions)
         loss, img, yinp, _ = sess.run(variables, feed_dict=feed_dict)
 
-        if i == 0:
+        if (np.sum(img) == 0):
+          print "WARNING: predicted image came back as blank!!!!"
+
+        if i == -10:
           # Image to be estimated
           # Image estimated
+          fig = plt.figure(1)
+          fig.suptitle('Original', fontsize=20)
+          ii = plt.imshow(yinp[0, :, :, 0], interpolation='nearest')
+          fig.colorbar(ii)
+          plt.show(block=False)
           fig = plt.figure(2)
           fig.suptitle('Diff', fontsize=20)
           ii = plt.imshow(yinp[0, :, :, 0] - img[0, :, :, 0], interpolation='nearest')

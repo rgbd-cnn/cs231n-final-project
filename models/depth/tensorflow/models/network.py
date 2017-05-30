@@ -239,19 +239,20 @@ class Network(object):
         return tf.nn.softmax(input_data, name)
 
     @layer
-    def batch_normalization(self, input_data, name, scale_offset=True, relu=False, trainable=False):
+    def batch_normalization(self, input_data, name, scale_offset=True, relu=False, trainable=False,
+                            is_training=True):
         # NOTE: Currently, only inference is supported
         with tf.variable_scope(name) as scope:
             shape = [input_data.get_shape()[-1]]
             if scale_offset:
-                scale = self.make_var('scale', shape=shape, trainable=trainable)
-                offset = self.make_var('offset', shape=shape, trainable=trainable)
+                scale = self.make_var('scale', shape=shape)
+                offset = self.make_var('offset', shape=shape)
             else:
                 scale, offset = (None, None)
             output = tf.nn.batch_normalization(
                 input_data,
-                mean=self.make_var('mean', shape=shape, trainable=trainable),
-                variance=self.make_var('variance', shape=shape, trainable=trainable),
+                mean=self.make_var('mean', shape=shape),
+                variance=self.make_var('variance', shape=shape),
                 offset=offset,
                 scale=scale,
 				variance_epsilon=1e-4,
@@ -380,7 +381,7 @@ class Network(object):
         # Convolution following the upProjection on the 1st branch
         layerName = "layer%s_Conv" % (id)
         self.feed(out)
-        self.conv(size[0], size[1], size[3], stride, stride, name = layerName, relu = False)
+        self.conv(size[0], size[1], size[3], stride, stride, name = layerName, relu = False, trainable=trainable)
 
         if BN:
             layerName = "layer%s_BN" % (id)

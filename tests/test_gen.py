@@ -5,7 +5,7 @@ from models.depth_prediction import setup_depth_model
 from utilities.train import *
 
 
-def run_gen_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, lr=1e-1,
+def run_gen_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, lr=1e-4,
                               train_epochs_per_validation=1, tensorboard_log_dir=None, dataset=None, reg=0.0):
   # Create Model
   print("Setting up model...")
@@ -24,8 +24,8 @@ def run_gen_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epo
     print("This will not work, exiting...")
     exit(-1)
   sess = tf.Session()
-  # setup_depth_model(image_size=128, learning_rate=1e-3, reg=0.0, batch_size=1, sess=tf.Session())
-  model = setup_depth_model(image_size=H, learning_rate=lr, batch_size=1, sess=sess)
+  batch_size = 128
+  model = setup_depth_model(image_size=H, learning_rate=lr, batch_size=batch_size, sess=sess)
   saver = tf.train.Saver()
   # sess.run(tf.global_variables_initializer())
 
@@ -61,7 +61,7 @@ def run_gen_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epo
   for i in range(num_train_val_cycles):
     # Train Model
     train_gen_model(device, sess, model, data['X_train'], data['y_train'],
-                epochs=train_epochs_per_validation, batch_size=1, is_training=True, log_freq=100,
+                epochs=train_epochs_per_validation, batch_size=batch_size, is_training=True, log_freq=100,
                 plot_loss=False, global_step=global_step,
                 writer=train_writer)
 
@@ -70,7 +70,7 @@ def run_gen_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epo
     # Validate Model
     if tensorboard_log_dir:
       print("Validating model...")
-      train_gen_model(device, sess, model, data['X_val'], data['y_val'], epochs=1, batch_size=1,
+      train_gen_model(device, sess, model, data['X_val'], data['y_val'], epochs=1, batch_size=batch_size,
                       is_training=False, log_freq=100, plot_loss=False, global_step=global_step,
                       writer=val_writer)
 
@@ -79,17 +79,17 @@ def run_gen_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epo
   # Check Final Training Accuracy
   print("\nFinal Training Accuracy:")
   train_gen_model(device, sess, model, data['X_train'], data['y_train'], epochs=1,
-              batch_size=1, is_training=False, log_freq=100, plot_loss=False)
+              batch_size=batch_size, is_training=False, log_freq=100, plot_loss=False)
 
   # Check Validation Accuracy
   print('\nFinal Validation Accuracy:')
   train_gen_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
-              batch_size=1, is_training=False, log_freq=100, plot_loss=False)
+              batch_size=batch_size, is_training=False, log_freq=100, plot_loss=False)
 
   # Check Test Accuracy
   print('\nFinal Test Accuracy:')
   train_gen_model(device, sess, model, data['X_test'], data['y_test'], epochs=1,
-              batch_size=1, is_training=False, log_freq=100, plot_loss=False)
+              batch_size=batch_size, is_training=False, log_freq=100, plot_loss=False)
 
   # Save Model Checkpoint
   save_model_checkpoint(sess, saver, ckpt_path, prev_epochs + epochs)

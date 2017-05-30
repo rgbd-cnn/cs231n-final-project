@@ -1,6 +1,7 @@
 **/.DS_Store
 data/**/*.pkl
 data/**/*.mat
+**/*.npy
 **/*.png
 **/*.pyc
 **/*.jpeg
