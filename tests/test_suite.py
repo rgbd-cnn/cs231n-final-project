@@ -1,4 +1,7 @@
 import os
+# Suppress Annoying TensorFlow Logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 import re
 import fnmatch
 from tests.test_resnet import *
@@ -7,11 +10,9 @@ from tests.test_two_branch_cnn import *
 from tests.test_gen import *
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
+from data.princeton_sunrgbd.load_pickles import load_princeton
 
 def main():
-  # Suppress Annoying TensorFlow Logs
-  os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
   print("Welcome to the CNN Test Suite!")
 
   # Specify Network
@@ -46,6 +47,8 @@ def main():
                     "   1. CIFAR-10 (2D)\n" +
                     "   2. UWASH (2D)\n" +
                     "   3. UWASH (3D)\n" +
+                    "   4. SUNRGB (2D)\n" +
+                    "   5. SUNRGBD (3D)\n" +
                     "Please select number: ")
     ask = False
     if dataset == 1 and not network == 'two_branch':
@@ -54,6 +57,10 @@ def main():
       dataset = 'uwash_2d'
     elif dataset == 3:
       dataset = 'uwash_3d'
+    elif dataset == 4:
+      dataset = 'sunrgb'
+    elif dataset == 5:
+      dataset = 'sunrgbd'
     else:
       print("Invalid choice...")
       ask = True
@@ -99,7 +106,10 @@ def main():
       ask = True
 
   # Specify Number of Epochs
-  epochs = input("\nNumber of Epochs: ")
+  epochs = input("\nNumber of epochs: ")
+
+  # Epochs Per Validation
+  epochs_per_val = input("\nNumber of epochs per validation: ")
 
   # Specify Device Type (CPU or GPU)
   ask = True
@@ -148,6 +158,14 @@ def main():
     # Get UWASH Dataset (With Depth)
     data = load_uwash_rgbd(depth=True)
     num_classes = 51
+  elif dataset == 'sunrgb':
+    # Get SUNRGB Dataset (Without Depth)
+    data = load_princeton(depth=False)
+    num_classes = 45
+  elif dataset == 'sunrgbd':
+    # Get SUNRGBD Dataset (With Depth)
+    data = load_princeton(depth=True)
+    num_classes = 45
   else:
     print("Error: Invalid dataset...")
     exit(-1)
@@ -171,10 +189,11 @@ def main():
   if network == 'resnet':
     run_resnet_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   elif network == 'inception_resnet':
-    run_inception_resnet_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
+    run_inception_resnet_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs,
+                              train_epochs_per_validation=epochs_per_val, dataset=model_name)
   elif network == 'two_branch':
     run_two_branch_cnn_test(data, num_classes, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs,
-                            train_epochs_per_validation=1, dataset=model_name)
+                            train_epochs_per_validation=epochs_per_val, dataset=model_name)
   elif network == 'generative':
     run_gen_test(data, 0, device, recover, 'checkpoints/' + model_name, highest_epochs, epochs)
   else:

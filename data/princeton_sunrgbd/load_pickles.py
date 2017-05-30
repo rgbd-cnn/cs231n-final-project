@@ -92,7 +92,7 @@ def package_data(X, y, depth):
 
     return data
 
-def load_princeton(depth=False):
+def load_princeton(depth=True):
     base = os.path.join(os.path.dirname(os.path.abspath(__file__)), './pickles')
     scenes = os.path.join(base, 'scenes.pkl')
     labels = os.path.join(base, 'labels.pkl')

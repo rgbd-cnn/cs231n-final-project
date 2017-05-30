@@ -5,8 +5,10 @@ from models.inception_resnet import setup_resnet_inception_model
 from utilities.train import *
 
 
-def run_inception_resnet_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs, lr=1e-3,
-                              train_epochs_per_validation=1, tensorboard_log_dir=None, dataset=None, reg=0.0):
+def run_inception_resnet_test(data, num_classes, device, recover, ckpt_path,
+                              prev_epochs, epochs, lr=1e-3,
+                              train_epochs_per_validation=100,
+                              tensorboard_log_dir='logs', dataset='default', reg=0.0):
   # Create Model
   print("Setting up model...")
   data_shape = list(data['X_train'][0].shape)
