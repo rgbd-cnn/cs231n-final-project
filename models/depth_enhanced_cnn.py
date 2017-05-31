@@ -70,8 +70,8 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
 
 def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
                                    learning_rate=1e-3, branch1=None,
-                                   branch2=None,
-                                   reg=0.0, keep_prob=None, feature_op=None):
+                                   branch2=None, reg=0.0, keep_prob=None,
+                                   feature_op=None):
     # Reset Network
     tf.reset_default_graph()
 
@@ -128,5 +128,6 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     model['y_out'] = y_out
     model['loss_val'] = loss
     model['train_step'] = train_step
+    model['net'] = net
 
     return model

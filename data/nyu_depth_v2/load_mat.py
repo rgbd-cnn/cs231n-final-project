@@ -6,7 +6,6 @@ import h5py
 import numpy as np
 from PIL import Image
 
-
 def format_pixel_data(pixel_array, h, w):
     list = []
     for i in range(h):
@@ -18,7 +17,9 @@ def format_pixel_data(pixel_array, h, w):
 def save_original_images_to_disk(data_file_dir):
     f = h5py.File(data_file_dir, 'r')
     images = np.array(f.get("images"))
+    depths = np.array(f.get("depths"))
     save_images_to_disk(images, "raw-images")
+    save_depth_maps_to_disk(depths, "raw-images")
 
 
 # saves all 1449 images in ./raw-images
@@ -33,6 +34,20 @@ def save_images_to_disk(images, root_dir):
         im = Image.new('RGB', (W, H))
         im.putdata(format_pixel_data(image, H, W))
         im.save(os.path.join(root_dir, "%s.png" % i))
+
+
+def save_depth_maps_to_disk(images, root_dir):
+    # print len(images)
+    if not os.path.exists(root_dir):
+        os.makedirs(root_dir)
+    for i in range(len(images)):
+        print("saving image: %s" % i)
+        image = images[i]
+        image = np.array([255 - (image / np.amax(image) * 255) for i in range(3)])
+        C, W, H = image.shape
+        im = Image.new('RGB', (W, H))
+        im.putdata(format_pixel_data(image, H, W))
+        im.save(os.path.join(root_dir, "%s-depth.png" % i))
 
 
 # creates 894 sub-folders under ./single-object-images and put all images
@@ -116,6 +131,6 @@ def cropped_image(image, pixel_label, index):
 
 if __name__ == '__main__':
     dir = parse_arguments(sys.argv[1:]).matlab_file_dir
-    save_original_images_to_disk(dir)
-    save_single_object_images_to_disk(dir)
-    save_cropped_single_object_images_to_disk(dir)
+    # save_original_images_to_disk(dir)
+    # save_single_object_images_to_disk(dir)
+    # save_cropped_single_object_images_to_disk(dir)

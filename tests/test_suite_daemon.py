@@ -54,6 +54,8 @@ def parse_arguments(argv):
                         help='how to fuse two features', default="stack")
     parser.add_argument('--tag', type=str,
                         help='information', default="")
+    parser.add_argument('--transfer_learn', type=int,
+                        help='whether to transfer learn', default=0)
     return parser.parse_args(argv)
 
 
@@ -168,7 +170,8 @@ def main(args):
                                     dataset=dataset, branch1=args.branch1,
                                     branch2=args.branch2, reg=args.reg,
                                     keep_prob=args.dropout_keep_prob,
-                                    feature_op=args.feature_op, tag=args.tag)
+                                    feature_op=args.feature_op, tag=args.tag,
+                                    transfer_learn=args.transfer_learn)
     else:
         print("Error: Invalid network...")
         exit(-1)

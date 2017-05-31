@@ -22,7 +22,7 @@ def parse_arguments(argv):
                         default=64)
     parser.add_argument('--save_resized_images_to_disk', type=bool,
                         help='whether to save resized images to disk',
-                        default=False)
+                        default=True)
     parser.add_argument('--overwrite', type=bool,
                         help='whether to rewrite existing pickles',
                         default=False)
@@ -89,7 +89,8 @@ def save_file(data_dir, object, folder, rgb_file, depth_file, rgb, depth,
     im = Image.fromarray(rgb, 'RGB')
     im.save(rgb_dir)
 
-    im = Image.fromarray(depth, 'RGB')
+    depth_data = np.concatenate(tuple([255 - (depth / np.amax(depth) * 255) for i in range(3)]), axis=2).astype(int)
+    im = Image.fromarray(depth_data, 'RGB')
     im.save(depth_dir)
     print("Saved to disk: %s and %s" % (rgb_dir, depth_dir))
 
