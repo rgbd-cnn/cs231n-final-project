@@ -2,9 +2,9 @@ import numpy as np
 import tensorflow as tf
 
 # ----------------------------------------------------------------------------------
-# Commonly used layers and operations based on ethereon's implementation 
+# Commonly used layers and operations based on ethereon's implementation
 # https://github.com/ethereon/caffe-tensorflow
-# Slight modifications may apply. FCRN-specific operations have also been appended. 
+# Slight modifications may apply. FCRN-specific operations have also been appended.
 # ----------------------------------------------------------------------------------
 # Thanks to *Helisa Dhamo* for the model conversion and integration into TensorFlow.
 # ----------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ class Network(object):
         self.trainable = trainable
         # Batch size needs to be set for the implementation of the interleaving
         self.batch_size = batch
-        
+
         self.setup()
 
 
@@ -135,13 +135,13 @@ class Network(object):
 
         if (padding == 'SAME'):
             input_data = tf.pad(input_data, [[0, 0], [(k_h - 1)//2, (k_h - 1)//2], [(k_w - 1)//2, (k_w - 1)//2], [0, 0]], "CONSTANT")
-        
+
         # Verify that the grouping parameter is valid
         assert c_i % group == 0
         assert c_o % group == 0
         # Convolution for a given input and kernel
         convolve = lambda i, k: tf.nn.conv2d(i, k, [1, s_h, s_w, 1], padding='VALID')
-        
+
         with tf.variable_scope(name) as scope:
             kernel = self.make_var('weights', shape=[k_h, k_w, c_i // group, c_o])
 
@@ -264,12 +264,12 @@ class Network(object):
     @layer
     def dropout(self, input_data, keep_prob, name):
         return tf.nn.dropout(input_data, keep_prob, name=name)
-    
+
 
     # -------------------------------------------------------
     # Additional operations, specific to FCRN
     # -------------------------------------------------------
-    
+
     def prepare_indices(self, before, row, col, after, dims ):
 
         x0, x1, x2, x3 = np.meshgrid(before, row, col, after)
@@ -287,7 +287,7 @@ class Network(object):
     def unpool_as_conv(self, size, input_data, id, stride = 1, ReLU = False, BN = True):
 
 		# Model upconvolutions (unpooling + convolution) as interleaving feature
-		# maps of four convolutions (A,B,C,D). Building block for up-projections. 
+		# maps of four convolutions (A,B,C,D). Building block for up-projections.
 
 
         # Convolution A (3x3)
@@ -340,7 +340,7 @@ class Network(object):
         all_indices_after = range(dims[3])
 
         A_linear_indices = self.prepare_indices(all_indices_before, A_row_indices, A_col_indices, all_indices_after, dims)
-        B_linear_indices = self.prepare_indices(all_indices_before, B_row_indices, B_col_indices, all_indices_after, dims) 
+        B_linear_indices = self.prepare_indices(all_indices_before, B_row_indices, B_col_indices, all_indices_after, dims)
         C_linear_indices = self.prepare_indices(all_indices_before, C_row_indices, C_col_indices, all_indices_after, dims)
         D_linear_indices = self.prepare_indices(all_indices_before, D_row_indices, D_col_indices, all_indices_after, dims)
 
@@ -351,7 +351,7 @@ class Network(object):
 
         Y_flat = tf.dynamic_stitch([A_linear_indices, B_linear_indices, C_linear_indices, D_linear_indices], [A_flat, B_flat, C_flat, D_flat])
         Y = tf.reshape(Y_flat, shape = tf.to_int32([-1, dim1.value, dim2.value, dims[3].value]))
-        
+
         if BN:
             layerName = "layer%s_BN" % (id)
             self.feed(Y)
@@ -360,12 +360,12 @@ class Network(object):
 
         if ReLU:
             Y = tf.nn.relu(Y, name = layerName)
-        
+
         return Y
 
 
     def up_project(self, size, id, stride = 1, BN = True):
-        
+
         # Create residual upsampling layer (UpProjection)
 
         input_data = self.get_output()
@@ -388,13 +388,13 @@ class Network(object):
         # Output of 1st branch
         branch1_output = self.get_output()
 
-            
+
         # Branch 2
         id_br2 = "%s_br2" % (id)
         # Interleaving convolutions and output of 2nd branch
         branch2_output = self.unpool_as_conv(size, input_data, id_br2, stride, ReLU=False)
 
-        
+
         # sum branches
         layerName = "layer%s_Sum" % (id)
         output = tf.add_n([branch1_output, branch2_output], name = layerName)

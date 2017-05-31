@@ -79,7 +79,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     size = [None] + image_size
     X = tf.placeholder(tf.float32, size)
 
-    net = fcrn.ResNet50UpProj({'data': X}, 64)
+    net = fcrn.ResNet50UpProj({'data': X}, 64, trainable=False)
     depth_map = net.get_output()
     resized_depth_map = tf.image.resize_images(depth_map,
                                                tf.constant([32, 32],
@@ -94,7 +94,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     # Define Output and Calculate Loss
     with slim.arg_scope([slim.conv2d, slim.fully_connected],
                         weights_regularizer=slim.l2_regularizer(reg)):
-        y_out = two_branch_cnn(X_3D, A, B, C, num_classes, is_training,
+        y_out = depth_enhanced_cnn(X_3D, A, B, C, num_classes, is_training,
                                branch1=branch1, branch2=branch2,
                                keep_prob=keep_prob, feature_op=feature_op)
 

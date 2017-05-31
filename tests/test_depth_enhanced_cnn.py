@@ -15,19 +15,25 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     # Create Model
     print("Setting up model...")
     data_shape = list(data['X_train'][0].shape)
-    saver = tf.train.Saver()
-    sess = tf.Session()
-
     model = setup_depth_enhanced_cnn_model(data_shape, num_classes, 1, 2, 1,
                                            learning_rate=lr, branch1=branch1,
                                            branch2=branch2, reg=reg,
                                            keep_prob=keep_prob,
                                            feature_op=feature_op)
 
+    saver = tf.train.Saver()
+    sess = tf.Session()
     sess.run(tf.global_variables_initializer())
+
+    print(tf.get_collection(tf.GraphKeys.VARIABLES))
+
     if transfer_learn:
-        model['net'].load(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              './depth/NYU_ResNet-UpProj.npy'), sess)
+        print("loading depth prediction...")
+        model['net'].load(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                         '../models/depth/NYU_ResNet-UpProj.npy'), sess)
+        print("done...")
+
     # Recover Saved Model (if available)
     if recover:
         print("Recovering model...")
