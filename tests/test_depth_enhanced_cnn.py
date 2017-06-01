@@ -37,7 +37,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     # Recover Saved Model (if available)
     if recover:
         print("Recovering model...")
-        recover_model_checkpoint(sess, saver, 'checkpoints/')
+        recover_model_weights(sess, saver, 'checkpoints/')
 
     num_train_val_cycles = epochs / train_epochs_per_validation
 

@@ -2,7 +2,7 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
-
+import os
 
 # Save Checkpoint of Model
 def save_model_checkpoint(session, saver, filename, epoch_num):
@@ -13,6 +13,11 @@ def save_model_checkpoint(session, saver, filename, epoch_num):
 # Recover Saved Model Checkpoint
 def recover_model_checkpoint(session, saver, checkpoint_path):
   saver.restore(session, tf.train.latest_checkpoint(checkpoint_path))
+  print("Model restored!\n")
+
+  # Recover Saved Model Checkpoint
+def recover_model_weights(session, saver, checkpoint_path):
+  saver.restore(session, os.path.join(checkpoint_path, "27-25.data-00000-of-00001"))
   print("Model restored!\n")
 
 
