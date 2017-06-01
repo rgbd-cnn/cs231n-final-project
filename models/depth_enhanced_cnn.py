@@ -71,7 +71,12 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
 def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
                                    learning_rate=1e-3, branch1=None,
                                    branch2=None, reg=0.0, keep_prob=None,
-                                   feature_op=None):
+                                   feature_op=None, recover=None):
+
+    # if recover:
+    #     print("Recovering model...")
+    #     recover_model_checkpoint(sess, saver, 'checkpoints/')
+
     # Reset Network
     tf.reset_default_graph()
 
@@ -79,17 +84,17 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     size = [None] + image_size
     X = tf.placeholder(tf.float32, size)
 
-    net = fcrn.ResNet50UpProj({'data': X}, 64, trainable=False)
+    resize_X = tf.image.resize_images(X,
+                                      tf.constant([64, 64]),
+                                      method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+
+    net = fcrn.ResNet50UpProj({'data': resize_X}, 128, trainable=False)
     depth_map = net.get_output()
-    resized_depth_map = tf.image.resize_images(depth_map,
-                                               tf.constant([32, 32],
-                                                           name='resized_image_size'),
-                                               method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
 
     y = tf.placeholder(tf.int64, [None])
     is_training = tf.placeholder(tf.bool)
 
-    X_3D = tf.concat([X, resized_depth_map], axis=3)
+    X_3D = tf.concat([X, depth_map], axis=3)
 
     # Define Output and Calculate Loss
     with slim.arg_scope([slim.conv2d, slim.fully_connected],

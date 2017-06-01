@@ -1,8 +1,17 @@
-import os
 import shutil
 
 from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
 from utilities.train import *
+
+
+def list_variables():
+    reader = tf.train.NewCheckpointReader('checkpoints/27-25')
+    variable_map = reader.get_variable_to_shape_map()
+    names = sorted(variable_map.keys())
+    result = []
+    for name in names:
+        result.append((name, variable_map[name]))
+    return result
 
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
@@ -19,7 +28,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                            learning_rate=lr, branch1=branch1,
                                            branch2=branch2, reg=reg,
                                            keep_prob=keep_prob,
-                                           feature_op=feature_op)
+                                           feature_op=feature_op,
+                                           recover=recover)
 
     saver = tf.train.Saver()
     sess = tf.Session()
@@ -34,10 +44,45 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                          '../models/depth/NYU_ResNet-UpProj.npy'), sess)
         print("done...")
 
-    # Recover Saved Model (if available)
     if recover:
         print("Recovering model...")
-        recover_model_weights(sess, saver, 'checkpoints/')
+        checkpoint_vars = [tup[0] for tup in list_variables()]
+        model_vars = [var.name[:var.name.find(':')] for var in tf.all_variables()]
+
+        common_set = set.intersection(set(checkpoint_vars), set(model_vars))
+        print(len(list(common_set)))
+        print(set(checkpoint_vars) - common_set)
+
+        common_checkpoint_vars = {}
+        for tup in list_variables():
+            if tup[0] in common_set:
+                common_checkpoint_vars[tup[0]] = tup[1]
+
+        common_model_vars = {}
+        model_name_to_vars = {}
+        for var in tf.all_variables():
+            name = var.name[:var.name.find(':')]
+            model_name_to_vars[name] = var
+            if name in common_set:
+                common_model_vars[name] = var.get_shape().as_list()
+
+
+        print(common_checkpoint_vars)
+        print(common_model_vars)
+        print(len(common_checkpoint_vars))
+        print(len(common_model_vars))
+
+        valid_vars = []
+
+        for name in common_checkpoint_vars:
+            if common_checkpoint_vars[name] != common_model_vars[name]:
+                print(name, common_checkpoint_vars[name], common_model_vars[name])
+            else:
+                valid_vars.append(name)
+
+        print(len([model_name_to_vars[name] for name in valid_vars]))
+        saver = tf.train.Saver(var_list=[model_name_to_vars[name] for name in valid_vars])
+        recover_model_weights(sess, saver, 'checkpoints')
 
     num_train_val_cycles = epochs / train_epochs_per_validation
 
@@ -71,7 +116,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     for i in range(num_train_val_cycles):
         train_model(device, sess, model, data['X_train'], data['y_train'],
                     epochs=train_epochs_per_validation,
-                    batch_size=64, is_training=True, log_freq=100,
+                    batch_size=128, is_training=True, log_freq=100,
                     plot_loss=False, global_step=global_step,
                     writer=train_writer, depth_enhanced=True)
 
@@ -80,7 +125,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         # Validate Model
         print("\nValidating model...")
         train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
-                    batch_size=64, is_training=False,
+                    batch_size=128, is_training=False,
                     log_freq=100, plot_loss=False, global_step=global_step,
                     writer=val_writer, depth_enhanced=True)
         print('')
@@ -89,19 +134,19 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
     train_model(device, sess, model, data['X_train'], data['y_train'], epochs=1,
-                batch_size=64, is_training=False, log_freq=100, plot_loss=False,
+                batch_size=128, is_training=False, log_freq=100, plot_loss=False,
                 depth_enhanced=True)
 
     # Check Validation Accuracy
     print('\nFinal Validation Accuracy:')
     train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
-                batch_size=64, is_training=False, log_freq=100, plot_loss=False,
+                batch_size=128, is_training=False, log_freq=100, plot_loss=False,
                 depth_enhanced=True)
 
     # Check Test Accuracy
     print('\nFinal Test Accuracy:')
     train_model(device, sess, model, data['X_test'], data['y_test'], epochs=1,
-                batch_size=64, is_training=False, log_freq=100, plot_loss=False,
+                batch_size=128, is_training=False, log_freq=100, plot_loss=False,
                 depth_enhanced=True)
 
     # Save Model Checkpoint
