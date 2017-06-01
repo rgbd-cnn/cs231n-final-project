@@ -25,7 +25,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
-    print(tf.get_collection(tf.GraphKeys.VARIABLES))
+    # print(tf.get_collection(tf.GraphKeys.VARIABLES))
 
     if transfer_learn:
         print("loading depth prediction...")
