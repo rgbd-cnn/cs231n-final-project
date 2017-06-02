@@ -171,7 +171,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 if X_data_unnormalized == None:
                     loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
                 else:
-                    loss, depth_map, _ = sess.run(variables, feed_dict=feed_dict)
+                    loss, depth_map, corr, _ = sess.run(variables, feed_dict=feed_dict)
                     save_depth_maps(depth_map, labels[idx])
                 # print(loss)
                 num_correct += np.sum(corr)
