@@ -3,6 +3,7 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
+import json
 import tensorflow as tf
 
 
@@ -108,7 +109,8 @@ def save_depth_maps(depth_maps, y_labels):
     print(y_labels)
     for i in range(len(y_labels)):
         y_label = y_labels[i]
-        np.save(os.path.join('./depth_maps', str(i) + '-' + y_label + '.npy'), depth_maps[i])
+        with open(os.path.join('./depth_maps', str(i) + '-label' + y_label + '.json'), 'w') as fp:
+            json.dump(fp, {'data': depth_maps[i]})
 
 
 
