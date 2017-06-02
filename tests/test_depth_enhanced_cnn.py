@@ -28,8 +28,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                            learning_rate=lr, branch1=branch1,
                                            branch2=branch2, reg=reg,
                                            keep_prob=keep_prob,
-                                           feature_op=feature_op,
-                                           recover=recover)
+                                           feature_op=feature_op, dataset=dataset)
 
     saver = tf.train.Saver()
     sess = tf.Session()

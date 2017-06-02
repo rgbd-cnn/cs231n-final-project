@@ -3,7 +3,6 @@ import tensorflow.contrib.slim as slim
 
 import models.fcrn as fcrn
 from models.inception_resnet import inception_res_features
-from models.two_branch_cnn import two_branch_cnn
 
 
 def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
@@ -71,8 +70,7 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
 def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
                                    learning_rate=1e-3, branch1=None,
                                    branch2=None, reg=0.0, keep_prob=None,
-                                   feature_op=None, recover=None):
-
+                                   feature_op=None, dataset=None):
     # if recover:
     #     print("Recovering model...")
     #     recover_model_checkpoint(sess, saver, 'checkpoints/')
@@ -85,11 +83,18 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     X = tf.placeholder(tf.float32, size)
     X_unnormalized = tf.placeholder(tf.float32, size)
 
-    resize_X = tf.image.resize_images(X,
-                                      tf.constant([32, 32]),
-                                      method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+    if dataset == 'cifar':
+        X_unnormalized_64 = tf.image.resize_images(X_unnormalized,
+                                                tf.constant([64, 64]),
+                                                method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+        resize_X = X
+    else:
+        resize_X = tf.image.resize_images(X,
+                                          tf.constant([32, 32]),
+                                          method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+        X_unnormalized_64 = X_unnormalized
 
-    net = fcrn.ResNet50UpProj({'data': X_unnormalized}, 128, trainable=False)
+    net = fcrn.ResNet50UpProj({'data': X_unnormalized_64}, 128, trainable=False)
     depth_map = net.get_output()
 
     y = tf.placeholder(tf.int64, [None])
@@ -101,8 +106,8 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     with slim.arg_scope([slim.conv2d, slim.fully_connected],
                         weights_regularizer=slim.l2_regularizer(reg)):
         y_out = depth_enhanced_cnn(X_3D, A, B, C, num_classes, is_training,
-                               branch1=branch1, branch2=branch2,
-                               keep_prob=keep_prob, feature_op=feature_op)
+                                   branch1=branch1, branch2=branch2,
+                                   keep_prob=keep_prob, feature_op=feature_op)
 
     total_loss = tf.nn.softmax_cross_entropy_with_logits(
         labels=tf.one_hot(y, num_classes),
