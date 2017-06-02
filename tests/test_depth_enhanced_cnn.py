@@ -47,7 +47,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     if recover:
         print("Recovering model...")
         checkpoint_vars = [tup[0] for tup in list_variables()]
-        model_vars = [var.name[:var.name.find(':')] for var in tf.all_variables()]
+        model_vars = [var.name[:var.name.find(':')] for var in
+                      tf.all_variables()]
 
         common_set = set.intersection(set(checkpoint_vars), set(model_vars))
         print(len(list(common_set)))
@@ -66,7 +67,6 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
             if name in common_set:
                 common_model_vars[name] = var.get_shape().as_list()
 
-
         print(common_checkpoint_vars)
         print(common_model_vars)
         print(len(common_checkpoint_vars))
@@ -76,12 +76,14 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
         for name in common_checkpoint_vars:
             if common_checkpoint_vars[name] != common_model_vars[name]:
-                print(name, common_checkpoint_vars[name], common_model_vars[name])
+                print(name, common_checkpoint_vars[name],
+                      common_model_vars[name])
             else:
                 valid_vars.append(name)
 
         print(len([model_name_to_vars[name] for name in valid_vars]))
-        saver = tf.train.Saver(var_list=[model_name_to_vars[name] for name in valid_vars])
+        saver = tf.train.Saver(
+            var_list=[model_name_to_vars[name] for name in valid_vars])
         recover_model_weights(sess, saver, 'checkpoints')
 
     num_train_val_cycles = epochs / train_epochs_per_validation
@@ -118,7 +120,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     epochs=train_epochs_per_validation,
                     batch_size=128, is_training=True, log_freq=100,
                     plot_loss=False, global_step=global_step,
-                    writer=train_writer, depth_enhanced=True)
+                    writer=train_writer, depth_enhanced=True,
+                    X_data_unnormalized=data['X_train_unnormalized'])
 
         global_step += train_epochs_per_validation - 1
 
@@ -127,27 +130,34 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
                     batch_size=128, is_training=False,
                     log_freq=100, plot_loss=False, global_step=global_step,
-                    writer=val_writer, depth_enhanced=True)
+                    writer=val_writer, depth_enhanced=True,
+                    X_data_unnormalized=data['X_val_unnormalized'])
         print('')
         global_step += 1
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
     train_model(device, sess, model, data['X_train'], data['y_train'], epochs=1,
-                batch_size=128, is_training=False, log_freq=100, plot_loss=False,
-                depth_enhanced=True)
+                batch_size=128, is_training=False, log_freq=100,
+                plot_loss=False,
+                depth_enhanced=True,
+                X_data_unnormalized=data['X_train_unnormalized'])
 
     # Check Validation Accuracy
     print('\nFinal Validation Accuracy:')
     train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
-                batch_size=128, is_training=False, log_freq=100, plot_loss=False,
-                depth_enhanced=True)
+                batch_size=128, is_training=False, log_freq=100,
+                plot_loss=False,
+                depth_enhanced=True,
+                X_data_unnormalized=data['X_val_unnormalized'])
 
     # Check Test Accuracy
     print('\nFinal Test Accuracy:')
     train_model(device, sess, model, data['X_test'], data['y_test'], epochs=1,
-                batch_size=128, is_training=False, log_freq=100, plot_loss=False,
-                depth_enhanced=True)
+                batch_size=128, is_training=False, log_freq=100,
+                plot_loss=False,
+                depth_enhanced=True,
+                X_data_unnormalized=data['X_test_unnormalized'])
 
     # Save Model Checkpoint
     save_model_checkpoint(sess, saver, ckpt_path, prev_epochs + epochs)

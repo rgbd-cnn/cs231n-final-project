@@ -1,6 +1,7 @@
 import os
 import pickle
 import numpy as np
+import copy
 import random
 import scipy as sp
 
@@ -79,7 +80,7 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
         # Threshold Depth Data
         # X_train[:, :, :, 3][X_train[:, :, :, 3] > 5000] = 5000
         # X_test_val[:, :, :, 3][X_test_val[:, :, :, 3] > 5000] = 5000
-        
+
         # Invert Depth Data
         X_train[:, :, :, 3] = 1.0 / X_train[:, :, :, 3]
         X_test_val[:, :, :, 3] = 1.0 / X_test_val[:, :, :, 3]
@@ -94,6 +95,10 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
 
         X_test_val[:, :, :, 3] -= min_train
         X_test_val[:, :, :, 3] *= (255.0 / max_train)
+
+    X_train_unnormalized = copy.deepcopy(X_train)
+    X_test_val_unnormalized = copy.deepcopy(X_test_val)
+
     mean_image = np.mean(X_train, axis=0)
     std_image = np.std(X_train, axis=0)
     X_train -= mean_image
@@ -105,6 +110,7 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     print("Shuffling validation and test data...")
     permutation = np.random.permutation(test_val_size)
     X_test_val_shuffled = X_test_val[permutation]
+    X_test_val_unnormalized_shuffled = X_test_val_unnormalized[permutation]
     y_test_val_shuffled = y_test_val[permutation]
     X_test_val, y_test_val = None, None
 
@@ -112,11 +118,13 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     print("Creating validation set...")
     val_size = int(0.5 * float(test_val_size))
     X_val = X_test_val_shuffled[:val_size]
+    X_val_unnormalized = X_test_val_unnormalized_shuffled[:val_size]
     y_val = y_test_val_shuffled[:val_size]
 
     # Create Test Set
     print("Creating test set...")
     X_test = X_test_val_shuffled[val_size:]
+    X_test_unnormalized = X_test_val_unnormalized_shuffled[val_size:]
     y_test = y_test_val_shuffled[val_size:]
 
     X_test_val_shuffled, y_test_val_shuffled = None, None
@@ -125,10 +133,13 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
     print("Save Data in Dictionary...")
     data = {}
     data['X_train'] = X_train
+    data['X_train_unnormalized'] = X_train_unnormalized
     data['y_train'] = y_train
     data['X_val'] = X_val
+    data['X_val_unnormalized'] = X_val_unnormalized
     data['y_val'] = y_val
     data['X_test'] = X_test
+    data['X_test_unnormalized'] = X_test_unnormalized
     data['y_test'] = y_test
 
     return data

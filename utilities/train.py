@@ -105,13 +105,14 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None,
-                depth_enhanced=False):
+                depth_enhanced=False, X_data_unnormalized=None):
     with tf.device(device):
         # Calculate Prediction Accuracy
         if depth_enhanced:
             num_train = X_data.shape[0]
             num_train = num_train / batch_size * batch_size
             X_data = X_data[:num_train]
+            X_data_unnormalized = X_data_unnormalized[:num_train]
             labels = labels[:num_train]
 
         correct_prediction = tf.equal(tf.argmax(model['y_out'], 1), model['y'])
@@ -142,9 +143,15 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 actual_batch_size = labels[i:i + batch_size].shape[0]
 
                 # Feed Dictionary for Batch
-                feed_dict = {model['X']: X_data[idx, :],
-                             model['y']: labels[idx],
-                             model['is_training']: is_training}
+                if X_data_unnormalized == None:
+                    feed_dict = {model['X']: X_data[idx, :],
+                                 model['y']: labels[idx],
+                                 model['is_training']: is_training}
+                else:
+                    feed_dict = {model['X']: X_data[idx, :],
+                                 model['X_unnormalized']: X_data_unnormalized[idx, :],
+                                 model['y']: labels[idx],
+                                 model['is_training']: is_training}
 
                 # Run TF Session (Returns Loss and Correct Predictions)
                 loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
