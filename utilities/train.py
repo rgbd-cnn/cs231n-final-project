@@ -101,6 +101,15 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
     return total_loss
 
 
+def save_depth_maps(depth_maps, y_labels):
+    if "depth_maps" not in os.listdir('./'):
+        os.mkdir('./depth_maps')
+    for i in range(len(y_labels)):
+        y_label = y_labels[i]
+        np.save(os.path.join('./depth_maps', str(i) + '-' + y_label + '.npy'), depth_maps[i])
+
+
+
 # Train the Model
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 is_training=False, log_freq=100,
@@ -123,7 +132,10 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
         np.random.shuffle(train_indicies)
 
         # Populate TensorFlow Variables
-        variables = [model['loss_val'], correct_prediction, accuracy]
+        if X_data_unnormalized == None:
+            variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy]
+        else:
+            variables = [model['loss_val'], correct_prediction, accuracy]
         if is_training:
             variables[-1] = model['train_step']
 
@@ -154,7 +166,11 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                                  model['is_training']: is_training}
 
                 # Run TF Session (Returns Loss and Correct Predictions)
-                loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
+                if X_data_unnormalized == None:
+                    loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
+                else:
+                    loss, depth_map, _ = sess.run(variables, feed_dict=feed_dict)
+                    save_depth_maps(depth_map, labels[idx])
                 # print(loss)
                 num_correct += np.sum(corr)
                 epoch_loss += loss * actual_batch_size
