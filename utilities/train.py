@@ -102,11 +102,11 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
     return total_loss
 
 
-def save_depth_maps(depth_maps, y_labels, suffix):
+def save_depth_maps(X, depth_maps, y_labels, suffix):
     if "depth_maps" not in os.listdir('./'):
         os.mkdir('./depth_maps')
     with open(os.path.join('./depth_maps', suffix + '.json'), 'w') as fp:
-        json.dump({'data': depth_maps.tolist(), 'label': y_labels.tolist()}, fp)
+        json.dump({'data': depth_maps.tolist(), 'label': y_labels.tolist(), 'X': X}, fp)
 
 
 
@@ -170,7 +170,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                     loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
                 else:
                     loss, depth_map, corr, _ = sess.run(variables, feed_dict=feed_dict)
-                    save_depth_maps(depth_map, labels[idx], str(epoch) + "-" + str(i))
+                    save_depth_maps(X_data_unnormalized[idx, :], depth_map, labels[idx], str(epoch) + "-" + str(i))
                 # print(loss)
                 num_correct += np.sum(corr)
                 epoch_loss += loss * actual_batch_size
