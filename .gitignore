@@ -21,3 +21,4 @@ data/UWASH-RGBD/rgbd-dataset
 **/*.0
 **/*.txt
 checkpoints/*
+**/*.json

@@ -20,7 +20,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                 tensorboard_log_dir=None, dataset=None,
                                 branch1='IR2d', branch2='IRd', reg=0.0,
                                 keep_prob=None, feature_op="stack", tag=None,
-                                transfer_learn=None):
+                                transfer_learn=None, save_depth=None):
     # Create Model
     print("Setting up model...")
     data_shape = list(data['X_train'][0].shape)
@@ -120,7 +120,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     batch_size=128, is_training=True, log_freq=100,
                     plot_loss=False, global_step=global_step,
                     writer=train_writer, depth_enhanced=True,
-                    X_data_unnormalized=data['X_train_unnormalized'])
+                    X_data_unnormalized=data['X_train_unnormalized'],
+                    save_depth=save_depth)
 
         global_step += train_epochs_per_validation - 1
 
@@ -130,7 +131,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     batch_size=128, is_training=False,
                     log_freq=100, plot_loss=False, global_step=global_step,
                     writer=val_writer, depth_enhanced=True,
-                    X_data_unnormalized=data['X_val_unnormalized'])
+                    X_data_unnormalized=data['X_val_unnormalized'],
+                    save_depth=save_depth)
         print('')
         global_step += 1
 
@@ -140,7 +142,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                 batch_size=128, is_training=False, log_freq=100,
                 plot_loss=False,
                 depth_enhanced=True,
-                X_data_unnormalized=data['X_train_unnormalized'])
+                X_data_unnormalized=data['X_train_unnormalized'],
+                save_depth=save_depth)
 
     # Check Validation Accuracy
     print('\nFinal Validation Accuracy:')
@@ -148,7 +151,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                 batch_size=128, is_training=False, log_freq=100,
                 plot_loss=False,
                 depth_enhanced=True,
-                X_data_unnormalized=data['X_val_unnormalized'])
+                X_data_unnormalized=data['X_val_unnormalized'],
+                save_depth=save_depth)
 
     # Check Test Accuracy
     print('\nFinal Test Accuracy:')
@@ -156,7 +160,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                 batch_size=128, is_training=False, log_freq=100,
                 plot_loss=False,
                 depth_enhanced=True,
-                X_data_unnormalized=data['X_test_unnormalized'])
+                X_data_unnormalized=data['X_test_unnormalized'],
+                save_depth=save_depth)
 
     # Save Model Checkpoint
     save_model_checkpoint(sess, saver, ckpt_path, prev_epochs + epochs)

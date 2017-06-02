@@ -97,10 +97,14 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     net = fcrn.ResNet50UpProj({'data': X_unnormalized_64}, 128, trainable=False)
     depth_map = net.get_output()
 
+    mean, var = tf.nn.moments(depth_map, axes=[0])
+
+    depth_map_normalized = (depth_map - mean) / tf.sqrt(var)
+
     y = tf.placeholder(tf.int64, [None])
     is_training = tf.placeholder(tf.bool)
 
-    X_3D = tf.concat([resize_X, depth_map], axis=3)
+    X_3D = tf.concat([resize_X, depth_map_normalized], axis=3)
 
     # Define Output and Calculate Loss
     with slim.arg_scope([slim.conv2d, slim.fully_connected],

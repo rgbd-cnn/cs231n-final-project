@@ -11,8 +11,11 @@ def visualize(f):
         fig = plt.figure(1)
         plt.title(yinp['label'][i])
         map = yinp['data'][i]
-        print(np.array(map).shape)
         ii = plt.imshow(np.array(map)[:, :, 0], interpolation='nearest')
+        fig = plt.figure(2)
+        plt.title(yinp['label'][i])
+        map = yinp['X'][i]
+        ii = plt.imshow(np.array(map), interpolation='nearest')
         plt.show()
 
 dir = './depth_maps'

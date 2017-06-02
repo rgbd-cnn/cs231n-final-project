@@ -56,6 +56,8 @@ def parse_arguments(argv):
                         help='information', default="")
     parser.add_argument('--transfer_learn', type=int,
                         help='whether to transfer learn', default=0)
+    parser.add_argument('--save_depth_map', type=int,
+                        help='whether to save depth map', default=0)
     return parser.parse_args(argv)
 
 
@@ -171,7 +173,8 @@ def main(args):
                                     branch2=args.branch2, reg=args.reg,
                                     keep_prob=args.dropout_keep_prob,
                                     feature_op=args.feature_op, tag=args.tag,
-                                    transfer_learn=args.transfer_learn)
+                                    transfer_learn=args.transfer_learn,
+                                    save_depth=args.save_depth_map)
     else:
         print("Error: Invalid network...")
         exit(-1)

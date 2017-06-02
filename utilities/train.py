@@ -114,7 +114,7 @@ def save_depth_maps(X, depth_maps, y_labels, suffix):
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None,
-                depth_enhanced=False, X_data_unnormalized=None):
+                depth_enhanced=False, X_data_unnormalized=None, save_depth=None):
     with tf.device(device):
         # Calculate Prediction Accuracy
         if depth_enhanced:
@@ -132,7 +132,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
         np.random.shuffle(train_indicies)
 
         # Populate TensorFlow Variables
-        if X_data_unnormalized == None:
+        if X_data_unnormalized == None or not save_depth:
             variables = [model['loss_val'], correct_prediction, accuracy]
         else:
             variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy]
@@ -166,7 +166,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                                  model['is_training']: is_training}
 
                 # Run TF Session (Returns Loss and Correct Predictions)
-                if X_data_unnormalized == None:
+                if X_data_unnormalized == None or not save_depth:
                     loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
                 else:
                     loss, depth_map, corr, _ = sess.run(variables, feed_dict=feed_dict)
