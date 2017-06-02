@@ -105,12 +105,14 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
 def save_depth_maps(depth_maps, y_labels):
     if "depth_maps" not in os.listdir('./'):
         os.mkdir('./depth_maps')
-    print(depth_maps)
+    # print(depth_maps)
     print(y_labels)
     for i in range(len(y_labels)):
+        print(list(depth_maps[i]))
         y_label = y_labels[i]
+        print(list(y_label))
         with open(os.path.join('./depth_maps', str(i) + '.json'), 'w') as fp:
-            json.dump(fp, {'data': list(depth_maps[i]), 'label': y_label})
+            json.dump(fp, {'data': list(depth_maps[i]), 'label': list(y_label)})
 
 
 
