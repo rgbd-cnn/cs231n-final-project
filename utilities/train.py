@@ -106,7 +106,7 @@ def save_depth_maps(depth_maps, y_labels, suffix):
     if "depth_maps" not in os.listdir('./'):
         os.mkdir('./depth_maps')
     with open(os.path.join('./depth_maps', suffix + '.json'), 'w') as fp:
-        json.dump(fp, {'data': depth_maps.tolist(), 'label': y_labels.tolist()})
+        json.dump({'data': depth_maps.tolist(), 'label': y_labels.tolist()}, fp)
 
 
 
