@@ -81,12 +81,14 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     # Create Placeholder Variables
     size = [None] + image_size
     X = tf.placeholder(tf.float32, size)
+    y = tf.placeholder(tf.int64, [None])
+    is_training = tf.placeholder(tf.bool)
     X_unnormalized = tf.placeholder(tf.float32, size)
 
     if dataset == 'cifar':
         X_unnormalized_64 = tf.image.resize_images(X_unnormalized,
-                                                tf.constant([64, 64]),
-                                                method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+                                                   tf.constant([64, 64]),
+                                                   method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
         resize_X = X
     else:
         resize_X = tf.image.resize_images(X,
@@ -97,12 +99,13 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     net = fcrn.ResNet50UpProj({'data': X_unnormalized_64}, 128, trainable=False)
     depth_map = net.get_output()
 
-    mean, var = tf.nn.moments(depth_map, axes=[0])
-
-    depth_map_normalized = (depth_map - mean) / tf.sqrt(var)
-
-    y = tf.placeholder(tf.int64, [None])
-    is_training = tf.placeholder(tf.bool)
+    # mean, var = tf.nn.moments(depth_map, axes=[0])
+    # depth_map_normalized = (depth_map - mean) / tf.sqrt(var)
+    depth_map_normalized = slim.batch_norm(depth_map, decay=0.99, center=True,
+                                           scale=True, epsilon=1e-8,
+                                           activation_fn=None,
+                                           is_training=is_training,
+                                           trainable=True)
 
     X_3D = tf.concat([resize_X, depth_map_normalized], axis=3)
 
