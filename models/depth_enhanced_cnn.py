@@ -97,7 +97,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
         X_unnormalized_64 = X_unnormalized
 
     net = fcrn.ResNet50UpProj({'data': X_unnormalized_64}, 128, trainable=False)
-    depth_map = net.get_output()
+    depth_map = net.get_output() * 500
 
     # mean, var = tf.nn.moments(depth_map, axes=[0])
     # depth_map_normalized = (depth_map - mean) / tf.sqrt(var)
