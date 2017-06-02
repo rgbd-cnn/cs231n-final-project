@@ -110,7 +110,7 @@ def save_depth_maps(depth_maps, y_labels):
     for i in range(len(y_labels)):
         y_label = y_labels[i]
         with open(os.path.join('./depth_maps', str(i) + '.json'), 'w') as fp:
-            json.dump(fp, {'data': depth_maps[i], 'label': y_label})
+            json.dump(fp, {'data': list(depth_maps[i]), 'label': y_label})
 
 
 
