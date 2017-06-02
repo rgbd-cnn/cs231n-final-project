@@ -104,6 +104,8 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
 def save_depth_maps(depth_maps, y_labels):
     if "depth_maps" not in os.listdir('./'):
         os.mkdir('./depth_maps')
+    print(depth_maps)
+    print(y_labels)
     for i in range(len(y_labels)):
         y_label = y_labels[i]
         np.save(os.path.join('./depth_maps', str(i) + '-' + y_label + '.npy'), depth_maps[i])
@@ -133,9 +135,9 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
         # Populate TensorFlow Variables
         if X_data_unnormalized == None:
-            variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy]
-        else:
             variables = [model['loss_val'], correct_prediction, accuracy]
+        else:
+            variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy]
         if is_training:
             variables[-1] = model['train_step']
 
