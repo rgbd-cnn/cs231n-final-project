@@ -3,7 +3,7 @@ from __future__ import print_function
 import os
 import platform
 from builtins import range
-
+import copy
 import numpy as np
 from scipy.misc import imread
 from six.moves import cPickle as pickle
@@ -70,9 +70,12 @@ def get_CIFAR10_data(num_training=49000, num_validation=1000, num_test=1000,
     # Normalize the data: subtract the mean image
     if subtract_mean:
         mean_image = np.mean(X_train, axis=0)
-        X_train_unnormalized = X_train - mean_image
-        X_val_unnormalized = X_val - mean_image
-        X_test_unnormalized = X_test - mean_image
+        X_train_unnormalized = copy.deepcopy(X_train)
+        X_val_unnormalized = copy.deepcopy(X_val)
+        X_test_unnormalized = copy.deepcopy(X_test)
+        X_train -= mean_image
+        X_val -= mean_image
+        X_test -= mean_image
 
     # Transpose so that channels come first
     # X_train = X_train.transpose(0, 3, 1, 2).copy()
