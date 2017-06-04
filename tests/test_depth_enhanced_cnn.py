@@ -28,7 +28,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                            learning_rate=lr, branch1=branch1,
                                            branch2=branch2, reg=reg,
                                            keep_prob=keep_prob,
-                                           feature_op=feature_op, dataset=dataset)
+                                           feature_op=feature_op,
+                                           dataset=dataset)
 
     saver = tf.train.Saver()
     sess = tf.Session()
@@ -129,18 +130,26 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
         # Validate Model
         print("\nValidating model...")
-        _, accuracy, confusion = train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
-                    batch_size=128, is_training=False,
-                    log_freq=100, plot_loss=False, global_step=global_step,
-                    writer=val_writer, depth_enhanced=True,
-                    X_data_unnormalized=data['X_val_unnormalized'],
-                    save_depth=save_depth)
-        print('')
+        _, accuracy, confusion = train_model(device, sess, model, data['X_val'],
+                                             data['y_val'], epochs=1,
+                                             batch_size=128, is_training=False,
+                                             log_freq=100, plot_loss=False,
+                                             global_step=global_step,
+                                             writer=val_writer,
+                                             depth_enhanced=True,
+                                             X_data_unnormalized=data[
+                                                 'X_val_unnormalized'],
+                                             save_depth=save_depth)
+
         global_step += 1
         if best_accuracy < accuracy:
             best_accuracy = accuracy
             with open('confusion.json', 'w') as f:
-                json.dump({"data": confusion, 'labels': data['dict']}, f)
+                json.dump({"epoch": i,
+                           "accuracy": best_accuracy,
+                           "data": confusion,
+                           'labels': data['dict']
+                           }, f)
             f.close()
 
     # Check Final Training Accuracy
@@ -172,5 +181,3 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     # Save Model Checkpoint
     save_model_checkpoint(sess, saver, ckpt_path, prev_epochs + epochs)
-
-
