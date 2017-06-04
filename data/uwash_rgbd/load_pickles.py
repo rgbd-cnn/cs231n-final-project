@@ -183,6 +183,6 @@ def load_uwash_rgbd(depth=False):
     y_test_val = np.array(y_test_val)
 
     data = package_data(X_train, y_train, X_test_val, y_test_val, depth)
-
+    print(y_train)
     # data = split_data(np.concatenate(X), np.array(Y), depth)
     return data
