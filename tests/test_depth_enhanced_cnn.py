@@ -116,7 +116,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     # Train Model
     print("Training model...")
     best_accuracy = 0
-
+    complete_confusion = []
     for i in range(num_train_val_cycles):
         train_model(device, sess, model, data['X_train'], data['y_train'],
                     epochs=train_epochs_per_validation,
@@ -144,10 +144,11 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         global_step += 1
         if best_accuracy < accuracy:
             best_accuracy = accuracy
+            complete_confusion += confusion
             with open('confusion.json', 'w') as f:
                 json.dump({"epoch": i,
                            "accuracy": best_accuracy,
-                           "data": confusion,
+                           "data": complete_confusion,
                            'labels': data['dict']
                            }, f)
             f.close()
