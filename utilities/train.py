@@ -134,7 +134,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
         # Populate TensorFlow Variables
         if X_data_unnormalized == None or not save_depth:
-            variables = [prediction, model['y'], model['loss_val'], correct_prediction, accuracy, prediction, model['y']]
+            variables = [model['loss_val'], correct_prediction, accuracy, prediction, model['y']]
         else:
             variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy, prediction, model['y']]
         if is_training:
