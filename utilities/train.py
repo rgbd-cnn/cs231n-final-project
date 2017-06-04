@@ -124,7 +124,8 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
             X_data_unnormalized = X_data_unnormalized[:num_train]
             labels = labels[:num_train]
 
-        correct_prediction = tf.equal(tf.argmax(model['y_out'], 1), model['y'])
+        prediction = tf.argmax(model['y_out'], 1)
+        correct_prediction = tf.equal(prediction, model['y'])
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
         # Shuffle Training Data
@@ -133,15 +134,16 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
         # Populate TensorFlow Variables
         if X_data_unnormalized == None or not save_depth:
-            variables = [model['loss_val'], correct_prediction, accuracy]
+            variables = [prediction, model['y'], model['loss_val'], correct_prediction, accuracy, prediction, model['y']]
         else:
-            variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy]
+            variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy, prediction, model['y']]
         if is_training:
             variables[-1] = model['train_step']
 
         # Iteration Counter
         iter_cnt = 0
         losses = []
+        confusion = []
         for epoch in range(epochs):
             # Keep Track of Loss and Number of Correct Predictions
             num_correct = 0
@@ -167,9 +169,9 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
                 # Run TF Session (Returns Loss and Correct Predictions)
                 if X_data_unnormalized == None or not save_depth:
-                    loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
+                    loss, corr, _, pred, gt = sess.run(variables, feed_dict=feed_dict)
                 else:
-                    loss, depth_map, corr, _ = sess.run(variables, feed_dict=feed_dict)
+                    loss, depth_map, corr, _, pred, gt = sess.run(variables, feed_dict=feed_dict)
                     save_depth_maps(X_data_unnormalized[idx, :], depth_map, labels[idx], str(epoch) + "-" + str(i))
                 # print(loss)
                 num_correct += np.sum(corr)
@@ -183,6 +185,10 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                         .format(iter_cnt, loss,
                                 np.sum(corr) / float(actual_batch_size)))
                 iter_cnt += 1
+
+            if not is_training:
+                for i in range(len(gt)):
+                    confusion.append(pred[i])
 
             # Calculate Performance
             accuracy = num_correct / float(X_data.shape[0])
@@ -208,4 +214,4 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
             plt.ylabel('Total Loss')
             plt.show()
 
-    return total_loss, accuracy
+    return total_loss, accuracy, confusion

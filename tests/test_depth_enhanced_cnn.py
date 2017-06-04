@@ -114,6 +114,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     # Train Model
     print("Training model...")
+    best_accuracy = 0
+
     for i in range(num_train_val_cycles):
         train_model(device, sess, model, data['X_train'], data['y_train'],
                     epochs=train_epochs_per_validation,
@@ -127,7 +129,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
         # Validate Model
         print("\nValidating model...")
-        train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
+        _, accuracy, confusion = train_model(device, sess, model, data['X_val'], data['y_val'], epochs=1,
                     batch_size=128, is_training=False,
                     log_freq=100, plot_loss=False, global_step=global_step,
                     writer=val_writer, depth_enhanced=True,
@@ -135,6 +137,11 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     save_depth=save_depth)
         print('')
         global_step += 1
+        if best_accuracy < accuracy:
+            best_accuracy = accuracy
+            with open('confusion.json', 'w') as f:
+                json.dump({"data": confusion}, f)
+            f.close()
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
@@ -165,3 +172,5 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     # Save Model Checkpoint
     save_model_checkpoint(sess, saver, ckpt_path, prev_epochs + epochs)
+
+
