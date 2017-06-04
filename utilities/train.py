@@ -188,7 +188,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
             if not is_training:
                 for i in range(len(gt)):
-                    confusion.append(pred[i])
+                    confusion.append((pred[i], gt[i]))
 
             # Calculate Performance
             accuracy = num_correct / float(X_data.shape[0])
