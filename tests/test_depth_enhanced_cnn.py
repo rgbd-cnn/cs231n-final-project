@@ -140,7 +140,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         if best_accuracy < accuracy:
             best_accuracy = accuracy
             with open('confusion.json', 'w') as f:
-                json.dump({"data": confusion}, f)
+                json.dump({"data": confusion, 'labels': data['dict']}, f)
             f.close()
 
     # Check Final Training Accuracy
