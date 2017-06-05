@@ -96,7 +96,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
                                           method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
         X_unnormalized_64 = X_unnormalized
 
-    net = fcrn.ResNet50UpProj({'data': X_unnormalized_64}, 128, trainable=True)
+    net = fcrn.ResNet50UpProj({'data': X_unnormalized_64}, 128, trainable=False)
     depth_map = net.get_output()
 
     # mean, var = tf.nn.moments(depth_map, axes=[0])

@@ -20,7 +20,7 @@ def visualize(f):
         plt.colorbar()
         plt.show()
 
-dir = './depth_maps'
+dir = './depth_maps/depth_maps'
 
 for f in os.listdir(dir):
     if 'json' in f:
