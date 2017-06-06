@@ -3,8 +3,9 @@ import os
 
 import matplotlib.pyplot as plt
 import numpy as np
-import json
 import tensorflow as tf
+
+import json
 
 
 # Save Checkpoint of Model
@@ -22,8 +23,7 @@ def recover_model_checkpoint(session, saver, checkpoint_path):
 
 
 def recover_model_weights(session, saver, checkpoint_path):
-    saver.restore(session,
-                  os.path.join(checkpoint_path, "27-25"))
+    saver.restore(session, os.path.join(checkpoint_path, "27-25"))
     print("Model restored!\n")
 
 
@@ -106,15 +106,16 @@ def save_depth_maps(X, depth_maps, y_labels, suffix):
     if "depth_maps" not in os.listdir('./'):
         os.mkdir('./depth_maps')
     with open(os.path.join('./depth_maps', suffix + '.json'), 'w') as fp:
-        json.dump({'data': depth_maps.tolist(), 'label': y_labels.tolist(), 'X': X.tolist()}, fp)
-
+        json.dump({'data': depth_maps.tolist(), 'label': y_labels.tolist(),
+                   'X': X.tolist()}, fp)
 
 
 # Train the Model
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None,
-                depth_enhanced=False, X_data_unnormalized=None, save_depth=None):
+                depth_enhanced=False, X_data_unnormalized=None,
+                save_depth=None):
     with tf.device(device):
         # Calculate Prediction Accuracy
         if depth_enhanced:
@@ -134,9 +135,11 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
         # Populate TensorFlow Variables
         if X_data_unnormalized == None or not save_depth:
-            variables = [model['loss_val'], correct_prediction, accuracy, prediction, model['y']]
+            variables = [model['loss_val'], correct_prediction, accuracy,
+                         prediction, model['y']]
         else:
-            variables = [model['loss_val'], model["depth_map"], correct_prediction, accuracy, prediction, model['y']]
+            variables = [model['loss_val'], model["depth_map"],
+                         correct_prediction, accuracy, prediction, model['y']]
         if is_training:
             variables[-1] = model['train_step']
 
@@ -163,16 +166,20 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                                  model['is_training']: is_training}
                 else:
                     feed_dict = {model['X']: X_data[idx, :],
-                                 model['X_unnormalized']: X_data_unnormalized[idx, :],
+                                 model['X_unnormalized']: X_data_unnormalized[
+                                                          idx, :],
                                  model['y']: labels[idx],
                                  model['is_training']: is_training}
 
                 # Run TF Session (Returns Loss and Correct Predictions)
                 if X_data_unnormalized == None or not save_depth:
-                    loss, corr, _, pred, gt = sess.run(variables, feed_dict=feed_dict)
+                    loss, corr, _, pred, gt = sess.run(variables,
+                                                       feed_dict=feed_dict)
                 else:
-                    loss, depth_map, corr, _, pred, gt = sess.run(variables, feed_dict=feed_dict)
-                    save_depth_maps(X_data_unnormalized[idx, :], depth_map, labels[idx], str(epoch) + "-" + str(i))
+                    loss, depth_map, corr, _, pred, gt = sess.run(variables,
+                                                                  feed_dict=feed_dict)
+                    save_depth_maps(X_data_unnormalized[idx, :], depth_map,
+                                    labels[idx], str(epoch) + "-" + str(i))
                 # print(loss)
                 num_correct += np.sum(corr)
                 epoch_loss += loss * actual_batch_size
@@ -182,8 +189,8 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                     print(
                         "Iteration {0}: Training Loss = {1:.3g} and Accuracy "
                         "= {2:.2g}" \
-                        .format(iter_cnt, loss,
-                                np.sum(corr) / float(actual_batch_size)))
+                            .format(iter_cnt, loss,
+                                    np.sum(corr) / float(actual_batch_size)))
                 iter_cnt += 1
 
                 if not is_training:
