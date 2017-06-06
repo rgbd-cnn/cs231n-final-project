@@ -14,7 +14,7 @@ def list_variables(path):
     return result
 
 
-def recover_model(path, sess, ckpt_path, name):
+def recover_model(path, sess, ckpt_path, ckptname):
     checkpoint_vars = [tup[0] for tup in list_variables(path)]
     model_vars = [var.name[:var.name.find(':')] for var in
                   tf.all_variables()]
@@ -53,7 +53,7 @@ def recover_model(path, sess, ckpt_path, name):
     print(len([model_name_to_vars[name] for name in valid_vars]))
     saver = tf.train.Saver(
         var_list=[model_name_to_vars[name] for name in valid_vars])
-    recover_model_weights(sess, saver, ckpt_path, name)
+    recover_model_weights(sess, saver, ckpt_path, ckptname)
 
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
