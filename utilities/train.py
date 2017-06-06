@@ -22,8 +22,8 @@ def recover_model_checkpoint(session, saver, checkpoint_path):
     # Recover Saved Model Checkpoint
 
 
-def recover_model_weights(session, saver, checkpoint_path):
-    saver.restore(session, os.path.join(checkpoint_path, "27-25"))
+def recover_model_weights(session, saver, checkpoint_path, name):
+    saver.restore(session, os.path.join(checkpoint_path, name))
     print("Model restored!\n")
 
 
