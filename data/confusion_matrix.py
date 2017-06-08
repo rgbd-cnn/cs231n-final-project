@@ -29,8 +29,7 @@ fig = plt.figure(figsize=(60, 60))
 plt.clf()
 ax = fig.add_subplot(111)
 ax.set_aspect(1)
-res = ax.imshow(np.array(norm_conf).T, cmap=plt.cm.jet,
-                interpolation='nearest')
+res = ax.imshow(np.array(norm_conf).T, cmap=plt.cm.jet, interpolation='nearest')
 
 conf_arr = conf_arr.T
 

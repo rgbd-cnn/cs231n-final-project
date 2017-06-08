@@ -58,16 +58,6 @@ def recover_model(path, sess, ckpt_path, ckptname):
     recover_model_weights(sess, saver, ckpt_path, ckptname)
 
 
-def plotNNFilter(units, prefix):
-    filters = units.shape[3]
-    plt.figure(1, figsize=(20, 20))
-    n_columns = 6
-    n_rows = math.ceil(filters / n_columns) + 1
-    for i in range(filters):
-        plt.subplot(n_rows, n_columns, i + 1)
-        plt.title('Filter ' + str(i))
-        plt.imsave(prefix + str(i) + '.png', units[0, :, :, i], cmap="gray")
-
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                 prev_epochs, epochs, lr=1e-3,
@@ -169,7 +159,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
             print(RGB)
             print(D)
             with open('first_layer.json', 'w') as f:
-                json.dump({"rgb", RGB.tolist(), 'd', D.tolist()}, f)
+                json.dump({"rgb": RGB.tolist(), 'd': D.tolist()}, f)
 
 
         # Validate Model
