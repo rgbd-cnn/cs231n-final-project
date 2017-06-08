@@ -69,7 +69,7 @@ def plotNNFilter(units, prefix):
     for i in range(filters):
         plt.subplot(n_rows, n_columns, i+1)
         plt.title('Filter ' + str(i))
-        plt.imshow(prefix + str(i) + '.png', units[0,:,:,i], cmap="gray")
+        plt.imsave(prefix + str(i) + '.png', units[0,:,:,i], cmap="gray")
 
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
