@@ -1,7 +1,65 @@
 import math
+import matplotlib
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import AxesGrid
 import numpy as np
 import tensorflow as tf
+import tensorlayer
+import matplotlib.colors as colors
+
+# Taken from:
+# https://stackoverflow.com/questions/7404116/defining-the-midpoint-of-a-colormap-in-matplotlib
+
+def shiftedColorMap(cmap, start=-3.0, midpoint=0, stop=3.0, name='shiftedcmap'):
+    '''
+    Function to offset the "center" of a colormap. Useful for
+    data with a negative min and positive max and you want the
+    middle of the colormap's dynamic range to be at zero
+
+    Input
+    -----
+      cmap : The matplotlib colormap to be altered
+      start : Offset from lowest point in the colormap's range.
+          Defaults to 0.0 (no lower ofset). Should be between
+          0.0 and `midpoint`.
+      midpoint : The new center of the colormap. Defaults to
+          0.5 (no shift). Should be between 0.0 and 1.0. In
+          general, this should be  1 - vmax/(vmax + abs(vmin))
+          For example if your data range from -15.0 to +5.0 and
+          you want the center of the colormap at 0.0, `midpoint`
+          should be set to  1 - 5/(5 + 15)) or 0.75
+      stop : Offset from highets point in the colormap's range.
+          Defaults to 1.0 (no upper ofset). Should be between
+          `midpoint` and 1.0.
+    '''
+    cdict = {
+        'red': [],
+        'green': [],
+        'blue': [],
+        'alpha': []
+    }
+
+    # regular index to compute the colors
+    reg_index = np.linspace(start, stop, 1024)
+
+    # shifted index to match the data
+    shift_index = np.hstack([
+        np.linspace(0.0, midpoint, 512, endpoint=False),
+        np.linspace(midpoint, 1.0, 512, endpoint=True)
+    ])
+
+    for ri, si in zip(reg_index, shift_index):
+        r, g, b, a = cmap(ri)
+
+        cdict['red'].append((si, r, r))
+        cdict['green'].append((si, g, g))
+        cdict['blue'].append((si, b, b))
+        cdict['alpha'].append((si, a, a))
+
+    newcmap = matplotlib.colors.LinearSegmentedColormap(name, cdict)
+    plt.register_cmap(cmap=newcmap)
+
+    return newcmap
 
 # Save Checkpoint of Model
 def save_model_checkpoint(session, saver, filename, epoch_num):
@@ -17,6 +75,8 @@ def recover_model_checkpoint(session, saver, checkpoint_path):
 
 def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=1, is_training=False,
                     log_freq=100, plot_loss=False, global_step=None, writer=None):
+  norm = colors.Normalize(vmin=-1.,vmax=1.)
+  # shifted_cmap = shiftedColorMap(orig_cmap, midpoint=0, name='shifted')
   with tf.device(device):
     # Calculate Prediction Accuracy
     y = tf.image.resize_images(model['y'], [32, 32],
@@ -54,11 +114,6 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=1,
                      model['y']: labels[idx, :],
                      model['is_training']: is_training}
         # # 'Label' for image
-        if i == -10:
-          fig = plt.figure(0)
-          fig.suptitle('Fed image', fontsize=20)
-          plt.imshow(X_data[idx, :][0, :, :, :])
-          plt.show(block=False)
 
         # Run TF Session (Returns Loss and Correct Predictions)
         loss, img, yinp, _ = sess.run(variables, feed_dict=feed_dict)
@@ -66,23 +121,24 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=1,
         if (np.sum(img) == 0):
           print "WARNING: predicted image came back as blank!!!!"
 
-        if i == -10:
+        num, _, _, _ = X_data[idx].shape
+        for x in range(num):
           # Image to be estimated
           # Image estimated
+          fig = plt.figure(0)
+          plt.imshow(X_data[idx][x, :, :, :]/256)
+          plt.show(block=False)
           fig = plt.figure(1)
-          fig.suptitle('Original', fontsize=20)
-          ii = plt.imshow(yinp[0, :, :, 0], interpolation='nearest')
-          fig.colorbar(ii)
+          ii = plt.imshow(yinp[x, :, :, 0], interpolation='nearest', cmap=matplotlib.cm.get_cmap('viridis'))
+          plt.colorbar(ii)
           plt.show(block=False)
           fig = plt.figure(2)
-          fig.suptitle('Diff', fontsize=20)
-          ii = plt.imshow(yinp[0, :, :, 0] - img[0, :, :, 0], interpolation='nearest')
-          fig.colorbar(ii)
+          ii = plt.imshow(yinp[x, :, :, 0] - img[x, :, :, 0], interpolation='nearest', cmap=matplotlib.cm.get_cmap('bwr'))
+          plt.colorbar(ii)
           plt.show(block=False)
           fig = plt.figure(3)
-          fig.suptitle('predicted', fontsize=20)
-          ii = plt.imshow(img[0, :, :, 0], interpolation='nearest')
-          fig.colorbar(ii)
+          ii = plt.imshow(img[x, :, :, 0], interpolation='nearest', cmap=matplotlib.cm.get_cmap('viridis'))
+          plt.colorbar(ii)
           plt.show()
 
         # print(loss)

@@ -4,28 +4,29 @@ import numpy as np
 import tensorflow as tf
 from matplotlib import pyplot as plt
 from PIL import Image
+import matplotlib
 from huber import huber_loss
 
 import models
 
-def predict(model_data_path, image_path, orig):
+def predict(model_data_path, image_path):
 
     # Default input size
-    height = 128
-    width = 128
+    height = 64
+    width = 64
     channels = 3
     batch_size = 1
-    fig2 = plt.figure(2)
-    img2 = Image.open(orig)
-    img2 = img2.resize([width/2, height/2], Image.NEAREST)
-    img2 = np.array(img2).astype('float32')/1000
-    ii = plt.imshow(img2, interpolation='nearest')
-    fig2.colorbar(ii)
-    plt.show(block=False)
+    # fig2 = plt.figure(2)
+    # img2 = Image.open(orig)
+    # img2 = img2.resize([width/2, height/2], Image.NEAREST)
+    # img2 = np.array(img2).astype('float32')/1000
+    # ii = plt.imshow(img2, interpolation='nearest')
+    # fig2.colorbar(ii)
+    # plt.show(block=False)
 
     # Read image
     img = Image.open(image_path)
-    img = img.resize([width,height], Image.ANTIALIAS)
+    img = img.resize([width,height], Image.ANTIALIAS).convert('RGB')
     img = np.array(img).astype('float32')
     img = np.expand_dims(np.asarray(img), axis = 0)
 
@@ -53,14 +54,15 @@ def predict(model_data_path, image_path, orig):
 
         # Evalute the network for the given image
         y_out = net.get_output()
-        print(y_out)
-        total_loss = tf.reduce_mean(huber_loss(y_out, img2))
-        loss, pred = sess.run([total_loss, y_out], feed_dict={input_node: img})
+        # print(y_out)
+        # total_loss = tf.reduce_mean(huber_loss(y_out, img2))
+        pred = sess.run([y_out], feed_dict={input_node: img})
         print("plotting results")
-        print("this is the loss!!!! = ", loss)
+        # print("this is the loss!!!! = ", loss)
         # Plot result
         fig = plt.figure(1)
-        ii = plt.imshow(pred[0, :, :, 0], interpolation='nearest')
+        print(pred[0].shape)
+        ii = plt.imshow(pred[0][0, :, :, 0], interpolation='nearest', cmap=matplotlib.cm.get_cmap('viridis'))
         fig.colorbar(ii)
         plt.show()
 
@@ -71,11 +73,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('model_path', help='Converted parameters for the model')
     parser.add_argument('image_paths', help='Directory of images to predict')
-    parser.add_argument('orig', help='Original image depth')
+    # parser.add_argument('orig', help='Original image depth')
     args = parser.parse_args()
 
     # Predict the image
-    pred = predict(args.model_path, args.image_paths, args.orig)
+    pred = predict(args.model_path, args.image_paths)
 
     os._exit(0)
 
