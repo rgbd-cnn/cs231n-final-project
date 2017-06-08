@@ -61,7 +61,7 @@ def recover_model(path, sess, ckpt_path, ckptname):
     recover_model_weights(sess, saver, ckpt_path, ckptname)
 
 
-def plotNNFilter(units):
+def plotNNFilter(units, prefix):
     filters = units.shape[3]
     plt.figure(1, figsize=(20,20))
     n_columns = 6
@@ -69,7 +69,7 @@ def plotNNFilter(units):
     for i in range(filters):
         plt.subplot(n_rows, n_columns, i+1)
         plt.title('Filter ' + str(i))
-        plt.imshow(str(i) + '.png', units[0,:,:,i], cmap="gray")
+        plt.imshow(prefix + str(i) + '.png', units[0,:,:,i], cmap="gray")
 
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
@@ -189,8 +189,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         image = data['X_val'][:1]
         RGB = sess.run(model['first_layer_b1'], feed_dict=image)
         D = sess.run(model['first_layer_b2'], feed_dict=image)
-        plotNNFilter(RGB)
-        plotNNFilter(D)
+        plotNNFilter(RGB, 'rgb')
+        plotNNFilter(D, 'd')
 
 
     # Check Final Training Accuracy
