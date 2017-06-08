@@ -189,7 +189,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        feed_dict={model['X']: image,
                                   model['y']: label,
                                   model['is_training']: False,
-                                  model['X_val_unnormalized']: data[
+                                  model['X_unnormalized']: data[
                                       'X_val_unnormalized'][:1]})
         print(RGB)
         print(D)
