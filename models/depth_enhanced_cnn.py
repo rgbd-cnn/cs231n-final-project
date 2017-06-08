@@ -98,11 +98,10 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
 
     net = fcrn.ResNet50UpProj({'data': X_unnormalized_64}, 128, trainable=False)
     depth_map = net.get_output()
-    inverted_depth_map = 1 / depth_map
 
     # mean, var = tf.nn.moments(depth_map, axes=[0])
     # depth_map_normalized = (depth_map - mean) / tf.sqrt(var)
-    depth_map_normalized = slim.batch_norm(inverted_depth_map, decay=0.99, center=True,
+    depth_map_normalized = slim.batch_norm(depth_map, decay=0.99, center=True,
                                            scale=True, epsilon=1e-8,
                                            activation_fn=None,
                                            is_training=is_training,
