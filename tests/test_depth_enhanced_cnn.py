@@ -155,6 +155,23 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         global_step += train_epochs_per_validation - 1
         saver.save(sess, os.path.join(tensorboard_log_dir, train_log_dir,
                                       'model.ckpt'), i)
+
+        if visualize_first_layer:
+            image = data['X_val'][:128]
+            label = data['y_val'][:128]
+            RGB, D = sess.run(
+                [model['first_layer_b1'], model['first_layer_b2']],
+                feed_dict={model['X']: image,
+                           model['y']: label,
+                           model['is_training']: False,
+                           model['X_unnormalized']:
+                               data['X_val_unnormalized'][:128]})
+            print(RGB)
+            print(D)
+            with open('first_layer.json', 'w') as f:
+                json.dump({"rgb", RGB.tolist(), 'd', D.tolist()}, f)
+
+
         # Validate Model
         print("\nValidating model...")
         _, accuracy, confusion = train_model(device, sess, model, data['X_val'],
@@ -183,21 +200,6 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        'labels': data['dict']
                        }, f)
         f.close()
-
-        if visualize_first_layer:
-            image = data['X_val'][:128]
-            label = data['y_val'][:128]
-            RGB, D = sess.run([model['first_layer_b1'], model['first_layer_b2']],
-                           feed_dict={model['X']: image,
-                                      model['y']: label,
-                                      model['is_training']: False,
-                                      model['X_unnormalized']: data[
-                                          'X_val_unnormalized'][:128]})
-            print(RGB)
-            print(D)
-            for j in range(5):
-                plotNNFilter(RGB[j:j+1], str(j) + '-rgb')
-                plotNNFilter(D[j:j+1], str(j) + '-d')
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
