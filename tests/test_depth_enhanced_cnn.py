@@ -185,18 +185,19 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         f.close()
 
         if visualize_first_layer:
-            image = data['X_val'][:1]
-            label = data['y_val'][:1]
+            image = data['X_val'][:128]
+            label = data['y_val'][:128]
             RGB, D = sess.run([model['first_layer_b1'], model['first_layer_b2']],
                            feed_dict={model['X']: image,
                                       model['y']: label,
                                       model['is_training']: False,
                                       model['X_unnormalized']: data[
-                                          'X_val_unnormalized'][:1]})
+                                          'X_val_unnormalized'][:128]})
             print(RGB)
             print(D)
-            plotNNFilter(RGB, 'rgb')
-            plotNNFilter(D, 'd')
+            for j in range(5):
+                plotNNFilter(RGB[j], str(j) + '-rgb')
+                plotNNFilter(D[j], str(j) + '-d')
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
