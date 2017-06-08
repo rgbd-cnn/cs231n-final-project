@@ -69,7 +69,7 @@ def plotNNFilter(units):
     for i in range(filters):
         plt.subplot(n_rows, n_columns, i+1)
         plt.title('Filter ' + str(i))
-        plt.imshow(units[0,:,:,i], interpolation="nearest", cmap="gray")
+        plt.imshow(str(i) + '.png', units[0,:,:,i], cmap="gray")
 
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
@@ -104,7 +104,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     if recover:
         print("Recovering model...")
-        recover_model('checkpoints/27-25', sess, "checkpoints", "27-25")
+        recover_model('checkpoints/27-225', sess, "checkpoints", "27-225")
         # recover_model('tb_checkpoints/9393-5', sess, "tb_checkpoints",
         # "9393-5")
 
