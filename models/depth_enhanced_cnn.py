@@ -9,29 +9,33 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
                        branch2=None, keep_prob=None, feature_op=None):
     with tf.variable_scope(branch1):
         if branch1 == "IR2d":
-            feature1 = inception_res_features(X[:, :, :, :3], A, B, C,
-                                              is_training, keep_prob=keep_prob)
+            tuple1 = inception_res_features(X[:, :, :, :3], A, B, C,
+                                            is_training, keep_prob=keep_prob)
         elif branch1 == "IR3d":
-            feature1 = inception_res_features(X, A, B, C, is_training,
-                                              keep_prob=keep_prob)
+            tuple1 = inception_res_features(X, A, B, C, is_training,
+                                            keep_prob=keep_prob)
         elif branch1 == "IRd":
-            feature1 = inception_res_features(X[:, :, :, 3:], A, B, C,
-                                              is_training, keep_prob=keep_prob)
+            tuple1 = inception_res_features(X[:, :, :, 3:], A, B, C,
+                                            is_training, keep_prob=keep_prob)
         else:
             raise Exception()
 
+    feature1, first_layer_b1 = tuple1
+
     with tf.variable_scope(branch2):
         if branch2 == "IR2d":
-            feature2 = inception_res_features(X[:, :, :, :3], A, B, C,
-                                              is_training, keep_prob=keep_prob)
+            tuple2 = inception_res_features(X[:, :, :, :3], A, B, C,
+                                            is_training, keep_prob=keep_prob)
         elif branch2 == "IR3d":
-            feature2 = inception_res_features(X, A, B, C, is_training,
-                                              keep_prob=keep_prob)
+            tuple2 = inception_res_features(X, A, B, C, is_training,
+                                            keep_prob=keep_prob)
         elif branch2 == "IRd":
-            feature2 = inception_res_features(X[:, :, :, 3:], A, B, C,
-                                              is_training, keep_prob=keep_prob)
+            tuple2 = inception_res_features(X[:, :, :, 3:], A, B, C,
+                                            is_training, keep_prob=keep_prob)
         else:
             raise Exception()
+
+    feature2, first_layer_b2 = tuple2
 
     if feature_op == "stack":
         embedding = tf.concat([feature1, feature2], 1)
@@ -64,7 +68,7 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
     else:
         raise Exception()
 
-    return output
+    return output, first_layer_b1, first_layer_b2
 
 
 def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
@@ -112,9 +116,14 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     # Define Output and Calculate Loss
     with slim.arg_scope([slim.conv2d, slim.fully_connected],
                         weights_regularizer=slim.l2_regularizer(reg)):
-        y_out = depth_enhanced_cnn(X_3D, A, B, C, num_classes, is_training,
-                                   branch1=branch1, branch2=branch2,
-                                   keep_prob=keep_prob, feature_op=feature_op)
+        y_out, first_layer_b1, first_layer_b2 = depth_enhanced_cnn(X_3D, A, B,
+                                                                   C,
+                                                                   num_classes,
+                                                                   is_training,
+                                                                   branch1=branch1,
+                                                                   branch2=branch2,
+                                                                   keep_prob=keep_prob,
+                                                                   feature_op=feature_op)
 
     total_loss = tf.nn.softmax_cross_entropy_with_logits(
         labels=tf.one_hot(y, num_classes),
@@ -149,5 +158,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     model['loss_val'] = loss
     model['train_step'] = train_step
     model['net'] = net
+    model['first_layer_b1'] = first_layer_b1
+    model['first_layer_b2'] = first_layer_b2
 
     return model

@@ -3,6 +3,10 @@ import shutil
 from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
 from utilities.train import *
 
+import matplotlib
+matplotlib.use('GTKAgg')
+import matplotlib.pyplot as plt
+
 
 def list_variables(path):
     reader = tf.train.NewCheckpointReader(path)
@@ -56,6 +60,17 @@ def recover_model(path, sess, ckpt_path, ckptname):
     recover_model_weights(sess, saver, ckpt_path, ckptname)
 
 
+def plotNNFilter(units):
+    filters = units.shape[3]
+    plt.figure(1, figsize=(20,20))
+    n_columns = 6
+    n_rows = math.ceil(filters / n_columns) + 1
+    for i in range(filters):
+        plt.subplot(n_rows, n_columns, i+1)
+        plt.title('Filter ' + str(i))
+        plt.imshow(units[0,:,:,i], interpolation="nearest", cmap="gray")
+
+
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                 prev_epochs, epochs, lr=1e-3,
                                 train_epochs_per_validation=100,
@@ -89,19 +104,26 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
     if recover:
         print("Recovering model...")
         recover_model('checkpoints/27-25', sess, "checkpoints", "27-25")
-        # recover_model('tb_checkpoints/9393-5', sess, "tb_checkpoints", "9393-5")
+        # recover_model('tb_checkpoints/9393-5', sess, "tb_checkpoints",
+        # "9393-5")
 
     num_train_val_cycles = epochs / train_epochs_per_validation
 
+    train_log_dir = "DE-%s-%s-%s-lr-%s-reg-%s-prob-%s-FeatOp-%s-tag-%s-train" \
+                    % (
+                        branch1, branch2, dataset, lr, reg, keep_prob,
+                        feature_op,
+                        tag)
+
+    val_log_dir = "DE-%s-%s-%s-lr-%s-reg-%s-prob-%s-FeatOp-%s-tag-%s-val" % (
+        branch1, branch2, dataset, lr, reg,
+        keep_prob, feature_op, tag)
+
     if tensorboard_log_dir:
         train_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                                 "DE-%s-%s-%s-lr-%s-reg-%s-prob-%s-FeatOp-%s-tag-%s-train" % (
-                                     branch1, branch2, dataset, lr, reg,
-                                     keep_prob, feature_op, tag))
+                                 train_log_dir)
         val_dir = os.path.join(os.path.expanduser(tensorboard_log_dir),
-                               "DE-%s-%s-%s-lr-%s-reg-%s-prob-%s-FeatOp-%s-tag-%s-val" % (
-                                   branch1, branch2, dataset, lr, reg,
-                                   keep_prob, feature_op, tag))
+                               val_log_dir)
 
         if os.path.exists(train_dir):
             shutil.rmtree(train_dir)
@@ -132,7 +154,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     save_depth=save_depth)
 
         global_step += train_epochs_per_validation - 1
-
+        saver.save(sess, os.path.join(tensorboard_log_dir, train_log_dir,
+                                      'model.ckpt'), i)
         # Validate Model
         print("\nValidating model...")
         _, accuracy, confusion = train_model(device, sess, model, data['X_val'],
@@ -147,6 +170,10 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                              save_depth=save_depth)
 
         global_step += 1
+
+        saver.save(sess, os.path.join(tensorboard_log_dir, val_log_dir,
+                                      'model.ckpt'), i)
+
         # if best_accuracy < accuracy:
         best_accuracy = accuracy
         complete_confusion += confusion
@@ -157,7 +184,13 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        'labels': data['dict']
                        }, f)
         f.close()
-        saver.save(sess, os.path.join(tensorboard_log_dir, 'model.ckpt'), i)
+
+        image = data['X_val'][:1]
+        RGB = sess.run(model['first_layer_b1'], feed_dict=image)
+        D = sess.run(model['first_layer_b2'], feed_dict=image)
+        plotNNFilter(RGB)
+        plotNNFilter(D)
+
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")

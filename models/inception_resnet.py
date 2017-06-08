@@ -198,10 +198,10 @@ def stem_unit(input, is_training):
                           activation_fn=None, is_training=is_training, trainable=True, scope='bn1')
 
     # ReLU Activation
-    out = tf.nn.relu(out)
+    first_layer = tf.nn.relu(out)
 
     # Convolutional Layer (3x3)
-    out = slim.conv2d(out, 64, [3,3], activation_fn=None)
+    out = slim.conv2d(first_layer, 64, [3,3], activation_fn=None)
 
     # Batch Normalization
     out = slim.batch_norm(out, decay=0.99, center=True, scale=True, epsilon=1e-8,
@@ -226,12 +226,12 @@ def stem_unit(input, is_training):
     # Convolutional Layer
     out = slim.conv2d(out, 128, [3,3], activation_fn=None)
 
-  return out
+  return out, first_layer
 
 
 def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=None):
     # Stem Layers
-    out = stem_unit(input, is_training)
+    out, first_layer = stem_unit(input, is_training)
 
     # Dropout
     # out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
@@ -268,7 +268,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=No
 
     flat = slim.layers.flatten(out, scope="embedding")
 
-    return flat
+    return flat, first_layer
 
 
 def inception_res_model(input, num_A, num_B, num_C, num_classes, is_training, keep_prob=None):
