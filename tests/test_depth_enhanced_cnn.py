@@ -1,7 +1,7 @@
 import shutil
 
 import matplotlib
-matplotlib.use('GTKAgg')
+matplotlib.use('GTK')
 import matplotlib.pyplot as plt
 
 from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
