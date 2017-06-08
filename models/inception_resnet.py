@@ -266,7 +266,7 @@ def inception_res_features(input, num_A, num_B, num_C, is_training, keep_prob=No
     # Dropout
     out = slim.dropout(out, keep_prob=keep_prob, is_training=is_training, scope='Dropout')
 
-    flat = slim.layers.flatten(out)
+    flat = slim.layers.flatten(out, scope="embedding")
 
     return flat
 

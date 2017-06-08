@@ -157,6 +157,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        'labels': data['dict']
                        }, f)
         f.close()
+        saver.save(sess, os.path.join(tensorboard_log_dir, 'model.ckpt'), i)
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
