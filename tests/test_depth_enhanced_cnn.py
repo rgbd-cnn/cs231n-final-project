@@ -1,12 +1,9 @@
 import shutil
 
-import matplotlib
-matplotlib.use('nbagg')
 import matplotlib.pyplot as plt
 
 from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
 from utilities.train import *
-
 
 
 def list_variables(path):
@@ -63,13 +60,13 @@ def recover_model(path, sess, ckpt_path, ckptname):
 
 def plotNNFilter(units, prefix):
     filters = units.shape[3]
-    plt.figure(1, figsize=(20,20))
+    plt.figure(1, figsize=(20, 20))
     n_columns = 6
     n_rows = math.ceil(filters / n_columns) + 1
     for i in range(filters):
-        plt.subplot(n_rows, n_columns, i+1)
+        plt.subplot(n_rows, n_columns, i + 1)
         plt.title('Filter ' + str(i))
-        plt.imsave(prefix + str(i) + '.png', units[0,:,:,i], cmap="gray")
+        plt.imsave(prefix + str(i) + '.png', units[0, :, :, i], cmap="gray")
 
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
@@ -187,11 +184,17 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         f.close()
 
         image = data['X_val'][:1]
-        RGB = sess.run(model['first_layer_b1'], feed_dict=image)
-        D = sess.run(model['first_layer_b2'], feed_dict=image)
+        label = data['y_val'][:1]
+        RGB, D = sess.run([model['first_layer_b1'], model['first_layer_b2']],
+                       feed_dict={model['X']: image,
+                                  model['y']: label,
+                                  model['is_training']: False,
+                                  model['X_val_unnormalized']: data[
+                                      'X_val_unnormalized'][:1]})
+        print(RGB)
+        print(D)
         plotNNFilter(RGB, 'rgb')
         plotNNFilter(D, 'd')
-
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
