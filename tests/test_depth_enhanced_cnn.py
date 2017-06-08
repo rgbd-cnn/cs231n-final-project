@@ -196,8 +196,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
             print(RGB)
             print(D)
             for j in range(5):
-                plotNNFilter(RGB[j], str(j) + '-rgb')
-                plotNNFilter(D[j], str(j) + '-d')
+                plotNNFilter(RGB[j:j+1], str(j) + '-rgb')
+                plotNNFilter(D[j:j+1], str(j) + '-d')
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
