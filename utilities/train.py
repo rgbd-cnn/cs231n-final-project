@@ -1,7 +1,6 @@
 import math
 import os
 
-import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
 
@@ -90,14 +89,14 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
                 summary.value.add(tag="Loss", simple_value=total_loss)
                 writer.add_summary(summary, global_step=global_step)
 
-        if plot_loss:
-            plt.plot(losses)
-            plt.grid(True)
-            plt.xlim(-10, 800)
-            plt.title('Total Loss vs. Epoch')
-            plt.xlabel('Epoch')
-            plt.ylabel('Total Loss')
-            plt.show()
+        # if plot_loss:
+        #     plt.plot(losses)
+        #     plt.grid(True)
+        #     plt.xlim(-10, 800)
+        #     plt.title('Total Loss vs. Epoch')
+        #     plt.xlabel('Epoch')
+        #     plt.ylabel('Total Loss')
+        #     plt.show()
 
     return total_loss
 
@@ -212,13 +211,13 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 summary.value.add(tag="Loss", simple_value=total_loss)
                 writer.add_summary(summary, global_step=global_step)
 
-        if plot_loss:
-            plt.plot(losses)
-            plt.grid(True)
-            plt.xlim(-10, 800)
-            plt.title('Total Loss vs. Epoch')
-            plt.xlabel('Epoch')
-            plt.ylabel('Total Loss')
-            plt.show()
+        # if plot_loss:
+        #     plt.plot(losses)
+        #     plt.grid(True)
+        #     plt.xlim(-10, 800)
+        #     plt.title('Total Loss vs. Epoch')
+        #     plt.xlabel('Epoch')
+        #     plt.ylabel('Total Loss')
+        #     plt.show()
 
     return total_loss, accuracy, confusion

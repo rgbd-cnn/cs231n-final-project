@@ -1,11 +1,12 @@
 import shutil
 
-from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
-from utilities.train import *
-
 import matplotlib
 matplotlib.use('GTKAgg')
 import matplotlib.pyplot as plt
+
+from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
+from utilities.train import *
+
 
 
 def list_variables(path):
