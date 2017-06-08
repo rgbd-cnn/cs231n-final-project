@@ -58,6 +58,8 @@ def parse_arguments(argv):
                         help='whether to transfer learn', default=0)
     parser.add_argument('--save_depth_map', type=int,
                         help='whether to save depth map', default=0)
+    parser.add_argument('--visualize_first_layer', type=int,
+                        help='whether to visualize_first_layer', default=0)
     return parser.parse_args(argv)
 
 
@@ -174,7 +176,8 @@ def main(args):
                                     keep_prob=args.dropout_keep_prob,
                                     feature_op=args.feature_op, tag=args.tag,
                                     transfer_learn=args.transfer_learn,
-                                    save_depth=args.save_depth_map)
+                                    save_depth=args.save_depth_map,
+                                    visualize_first_layer=args.visualize_first_layer)
     else:
         print("Error: Invalid network...")
         exit(-1)

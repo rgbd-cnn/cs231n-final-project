@@ -22,8 +22,8 @@ def recover_model(path, sess, ckpt_path, ckptname):
                   tf.all_variables()]
 
     common_set = set.intersection(set(checkpoint_vars), set(model_vars))
-    print(len(list(common_set)))
-    print(set(checkpoint_vars) - common_set)
+    # print(len(list(common_set)))
+    # print(set(checkpoint_vars) - common_set)
 
     common_checkpoint_vars = {}
     for tup in list_variables(path):
@@ -38,8 +38,8 @@ def recover_model(path, sess, ckpt_path, ckptname):
         if name in common_set:
             common_model_vars[name] = var.get_shape().as_list()
 
-    print(common_checkpoint_vars)
-    print(common_model_vars)
+    # print(common_checkpoint_vars)
+    # print(common_model_vars)
     print(len(common_checkpoint_vars))
     print(len(common_model_vars))
 
@@ -75,7 +75,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                 tensorboard_log_dir=None, dataset=None,
                                 branch1='IR2d', branch2='IRd', reg=0.0,
                                 keep_prob=None, feature_op="stack", tag=None,
-                                transfer_learn=None, save_depth=None):
+                                transfer_learn=None, save_depth=None,
+                                visualize_first_layer=None):
     # Create Model
     print("Setting up model...")
     data_shape = list(data['X_train'][0].shape)
@@ -183,18 +184,19 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        }, f)
         f.close()
 
-        image = data['X_val'][:1]
-        label = data['y_val'][:1]
-        RGB, D = sess.run([model['first_layer_b1'], model['first_layer_b2']],
-                       feed_dict={model['X']: image,
-                                  model['y']: label,
-                                  model['is_training']: False,
-                                  model['X_unnormalized']: data[
-                                      'X_val_unnormalized'][:1]})
-        print(RGB)
-        print(D)
-        plotNNFilter(RGB, 'rgb')
-        plotNNFilter(D, 'd')
+        if visualize_first_layer:
+            image = data['X_val'][:1]
+            label = data['y_val'][:1]
+            RGB, D = sess.run([model['first_layer_b1'], model['first_layer_b2']],
+                           feed_dict={model['X']: image,
+                                      model['y']: label,
+                                      model['is_training']: False,
+                                      model['X_unnormalized']: data[
+                                          'X_val_unnormalized'][:1]})
+            print(RGB)
+            print(D)
+            plotNNFilter(RGB, 'rgb')
+            plotNNFilter(D, 'd')
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
