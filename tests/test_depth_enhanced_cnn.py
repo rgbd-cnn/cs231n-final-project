@@ -56,6 +56,14 @@ def recover_model(path, sess, ckpt_path, ckptname):
     recover_model_weights(sess, saver, ckpt_path, ckptname)
 
 
+def tSNE(LOG_DIR):
+    config = projector.ProjectorConfig()
+    embedding = config.embeddings.add()
+    embedding.tensor_name = "embedding"
+    embedding.metadata_path = os.path.join(LOG_DIR, 'metadata.tsv')
+    summary_writer = tf.summary.FileWriter(LOG_DIR)
+    projector.visualize_embeddings(summary_writer, config)
+
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                 prev_epochs, epochs, lr=1e-3,
                                 train_epochs_per_validation=100,
@@ -143,6 +151,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         saver.save(sess, os.path.join(tensorboard_log_dir, train_log_dir,
                                       'model.ckpt'), i)
 
+        tSNE(train_log_dir)
+
         if visualize_first_layer:
             image = data['X_val'][:128]
             label = data['y_val'][:128]
@@ -196,6 +206,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        'labels': data['dict']
                        }, f)
         f.close()
+
+        tSNE(val_log_dir)
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
