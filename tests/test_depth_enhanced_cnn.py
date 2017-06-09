@@ -164,7 +164,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     'd': D.tolist(),
                     'dict': data['dict'],
                     'label': data['y_val'][:128],
-                    'image': data['X_val_unnormalized'][:128],
+                    'image': data['X_val_unnormalized'][:128].tolist(),
                     'depth': dmap.tolist()
                 }, f)
 
