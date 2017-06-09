@@ -210,7 +210,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                     tSNE(log_dir)
                     tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                     string = '\n'.join(["%s\t%s" % (count, labels[idx][count])
-                                        for count in len(labels[idx])])
+                                        for count in range(len(labels[idx]))])
                     with open(tsv_dir, 'w') as f:
                         f.write('index\tlabel\n' + string)
 
