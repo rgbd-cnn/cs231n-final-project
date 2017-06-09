@@ -1,7 +1,5 @@
 import shutil
 
-import matplotlib.pyplot as plt
-
 from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
 from utilities.train import *
 
@@ -56,7 +54,6 @@ def recover_model(path, sess, ckpt_path, ckptname):
     saver = tf.train.Saver(
         var_list=[model_name_to_vars[name] for name in valid_vars])
     recover_model_weights(sess, saver, ckpt_path, ckptname)
-
 
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
@@ -149,18 +146,27 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         if visualize_first_layer:
             image = data['X_val'][:128]
             label = data['y_val'][:128]
-            RGB, D = sess.run(
-                [model['first_layer_b1'], model['first_layer_b2']],
-                feed_dict={model['X']: image,
-                           model['y']: label,
-                           model['is_training']: False,
-                           model['X_unnormalized']:
-                               data['X_val_unnormalized'][:128]})
-            print(RGB)
-            print(D)
+            RGB, D, dmap = sess.run([model['first_layer_b1'],
+                                     model['first_layer_b2'],
+                                     model['depth_map']],
+                                    feed_dict={
+                                        model['X']: image,
+                                        model['y']: label,
+                                        model['is_training']: False,
+                                        model['X_unnormalized']:
+                                            data['X_val_unnormalized'][:128]
+                                    })
+            # print(RGB)
+            # print(D)
             with open('first_layer.json', 'w') as f:
-                json.dump({"rgb": RGB.tolist(), 'd': D.tolist()}, f)
-
+                json.dump({
+                    "rgb": RGB.tolist(),
+                    'd': D.tolist(),
+                    'dict': data['dict'],
+                    'label': data['y_val'][:128],
+                    'image': data['X_val_unnormalized'][:128],
+                    'depth': dmap.tolist()
+                }, f)
 
         # Validate Model
         print("\nValidating model...")
