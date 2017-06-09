@@ -36,6 +36,9 @@ def recover_model(path, sess, ckpt_path, ckptname):
         if name in common_set:
             common_model_vars[name] = var.get_shape().as_list()
 
+    for i in model_vars:
+        print(i)
+
     # print(common_checkpoint_vars)
     # print(common_model_vars)
     print(len(common_checkpoint_vars))
