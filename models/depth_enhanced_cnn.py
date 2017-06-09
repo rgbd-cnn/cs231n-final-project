@@ -38,7 +38,7 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
     feature2, first_layer_b2 = tuple2
 
     if feature_op == "stack":
-        embedding = tf.concat([feature1, feature2], 1, name='embedding')
+        embedding = tf.concat([feature1, feature2], 1, name='final_embedding')
         output = slim.fully_connected(embedding, num_classes,
                                       activation_fn=None)
     elif feature_op == "bn_add":

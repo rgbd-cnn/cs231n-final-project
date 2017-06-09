@@ -62,7 +62,7 @@ def recover_model(path, sess, ckpt_path, ckptname):
 def tSNE(LOG_DIR):
     config = projector.ProjectorConfig()
     embedding = config.embeddings.add()
-    embedding.tensor_name = "embedding:0"
+    embedding.tensor_name = "final_embedding:0"
     embedding.metadata_path = os.path.join(LOG_DIR, 'metadata.tsv')
     summary_writer = tf.summary.FileWriter(LOG_DIR)
     projector.visualize_embeddings(summary_writer, config)
