@@ -19,6 +19,7 @@ def plotNNFilter(units, k, type, image):
     else:
         print(np.array(image).shape)
         plt.imshow(np.array(image)[:, :, 0].astype('uint8'))
+
     for i in range(1, filters+1):
         plt.subplot(n_rows, n_columns, i + 1)
         plt.title('Filter %s %s %s' % (i, k, type))
