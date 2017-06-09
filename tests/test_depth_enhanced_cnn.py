@@ -151,7 +151,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
         saver.save(sess, os.path.join(tensorboard_log_dir, train_log_dir,
                                       'model.ckpt'), i)
 
-        # tSNE(train_log_dir)
+        tSNE(train_log_dir)
 
         if visualize_first_layer:
             image = data['X_val'][:128]
@@ -207,7 +207,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        }, f)
         f.close()
 
-        # tSNE(val_log_dir)
+        tSNE(val_log_dir)
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
