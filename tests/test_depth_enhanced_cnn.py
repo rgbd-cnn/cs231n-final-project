@@ -151,6 +151,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     save_depth=save_depth)
 
         global_step += train_epochs_per_validation - 1
+        saver = tf.train.Saver()
         saver.save(sess, os.path.join(tensorboard_log_dir, train_log_dir,
                                       'model.ckpt'), i)
 
@@ -196,6 +197,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
         global_step += 1
 
+        saver = tf.train.Saver()
         saver.save(sess, os.path.join(tensorboard_log_dir, val_log_dir,
                                       'model.ckpt'), i)
 
