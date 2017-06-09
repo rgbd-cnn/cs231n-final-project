@@ -2,7 +2,7 @@ import shutil
 
 from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
 from utilities.train import *
-
+from tensorflow.contrib.tensorboard.plugins import projector
 
 def list_variables(path):
     reader = tf.train.NewCheckpointReader(path)
