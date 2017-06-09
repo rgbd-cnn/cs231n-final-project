@@ -153,7 +153,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     model['X_unnormalized'] = X_unnormalized
     model['y'] = y
     model['is_training'] = is_training
-    model['depth_map'] = depth_map
+    model['depth_map'] = depth_map_normalized
     model['y_out'] = y_out
     model['loss_val'] = loss
     model['train_step'] = train_step
