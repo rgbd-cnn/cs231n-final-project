@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 
 import json
+from tensorflow.contrib.tensorboard.plugins import projector
 
 
 # Save Checkpoint of Model
@@ -109,12 +110,21 @@ def save_depth_maps(X, depth_maps, y_labels, suffix):
                    'X': X.tolist()}, fp)
 
 
+def tSNE(LOG_DIR):
+    config = projector.ProjectorConfig()
+    embedding = config.embeddings.add()
+    embedding.tensor_name = "final_embedding:0"
+    embedding.metadata_path = os.path.join(LOG_DIR, 'metadata.tsv')
+    summary_writer = tf.summary.FileWriter(LOG_DIR)
+    projector.visualize_embeddings(summary_writer, config)
+
+
 # Train the Model
 def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None,
                 depth_enhanced=False, X_data_unnormalized=None,
-                save_depth=None):
+                save_depth=None, log_dir=None, dict=None):
     with tf.device(device):
         # Calculate Prediction Accuracy
         if depth_enhanced:
@@ -195,6 +205,15 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 if not is_training:
                     for i in range(len(gt)):
                         confusion.append((pred[i], gt[i]))
+
+                if log_dir:
+                    tSNE(log_dir)
+                    tsv_dir = os.path.join(log_dir, 'metadata.tsv')
+                    string = '\n'.join(["%s\t%s" % (count, labels[idx][count])
+                                        for count in len(labels[idx])])
+                    with open(tsv_dir, 'w') as f:
+                        f.write('index\tlabel\n' + string)
+
 
             # Calculate Performance
             accuracy = num_correct / float(X_data.shape[0])

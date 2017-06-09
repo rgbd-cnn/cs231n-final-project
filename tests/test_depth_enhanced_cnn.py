@@ -1,8 +1,10 @@
 import shutil
 
+from tensorflow.contrib.tensorboard.plugins import projector
+
 from models.depth_enhanced_cnn import setup_depth_enhanced_cnn_model
 from utilities.train import *
-from tensorflow.contrib.tensorboard.plugins import projector
+
 
 def list_variables(path):
     reader = tf.train.NewCheckpointReader(path)
@@ -66,6 +68,7 @@ def tSNE(LOG_DIR):
     embedding.metadata_path = os.path.join(LOG_DIR, 'metadata.tsv')
     summary_writer = tf.summary.FileWriter(LOG_DIR)
     projector.visualize_embeddings(summary_writer, config)
+
 
 def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                 prev_epochs, epochs, lr=1e-3,
@@ -148,14 +151,12 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                     plot_loss=False, global_step=global_step,
                     writer=train_writer, depth_enhanced=True,
                     X_data_unnormalized=data['X_train_unnormalized'],
-                    save_depth=save_depth)
+                    save_depth=save_depth, log_dir=train_dir, dict=data['dict'])
 
         global_step += train_epochs_per_validation - 1
         saver = tf.train.Saver()
         saver.save(sess, os.path.join(tensorboard_log_dir, train_log_dir,
                                       'model.ckpt'), i)
-
-        tSNE(train_dir)
 
         if visualize_first_layer:
             image = data['X_val'][:128]
@@ -193,7 +194,8 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                              depth_enhanced=True,
                                              X_data_unnormalized=data[
                                                  'X_val_unnormalized'],
-                                             save_depth=save_depth)
+                                             save_depth=save_depth,
+                                             log_dir=val_dir, dict=data['dict'])
 
         global_step += 1
 
@@ -211,8 +213,6 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                        'labels': data['dict']
                        }, f)
         f.close()
-
-        tSNE(val_dir)
 
     # Check Final Training Accuracy
     print("\nFinal Training Accuracy:")
