@@ -97,7 +97,7 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
 
     if recover:
         print("Recovering model...")
-        recover_model('checkpoints/27-225', sess, "checkpoints", "27-225")
+        recover_model('checkpoints/27-25', sess, "checkpoints", "27-25")
         # recover_model('tb_checkpoints/9393-5', sess, "tb_checkpoints",
         # "9393-5")
 
