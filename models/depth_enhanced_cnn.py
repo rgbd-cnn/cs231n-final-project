@@ -68,7 +68,6 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
     else:
         raise Exception()
 
-
     return output, first_layer_b1, first_layer_b2, embedding
 
 
@@ -156,8 +155,10 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     model['train_step'] = train_step
     model['net'] = net
     model['embedding'] = embedding
-    model['embedding_train'] = tf.Variable(name="final_embedding_train")
-    model['embedding_val'] = tf.Variable(name="final_embedding_val")
+    model['embedding_train'] = tf.Variable(tf.zeros(num_train, 2560),
+                                           name="final_embedding_train")
+    model['embedding_val'] = tf.Variable(tf.zeros(num_val, 2560),
+                                         name="final_embedding_val")
     model['first_layer_b1'] = first_layer_b1
     model['first_layer_b2'] = first_layer_b2
 
