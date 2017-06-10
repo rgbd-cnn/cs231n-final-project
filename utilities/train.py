@@ -120,7 +120,7 @@ def tSNE(LOG_DIR):
 
 
 # Train the Model
-def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
+def train_model(device, sess, model, X_data, org_labels, epochs=1, batch_size=64,
                 is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None,
                 depth_enhanced=False, X_data_unnormalized=None,
@@ -132,7 +132,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
             num_train = num_train / batch_size * batch_size
             X_data = X_data[:num_train]
             X_data_unnormalized = X_data_unnormalized[:num_train]
-            labels = labels[:num_train]
+            labels = org_labels[:num_train]
 
         prediction = tf.argmax(model['y_out'], 1)
         correct_prediction = tf.equal(prediction, model['y'])
@@ -214,11 +214,12 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                                           name="final_embedding")
 
             if log_dir:
+                print(dict)
                 tSNE(log_dir)
                 tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                 string = '\n'.join(
                     ["%s\t%s" % (count, dict[str(labels[count])]) for count
-                     in range(len(labels))])
+                     in range(num_train)])
 
                 with open(tsv_dir, 'w') as f:
                     f.write('index\tlabel\n' + string)
