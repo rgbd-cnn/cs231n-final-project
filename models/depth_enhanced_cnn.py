@@ -68,17 +68,16 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
     else:
         raise Exception()
 
+
     return output, first_layer_b1, first_layer_b2, embedding
 
 
 def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
                                    learning_rate=1e-3, branch1=None,
                                    branch2=None, reg=0.0, keep_prob=None,
-                                   feature_op=None, dataset=None):
-    # if recover:
-    #     print("Recovering model...")
-    #     recover_model_checkpoint(sess, saver, 'checkpoints/')
-
+                                   feature_op=None, dataset=None,
+                                   num_train=None,
+                                   num_val=None):
     # Reset Network
     tf.reset_default_graph()
 
@@ -117,9 +116,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     with slim.arg_scope([slim.conv2d, slim.fully_connected],
                         weights_regularizer=slim.l2_regularizer(reg)):
         y_out, first_layer_b1, first_layer_b2, embedding = depth_enhanced_cnn(
-            X_3D, A, B, C,
-            num_classes,
-            is_training,
+            X_3D, A, B, C, num_classes, is_training,
             branch1=branch1,
             branch2=branch2,
             keep_prob=keep_prob,
@@ -159,6 +156,8 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     model['train_step'] = train_step
     model['net'] = net
     model['embedding'] = embedding
+    model['embedding_train'] = tf.Variable(name="final_embedding_train")
+    model['embedding_val'] = tf.Variable(name="final_embedding_val")
     model['first_layer_b1'] = first_layer_b1
     model['first_layer_b2'] = first_layer_b2
 

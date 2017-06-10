@@ -101,17 +101,19 @@ def save_depth_maps(X, depth_maps, y_labels, suffix):
                    'X': X.tolist()}, fp)
 
 
-def tSNE(LOG_DIR):
+def tSNE(LOG_DIR, is_training):
     config = projector.ProjectorConfig()
     embedding = config.embeddings.add()
-    embedding.tensor_name = "final_embedding:0"
+    embedding.tensor_name = "final_embedding_%s:0" % (
+    'train' if is_training else 'val')
     embedding.metadata_path = os.path.join(LOG_DIR, 'metadata.tsv')
     summary_writer = tf.summary.FileWriter(LOG_DIR)
     projector.visualize_embeddings(summary_writer, config)
 
 
 # Train the Model
-def train_model(device, sess, model, X_data, org_labels, epochs=1, batch_size=64,
+def train_model(device, sess, model, X_data, org_labels, epochs=1,
+                batch_size=64,
                 is_training=False, log_freq=100,
                 plot_loss=False, global_step=None, writer=None,
                 depth_enhanced=False, X_data_unnormalized=None,
@@ -135,10 +137,12 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1, batch_size=64
 
         # Populate TensorFlow Variables
         if X_data_unnormalized == None or not save_depth:
-            variables = [model['embedding'], model['loss_val'], correct_prediction, accuracy,
+            variables = [model['embedding'], model['loss_val'],
+                         correct_prediction, accuracy,
                          prediction, model['y']]
         else:
-            variables = [model['embedding'], model['loss_val'], model["depth_map"],
+            variables = [model['embedding'], model['loss_val'],
+                         model["depth_map"],
                          correct_prediction, accuracy, prediction, model['y']]
         if is_training:
             variables[-1] = model['train_step']
@@ -176,10 +180,11 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1, batch_size=64
                 # Run TF Session (Returns Loss and Correct Predictions)
                 if X_data_unnormalized == None or not save_depth:
                     emb, loss, corr, _, pred, gt = sess.run(variables,
-                                                       feed_dict=feed_dict)
+                                                            feed_dict=feed_dict)
                 else:
-                    emb, loss, depth_map, corr, _, pred, gt = sess.run(variables,
-                                                                  feed_dict=feed_dict)
+                    emb, loss, depth_map, corr, _, pred, gt = sess.run(
+                        variables,
+                        feed_dict=feed_dict)
                     save_depth_maps(X_data_unnormalized[idx, :], depth_map,
                                     labels[idx], str(epoch) + "-" + str(i))
                 # print(loss)
@@ -201,12 +206,12 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1, batch_size=64
 
                 embeddings.append(emb)
 
-            final_embedding = tf.Variable(np.concatenate(tuple(embeddings)),
-                                          name="final_embedding")
-
             if log_dir:
+                if is_training:
+                    model['embedding_train'].assign(np.concatenate(embeddings))
+                else:
+                    model['embedding_val'].assign(np.concatenate(embeddings))
                 print(dict)
-                tSNE(log_dir)
                 tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                 string = '\n'.join(
                     ["%s\t%s" % (count, dict[labels[count]]) for count
@@ -214,6 +219,7 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1, batch_size=64
 
                 with open(tsv_dir, 'w') as f:
                     f.write('index\tlabel\n' + string)
+                tSNE(log_dir, is_training)
 
             # Calculate Performance
             accuracy = num_correct / float(X_data.shape[0])

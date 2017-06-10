@@ -78,6 +78,11 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                 keep_prob=None, feature_op="stack", tag=None,
                                 transfer_learn=None, save_depth=None,
                                 visualize_first_layer=None):
+
+    batch_size = 128
+    num_train = data['X_train'].shape[0] / batch_size * batch_size
+    num_val = data['X_val'].shape[0] / batch_size * batch_size
+
     # Create Model
     print("Setting up model...")
     data_shape = list(data['X_train'][0].shape)
@@ -86,7 +91,9 @@ def run_depth_enhanced_cnn_test(data, num_classes, device, recover, ckpt_path,
                                            branch2=branch2, reg=reg,
                                            keep_prob=keep_prob,
                                            feature_op=feature_op,
-                                           dataset=dataset)
+                                           dataset=dataset,
+                                           num_train=num_train,
+                                           num_val=num_val)
 
     saver = tf.train.Saver()
     sess = tf.Session()
