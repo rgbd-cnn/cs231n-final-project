@@ -214,11 +214,11 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 print(dict)
                 tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                 string = '\n'.join(
-                    ["%s\t%s" % (count, dict[labels[count]]) for count
+                    ["%s\t%s\t%s" % (count, labels[count], dict[labels[count]]) for count
                      in range(num_train)])
 
                 with open(tsv_dir, 'w') as f:
-                    f.write('index\tlabel\n' + string)
+                    f.write('index\tlabel_index\tlabel_name\n' + string)
                 tSNE(log_dir, is_training)
 
             # Calculate Performance

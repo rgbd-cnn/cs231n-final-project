@@ -1,8 +1,10 @@
-import json
 import os
+
 import matplotlib.pyplot as plt
 import numpy as np
-from PIL import Image
+
+import json
+
 
 def visualize(f):
     with open(f, 'r') as fp:
@@ -18,7 +20,8 @@ def visualize(f):
         map = yinp['X'][i]
         ii = plt.imshow(np.array(map).astype('uint8'))
         plt.colorbar()
-        plt.show()
+    plt.show()
+
 
 dir = './depth_maps'
 
