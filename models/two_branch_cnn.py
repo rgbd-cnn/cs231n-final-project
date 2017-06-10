@@ -9,23 +9,27 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
 
     with tf.variable_scope(branch1):
         if branch1 == "IR2d":
-            feature1 = inception_res_features(X[:, :, :, :3], A, B, C, is_training, keep_prob=keep_prob)
+            tuple1 = inception_res_features(X[:, :, :, :3], A, B, C, is_training, keep_prob=keep_prob)
         elif branch1 == "IR3d":
-            feature1 = inception_res_features(X, A, B, C, is_training, keep_prob=keep_prob)
+            tuple1 = inception_res_features(X, A, B, C, is_training, keep_prob=keep_prob)
         elif branch1 == "IRd":
-            feature1 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training, keep_prob=keep_prob)
+            tuple1 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training, keep_prob=keep_prob)
         else:
             raise Exception()
 
+    feature1, first_layer_b1 = tuple1
+
     with tf.variable_scope(branch2):
         if branch2 == "IR2d":
-            feature2 = inception_res_features(X[:, :, :, :3], A, B, C, is_training, keep_prob=keep_prob)
+            tuple2 = inception_res_features(X[:, :, :, :3], A, B, C, is_training, keep_prob=keep_prob)
         elif branch2 == "IR3d":
-            feature2 = inception_res_features(X, A, B, C, is_training, keep_prob=keep_prob)
+            tuple2 = inception_res_features(X, A, B, C, is_training, keep_prob=keep_prob)
         elif branch2 == "IRd":
-            feature2 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training, keep_prob=keep_prob)
+            tuple2 = inception_res_features(X[:, :, :, 3:], A, B, C, is_training, keep_prob=keep_prob)
         else:
             raise Exception()
+
+    feature2, first_layer_b2 = tuple2
 
     if feature_op == "stack":
         embedding = tf.concat([feature1, feature2], 1)
