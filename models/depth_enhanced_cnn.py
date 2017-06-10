@@ -38,10 +38,7 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
     feature2, first_layer_b2 = tuple2
 
     if feature_op == "stack":
-        embedding_var = tf.Variable(tf.random_normal([128, 2560]),
-                                    name='final_embedding')
         embedding = tf.concat([feature1, feature2], 1)
-        embedding_var = embedding
         output = slim.fully_connected(embedding, num_classes,
                                       activation_fn=None)
     elif feature_op == "bn_add":
@@ -71,7 +68,7 @@ def depth_enhanced_cnn(X, A, B, C, num_classes, is_training, branch1=None,
     else:
         raise Exception()
 
-    return output, first_layer_b1, first_layer_b2
+    return output, first_layer_b1, first_layer_b2, embedding
 
 
 def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
@@ -119,14 +116,14 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     # Define Output and Calculate Loss
     with slim.arg_scope([slim.conv2d, slim.fully_connected],
                         weights_regularizer=slim.l2_regularizer(reg)):
-        y_out, first_layer_b1, first_layer_b2 = depth_enhanced_cnn(X_3D, A, B,
-                                                                   C,
-                                                                   num_classes,
-                                                                   is_training,
-                                                                   branch1=branch1,
-                                                                   branch2=branch2,
-                                                                   keep_prob=keep_prob,
-                                                                   feature_op=feature_op)
+        y_out, first_layer_b1, first_layer_b2, embedding = depth_enhanced_cnn(
+            X_3D, A, B, C,
+            num_classes,
+            is_training,
+            branch1=branch1,
+            branch2=branch2,
+            keep_prob=keep_prob,
+            feature_op=feature_op)
 
     total_loss = tf.nn.softmax_cross_entropy_with_logits(
         labels=tf.one_hot(y, num_classes),
@@ -161,6 +158,7 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     model['loss_val'] = loss
     model['train_step'] = train_step
     model['net'] = net
+    model['embedding'] = embedding
     model['first_layer_b1'] = first_layer_b1
     model['first_layer_b2'] = first_layer_b2
 

@@ -3,9 +3,9 @@ import os
 
 import numpy as np
 import tensorflow as tf
+from tensorflow.contrib.tensorboard.plugins import projector
 
 import json
-from tensorflow.contrib.tensorboard.plugins import projector
 
 
 # Save Checkpoint of Model
@@ -90,14 +90,14 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
                 summary.value.add(tag="Loss", simple_value=total_loss)
                 writer.add_summary(summary, global_step=global_step)
 
-        # if plot_loss:
-        #     plt.plot(losses)
-        #     plt.grid(True)
-        #     plt.xlim(-10, 800)
-        #     plt.title('Total Loss vs. Epoch')
-        #     plt.xlabel('Epoch')
-        #     plt.ylabel('Total Loss')
-        #     plt.show()
+                # if plot_loss:
+                #     plt.plot(losses)
+                #     plt.grid(True)
+                #     plt.xlim(-10, 800)
+                #     plt.title('Total Loss vs. Epoch')
+                #     plt.xlabel('Epoch')
+                #     plt.ylabel('Total Loss')
+                #     plt.show()
 
     return total_loss
 
@@ -161,6 +161,8 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
             num_correct = 0
             epoch_loss = 0
 
+            embeddings = []
+
             # Iterate Over the Entire Dataset Once
             for i in range(int(math.ceil(X_data.shape[0] / float(batch_size)))):
                 # Indices for Batch
@@ -206,14 +208,20 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                     for i in range(len(gt)):
                         confusion.append((pred[i], gt[i]))
 
-                if log_dir:
-                    tSNE(log_dir)
-                    tsv_dir = os.path.join(log_dir, 'metadata.tsv')
-                    string = '\n'.join(["%s\t%s" % (count, labels[idx][count])
-                                        for count in range(len(labels[idx]))])
-                    with open(tsv_dir, 'w') as f:
-                        f.write('index\tlabel\n' + string)
+                embeddings += sess.run(model['embedding'])
 
+            final_embedding = tf.Variable(np.concatenate(tuple(embeddings)),
+                                          name="final_embedding")
+
+            if log_dir:
+                tSNE(log_dir)
+                tsv_dir = os.path.join(log_dir, 'metadata.tsv')
+                string = '\n'.join(
+                    ["%s\t%s" % (count, dict[str(labels[count])]) for count
+                     in range(len(labels))])
+
+                with open(tsv_dir, 'w') as f:
+                    f.write('index\tlabel\n' + string)
 
             # Calculate Performance
             accuracy = num_correct / float(X_data.shape[0])
@@ -229,14 +237,5 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                 summary.value.add(tag="Accuracy", simple_value=accuracy)
                 summary.value.add(tag="Loss", simple_value=total_loss)
                 writer.add_summary(summary, global_step=global_step)
-
-        # if plot_loss:
-        #     plt.plot(losses)
-        #     plt.grid(True)
-        #     plt.xlim(-10, 800)
-        #     plt.title('Total Loss vs. Epoch')
-        #     plt.xlabel('Epoch')
-        #     plt.ylabel('Total Loss')
-        #     plt.show()
 
     return total_loss, accuracy, confusion
