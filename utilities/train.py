@@ -120,13 +120,14 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 save_depth=None, log_dir=None, dict=None):
     with tf.device(device):
         # Calculate Prediction Accuracy
-        # if depth_enhanced:
         num_train = X_data.shape[0]
         num_train = num_train / batch_size * batch_size
         X_data = X_data[:num_train]
-        X_data_unnormalized = X_data_unnormalized[:num_train]
-        labels = org_labels[:num_train]
 
+        if depth_enhanced:
+            X_data_unnormalized = X_data_unnormalized[:num_train]
+
+        labels = org_labels[:num_train]
 
         prediction = tf.argmax(model['y_out'], 1)
         correct_prediction = tf.equal(prediction, model['y'])
