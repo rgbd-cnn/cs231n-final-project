@@ -155,9 +155,9 @@ def setup_depth_enhanced_cnn_model(image_size, num_classes, A, B, C,
     model['train_step'] = train_step
     model['net'] = net
     model['embedding'] = embedding
-    model['embedding_train'] = tf.Variable(tf.random_normal([1280, 2560]),
+    model['embedding_train'] = tf.Variable(tf.random_normal([640, 2560]),
                                            name="final_embedding_train")
-    model['embedding_val'] = tf.Variable(tf.random_normal([1280, 2560]),
+    model['embedding_val'] = tf.Variable(tf.random_normal([640, 2560]),
                                          name="final_embedding_val")
     model['first_layer_b1'] = first_layer_b1
     model['first_layer_b2'] = first_layer_b2
