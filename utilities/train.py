@@ -209,7 +209,7 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
             if log_dir:
                 all_embed = np.concatenate(embeddings)
                 embed_list = all_embed.tolist()
-                label_5 = [int(ind < 5) for ind in labels]
+                label_5 = [int(ind < 10) for ind in labels]
                 real_labels = [labels[la] for la in range(len(labels)) if label_5[la]]
                 print(real_labels)
                 embeddings = np.array([embed_list[endi] for endi in range(len(label_5)) if label_5[endi]])
