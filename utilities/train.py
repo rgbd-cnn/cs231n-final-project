@@ -211,7 +211,7 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 embed_list = all_embed.tolist()
                 label_5 = [int(ind < 5) for ind in labels]
                 embeddings = np.array([embed_list[endi] for endi in range(len(label_5)) if label_5[endi]])
-
+                print(embeddings.shape)
                 if is_training:
                     model['embedding_train'].assign(embeddings[:640])
                 else:
