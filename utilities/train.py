@@ -207,10 +207,15 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 embeddings.append(emb)
 
             if log_dir:
+                all_embed = np.concatenate(embeddings)
+                embed_list = all_embed.tolist()
+                label_5 = [int(ind < 5) for ind in labels]
+                embeddings = np.array([embed_list[endi] for endi in range(len(label_5)) if label_5[endi]])
+
                 if is_training:
-                    model['embedding_train'].assign(np.concatenate(embeddings)[:640])
+                    model['embedding_train'].assign(embeddings[:640])
                 else:
-                    model['embedding_val'].assign(np.concatenate(embeddings)[:640])
+                    model['embedding_val'].assign(embeddings[:640])
                 print(dict)
                 tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                 string = '\n'.join(
