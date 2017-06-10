@@ -210,6 +210,8 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 all_embed = np.concatenate(embeddings)
                 embed_list = all_embed.tolist()
                 label_5 = [int(ind < 5) for ind in labels]
+                real_labels = [labels[la] for la in range(len(labels)) if label_5[la]]
+                print(real_labels)
                 embeddings = np.array([embed_list[endi] for endi in range(len(label_5)) if label_5[endi]])
                 print(embeddings.shape)
                 if is_training:
@@ -219,7 +221,7 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 print(dict)
                 tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                 string = '\n'.join(
-                    ["%s\t%s\t%s" % (count, labels[count], dict[labels[count]]) for count
+                    ["%s\t%s\t%s" % (count, real_labels[count], dict[real_labels[count]]) for count
                      in range(640)])
 
                 with open(tsv_dir, 'w') as f:
