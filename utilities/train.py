@@ -105,7 +105,7 @@ def tSNE(LOG_DIR, is_training):
     config = projector.ProjectorConfig()
     embedding = config.embeddings.add()
     embedding.tensor_name = "final_embedding_%s:0" % (
-    'train' if is_training else 'val')
+        'train' if is_training else 'val')
     embedding.metadata_path = os.path.join(LOG_DIR, 'metadata.tsv')
     summary_writer = tf.summary.FileWriter(LOG_DIR)
     projector.visualize_embeddings(summary_writer, config)
@@ -136,14 +136,19 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
         np.random.shuffle(train_indicies)
 
         # Populate TensorFlow Variables
-        if X_data_unnormalized == None or not save_depth:
-            variables = [model['embedding'], model['loss_val'],
-                         correct_prediction, accuracy,
-                         prediction, model['y']]
+        if depth_enhanced:
+            if X_data_unnormalized == None or not save_depth:
+                variables = [model['embedding'], model['loss_val'],
+                             correct_prediction, accuracy,
+                             prediction, model['y']]
+            else:
+
+                variables = [model['embedding'], model['loss_val'],
+                             model["depth_map"], correct_prediction, accuracy,
+                             prediction, model['y']]
         else:
-            variables = [model['embedding'], model['loss_val'],
-                         model["depth_map"],
-                         correct_prediction, accuracy, prediction, model['y']]
+            variables = [model['loss_val'], correct_prediction, accuracy]
+
         if is_training:
             variables[-1] = model['train_step']
 
@@ -166,27 +171,36 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 actual_batch_size = labels[i:i + batch_size].shape[0]
 
                 # Feed Dictionary for Batch
-                if X_data_unnormalized == None:
-                    feed_dict = {model['X']: X_data[idx, :],
-                                 model['y']: labels[idx],
-                                 model['is_training']: is_training}
+                if depth_enhanced:
+                    if X_data_unnormalized == None:
+                        feed_dict = {model['X']: X_data[idx, :],
+                                     model['y']: labels[idx],
+                                     model['is_training']: is_training}
+                    else:
+                        feed_dict = {model['X']: X_data[idx, :],
+                                     model['X_unnormalized']: X_data_unnormalized[
+                                                              idx, :],
+                                     model['y']: labels[idx],
+                                     model['is_training']: is_training}
                 else:
                     feed_dict = {model['X']: X_data[idx, :],
-                                 model['X_unnormalized']: X_data_unnormalized[
-                                                          idx, :],
                                  model['y']: labels[idx],
                                  model['is_training']: is_training}
 
                 # Run TF Session (Returns Loss and Correct Predictions)
-                if X_data_unnormalized == None or not save_depth:
-                    emb, loss, corr, _, pred, gt = sess.run(variables,
-                                                            feed_dict=feed_dict)
+                if depth_enhanced:
+                    if X_data_unnormalized == None or not save_depth:
+                        emb, loss, corr, _, pred, gt = sess.run(variables,
+                                                                feed_dict=feed_dict)
+                    else:
+                        emb, loss, depth_map, corr, _, pred, gt = sess.run(
+                            variables,
+                            feed_dict=feed_dict)
+                        save_depth_maps(X_data_unnormalized[idx, :], depth_map,
+                                        labels[idx], str(epoch) + "-" + str(i))
                 else:
-                    emb, loss, depth_map, corr, _, pred, gt = sess.run(
-                        variables,
-                        feed_dict=feed_dict)
-                    save_depth_maps(X_data_unnormalized[idx, :], depth_map,
-                                    labels[idx], str(epoch) + "-" + str(i))
+                    loss, corr, _ = sess.run(variables, feed_dict=feed_dict)
+
                 # print(loss)
                 num_correct += np.sum(corr)
                 epoch_loss += loss * actual_batch_size
@@ -200,19 +214,23 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                                     np.sum(corr) / float(actual_batch_size)))
                 iter_cnt += 1
 
-                if not is_training:
+                if depth_enhanced and not is_training:
                     for i in range(len(gt)):
                         confusion.append((pred[i], gt[i]))
 
-                embeddings.append(emb)
+                if depth_enhanced:
+                    embeddings.append(emb)
 
-            if log_dir:
+            if depth_enhanced and log_dir:
                 all_embed = np.concatenate(embeddings)
                 embed_list = all_embed.tolist()
                 label_5 = [int(ind < 10) for ind in labels]
-                real_labels = [labels[la] for la in range(len(labels)) if label_5[la]]
+                real_labels = [labels[la] for la in range(len(labels)) if
+                               label_5[la]]
                 print(real_labels)
-                embeddings = np.array([embed_list[endi] for endi in range(len(label_5)) if label_5[endi]])
+                embeddings = np.array(
+                    [embed_list[endi] for endi in range(len(label_5)) if
+                     label_5[endi]])
                 print(embeddings.shape)
                 if is_training:
                     model['embedding_train'].assign(embeddings[:640])
@@ -221,7 +239,9 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                 print(dict)
                 tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                 string = '\n'.join(
-                    ["%s\t%s\t%s" % (count, real_labels[count], dict[real_labels[count]]) for count
+                    ["%s\t%s\t%s" % (
+                        count, real_labels[count], dict[real_labels[count]]) for
+                     count
                      in range(640)])
 
                 with open(tsv_dir, 'w') as f:
