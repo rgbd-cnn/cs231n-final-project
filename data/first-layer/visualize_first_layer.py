@@ -18,7 +18,7 @@ def plotNNFilter(units, k, type, image):
         plt.imshow(np.array(image).astype('uint8'))
     else:
         print(np.array(image).shape)
-        plt.imshow(np.array(image)[:, :, 0].astype('uint8'))
+        plt.imshow(np.array(image)[:, :, 0])
 
     for i in range(1, filters+1):
         plt.subplot(n_rows, n_columns, i + 1)
@@ -35,8 +35,8 @@ image, depth = j['image'], j['depth']
 for k in range(len(RGB)):
     print(dict[str(labels[k])])
     plotNNFilter(RGB[k:k + 1], dict[str(labels[k])], 'RGB', image[k])
-    plt.savefig('RGB %s' % (dict[str(labels[k])]))
+    plt.savefig('RGB_%s' % (dict[str(labels[k])]))
     plotNNFilter(D[k:k + 1], dict[str(labels[k])], 'Depth', depth[k])
-    plt.savefig('D %s' % (dict[str(labels[k])]))
+    plt.savefig('D_%s' % (dict[str(labels[k])]))
 
 

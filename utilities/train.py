@@ -90,15 +90,6 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1,
                 summary.value.add(tag="Loss", simple_value=total_loss)
                 writer.add_summary(summary, global_step=global_step)
 
-                # if plot_loss:
-                #     plt.plot(losses)
-                #     plt.grid(True)
-                #     plt.xlim(-10, 800)
-                #     plt.title('Total Loss vs. Epoch')
-                #     plt.xlabel('Epoch')
-                #     plt.ylabel('Total Loss')
-                #     plt.show()
-
     return total_loss
 
 
@@ -218,7 +209,7 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1, batch_size=64
                 tSNE(log_dir)
                 tsv_dir = os.path.join(log_dir, 'metadata.tsv')
                 string = '\n'.join(
-                    ["%s\t%s" % (count, dict[str(labels[count])]) for count
+                    ["%s\t%s" % (count, dict[labels[count]]) for count
                      in range(num_train)])
 
                 with open(tsv_dir, 'w') as f:
