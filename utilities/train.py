@@ -144,10 +144,10 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
         # Populate TensorFlow Variables
         if X_data_unnormalized == None or not save_depth:
-            variables = [model['loss_val'], correct_prediction, accuracy,
+            variables = [model['embedding'], model['loss_val'], correct_prediction, accuracy,
                          prediction, model['y']]
         else:
-            variables = [model['loss_val'], model["depth_map"],
+            variables = [model['embedding'], model['loss_val'], model["depth_map"],
                          correct_prediction, accuracy, prediction, model['y']]
         if is_training:
             variables[-1] = model['train_step']
@@ -184,10 +184,10 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
 
                 # Run TF Session (Returns Loss and Correct Predictions)
                 if X_data_unnormalized == None or not save_depth:
-                    loss, corr, _, pred, gt = sess.run(variables,
+                    emb, loss, corr, _, pred, gt = sess.run(variables,
                                                        feed_dict=feed_dict)
                 else:
-                    loss, depth_map, corr, _, pred, gt = sess.run(variables,
+                    emb, loss, depth_map, corr, _, pred, gt = sess.run(variables,
                                                                   feed_dict=feed_dict)
                     save_depth_maps(X_data_unnormalized[idx, :], depth_map,
                                     labels[idx], str(epoch) + "-" + str(i))
@@ -208,7 +208,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
                     for i in range(len(gt)):
                         confusion.append((pred[i], gt[i]))
 
-                embeddings += sess.run(model['embedding'])
+                embeddings.append(emb)
 
             final_embedding = tf.Variable(np.concatenate(tuple(embeddings)),
                                           name="final_embedding")
