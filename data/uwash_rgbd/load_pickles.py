@@ -82,8 +82,8 @@ def package_data(X_train, y_train, X_test_val, y_test_val, depth):
         # X_test_val[:, :, :, 3][X_test_val[:, :, :, 3] > 5000] = 5000
 
         # Invert Depth Data
-        X_train[:, :, :, 3] = 1.0 / X_train[:, :, :, 3]
-        X_test_val[:, :, :, 3] = 1.0 / X_test_val[:, :, :, 3]
+        # X_train[:, :, :, 3] = 1.0 / X_train[:, :, :, 3]
+        # X_test_val[:, :, :, 3] = 1.0 / X_test_val[:, :, :, 3]
         # X_train[:, :, :, 3][X_train[:, :, :, 3] > 5000] = 5000
         # print(np.max(X_train[:, :, :, 3]))
 
