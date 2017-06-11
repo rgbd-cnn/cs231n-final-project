@@ -45,7 +45,7 @@ for x in range(width):
 
 cb = fig.colorbar(res)
 cb.ax.tick_params(labelsize=50)
-plt.title("Depth-Enhanced CNN Confusion Matrix on UW-2D Dataset", fontsize=90, y=1.08)
+# plt.title("Depth-Enhanced CNN Confusion Matrix on UW-2D Dataset", fontsize=90, y=1.08)
 plt.ylabel('Predicted Class', fontsize=100)
 plt.xlabel('True Class', fontsize=100)
 plt.xticks(range(width), [labels[str(i)] for i in range(51)], rotation=90, fontsize=35)

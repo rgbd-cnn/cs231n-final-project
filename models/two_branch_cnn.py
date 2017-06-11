@@ -34,6 +34,13 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
     if feature_op == "stack":
         embedding = tf.concat([feature1, feature2], 1)
         output = slim.fully_connected(embedding, num_classes, activation_fn=None)
+    elif feature_op == "bn_stack":
+        normalized1 = slim.batch_norm(feature1, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                                      activation_fn=None, is_training=is_training, trainable=True)
+        normalized2 = slim.batch_norm(feature2, decay=0.99, center=True, scale=True, epsilon=1e-8,
+                                      activation_fn=None, is_training=is_training, trainable=True)
+        embedding = tf.concat([normalized1, normalized2], 1)
+        output = slim.fully_connected(embedding, num_classes, activation_fn=None)
     elif feature_op == "bn_add":
         normalized1 = slim.batch_norm(feature1, decay=0.99, center=True, scale=True, epsilon=1e-8,
                                       activation_fn=None, is_training=is_training, trainable=True)
@@ -41,12 +48,8 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
                                       activation_fn=None, is_training=is_training, trainable=True)
         embedding = normalized1 + normalized2
         output = slim.fully_connected(embedding, num_classes, activation_fn=None)
-    elif feature_op == "bn_stack":
-        normalized1 = slim.batch_norm(feature1, decay=0.99, center=True, scale=True, epsilon=1e-8,
-                                      activation_fn=None, is_training=is_training, trainable=True)
-        normalized2 = slim.batch_norm(feature2, decay=0.99, center=True, scale=True, epsilon=1e-8,
-                                      activation_fn=None, is_training=is_training, trainable=True)
-        embedding = tf.concat([normalized1, normalized2], 1)
+    elif feature_op == "add":
+        embedding = feature1 + feature2
         output = slim.fully_connected(embedding, num_classes, activation_fn=None)
     else:
         raise Exception()
