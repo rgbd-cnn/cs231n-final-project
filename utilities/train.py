@@ -216,39 +216,39 @@ def train_model(device, sess, model, X_data, org_labels, epochs=1,
                                     np.sum(corr) / float(actual_batch_size)))
                 iter_cnt += 1
 
-                if depth_enhanced and not is_training:
-                    for i in range(len(gt)):
-                        confusion.append((pred[i], gt[i]))
-
-                if depth_enhanced:
-                    embeddings.append(emb)
-
-            if depth_enhanced and log_dir:
-                all_embed = np.concatenate(embeddings)
-                embed_list = all_embed.tolist()
-                label_5 = [int(ind < 10) for ind in labels]
-                real_labels = [labels[la] for la in range(len(labels)) if
-                               label_5[la]]
-                print(real_labels)
-                embeddings = np.array(
-                    [embed_list[endi] for endi in range(len(label_5)) if
-                     label_5[endi]])
-                print(embeddings.shape)
-                if is_training:
-                    model['embedding_train'].assign(embeddings[:640])
-                else:
-                    model['embedding_val'].assign(embeddings[:640])
-                print(dict)
-                tsv_dir = os.path.join(log_dir, 'metadata.tsv')
-                string = '\n'.join(
-                    ["%s\t%s\t%s" % (
-                        count, real_labels[count], dict[real_labels[count]]) for
-                     count
-                     in range(640)])
-
-                with open(tsv_dir, 'w') as f:
-                    f.write('index\tlabel_index\tlabel_name\n' + string)
-                tSNE(log_dir, is_training)
+                # if depth_enhanced and not is_training:
+                #     for i in range(len(gt)):
+                #         confusion.append((pred[i], gt[i]))
+                #
+                # if depth_enhanced:
+                #     embeddings.append(emb)
+            #
+            # if depth_enhanced and log_dir:
+            #     all_embed = np.concatenate(embeddings)
+            #     embed_list = all_embed.tolist()
+            #     label_5 = [int(ind < 10) for ind in labels]
+            #     real_labels = [labels[la] for la in range(len(labels)) if
+            #                    label_5[la]]
+            #     print(real_labels)
+            #     embeddings = np.array(
+            #         [embed_list[endi] for endi in range(len(label_5)) if
+            #          label_5[endi]])
+            #     print(embeddings.shape)
+            #     if is_training:
+            #         model['embedding_train'].assign(embeddings[:640])
+            #     else:
+            #         model['embedding_val'].assign(embeddings[:640])
+            #     print(dict)
+            #     tsv_dir = os.path.join(log_dir, 'metadata.tsv')
+            #     string = '\n'.join(
+            #         ["%s\t%s\t%s" % (
+            #             count, real_labels[count], dict[real_labels[count]]) for
+            #          count
+            #          in range(640)])
+            #
+            #     with open(tsv_dir, 'w') as f:
+            #         f.write('index\tlabel_index\tlabel_name\n' + string)
+            #     tSNE(log_dir, is_training)
 
             # Calculate Performance
             accuracy = num_correct / float(X_data.shape[0])
