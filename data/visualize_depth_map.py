@@ -37,7 +37,7 @@ def visualize(f):
         plt.subplot(7, 6, 2 * i + 2)
         plt.title(labels[str(yinp['label'][i])] + "-D")
         plt.imshow(np.array(yinp['data'][i])[:, :, 0])
-    plt.savefig(f[:-5] + '.png')
+    plt.savefig(f[:-5] + '.png', bbox_inches='tight')
 
 
 dir = './depth_maps/depth_maps'

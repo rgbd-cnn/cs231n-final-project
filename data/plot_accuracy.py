@@ -34,9 +34,10 @@ def plot_accuracies(dir):
                 j[run]['val'] = [float(i[2]) * 100 for i in data[1:]]
 
 
-    i = 1
+    i = 0
+    plt.figure(1, figsize=(20, 40))
     for title in j:
-        plt.figure(i)
+        plt.subplot(len(j), 2, i + 1)
         plt.xlabel('Epoch')
         plt.ylabel('Accuracy (%)')
         plt.title(title)
@@ -48,7 +49,7 @@ def plot_accuracies(dir):
         plt.grid(b=True, axis='y')
         i += 1
 
-        plt.savefig(os.path.join(dir, title + '.png'))
+    plt.savefig(os.path.join(dir, 'accuracies.png'), bbox_inches='tight')
 
 if __name__ == '__main__':
     dir = parse_arguments(sys.argv[1:]).json_file_dir

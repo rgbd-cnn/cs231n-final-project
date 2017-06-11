@@ -35,8 +35,8 @@ image, depth = j['image'], j['depth']
 for k in range(len(RGB)):
     print(dict[str(labels[k])])
     plotNNFilter(RGB[k:k + 1], dict[str(labels[k])], 'RGB', image[k])
-    plt.savefig('RGB_%s' % (dict[str(labels[k])]))
+    plt.savefig('RGB_%s' % (dict[str(labels[k])]), bbox_inches='tight')
     plotNNFilter(D[k:k + 1], dict[str(labels[k])], 'Depth', depth[k])
-    plt.savefig('D_%s' % (dict[str(labels[k])]))
+    plt.savefig('D_%s' % (dict[str(labels[k])]), bbox_inches='tight')
 
 
