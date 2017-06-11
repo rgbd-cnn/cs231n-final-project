@@ -142,7 +142,11 @@ def main(args):
     # Run Appropriate Network
     if network == 'resnet':
         run_resnet_test(data, num_classes, device, recover,
-                        'checkpoints/' + model_name, highest_epochs, epochs)
+                        'checkpoints/' + model_name, highest_epochs, epochs,
+                        lr=args.lr,
+                        train_epochs_per_validation=args.train_epochs_per_validation,
+                        tensorboard_log_dir=args.tensorboard_log_dir,
+                        dataset=dataset, tag=args.tag)
     elif network == 'inception_resnet':
         run_inception_resnet_test(data, num_classes, device, recover,
                                   'checkpoints/' + model_name,
