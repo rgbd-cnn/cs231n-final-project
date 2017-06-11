@@ -49,7 +49,7 @@ def run_resnet_test(data, num_classes, device, recover, ckpt_path, prev_epochs,
         # Train Model
         print("Training model...")
         train_model(device, sess, model, data['X_train'], data['y_train'],
-                    epochs=epochs,
+                    epochs=1,
                     batch_size=64, is_training=True, log_freq=100,
                     plot_loss=False, global_step=global_step,
                     writer=train_writer)
