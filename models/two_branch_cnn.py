@@ -48,7 +48,7 @@ def two_branch_cnn(X, A, B, C, num_classes, is_training, branch1=None,
                                       activation_fn=None, is_training=is_training, trainable=True)
         embedding = normalized1 + normalized2
         output = slim.fully_connected(embedding, num_classes, activation_fn=None)
-    elif feature_op == "add":
+    elif feature_op == "naive-add":
         embedding = feature1 + feature2
         output = slim.fully_connected(embedding, num_classes, activation_fn=None)
     else:
