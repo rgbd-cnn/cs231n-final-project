@@ -1,4 +1,5 @@
 import math
+
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
@@ -16,12 +17,13 @@ def recover_model_checkpoint(session, saver, checkpoint_path):
   print("Model restored!\n")
 
 
-def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is_training=False,
-                    log_freq=100, plot_loss=False, global_step=None, writer=None):
+def train_gen_model(device, sess, model, X_data, labels, epochs=1,
+                    batch_size=64, is_training=False, log_freq=100,
+                    plot_loss=False, global_step=None, writer=None):
   with tf.device(device):
     # Calculate Prediction Accuracy
     y = tf.image.resize_images(model['y'], [32, 32],
-                                 method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
+                               method=tf.image.ResizeMethod.NEAREST_NEIGHBOR)
     mse = tf.reduce_mean(tf.squared_difference(model['y_out'], y))
 
     # Shuffle Training Data
@@ -49,8 +51,7 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=64
         actual_batch_size = labels[i:i + batch_size].shape[0]
 
         # Feed Dictionary for Batch
-        feed_dict = {model['X']: X_data[idx, :],
-                     model['y']: labels[idx],
+        feed_dict = {model['X']: X_data[idx, :], model['y']: labels[idx],
                      model['is_training']: is_training}
 
         # Run TF Session (Returns Loss and Correct Predictions)
@@ -88,9 +89,11 @@ def train_gen_model(device, sess, model, X_data, labels, epochs=1, batch_size=64
 
   return total_loss
 
+
 # Train the Model
-def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is_training=False, log_freq=100,
-                plot_loss=False, global_step=None, writer=None):
+def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64,
+                is_training=False, log_freq=100, plot_loss=False,
+                global_step=None, writer=None):
   with tf.device(device):
     # Calculate Prediction Accuracy
     correct_prediction = tf.equal(tf.argmax(model['y_out'], 1), model['y'])
@@ -121,8 +124,7 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is
         actual_batch_size = labels[i:i + batch_size].shape[0]
 
         # Feed Dictionary for Batch
-        feed_dict = {model['X']: X_data[idx, :],
-                     model['y']: labels[idx],
+        feed_dict = {model['X']: X_data[idx, :], model['y']: labels[idx],
                      model['is_training']: is_training}
 
         # Run TF Session (Returns Loss and Correct Predictions)
@@ -133,8 +135,9 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is
 
         # Print Loss and Accuracies
         if is_training and (iter_cnt % log_freq) == 0:
-          print("Iteration {0}: Training Loss = {1:.3g} and Accuracy = {2:.2g}" \
-                .format(iter_cnt, loss, np.sum(corr) / float(actual_batch_size)))
+          print("Iteration {0}: Training Loss = {1:.3g} and Accuracy "
+                "= {2:.2g}".format(iter_cnt, loss,
+              np.sum(corr) / float(actual_batch_size)))
         iter_cnt += 1
 
       # Calculate Performance
@@ -142,8 +145,8 @@ def train_model(device, sess, model, X_data, labels, epochs=1, batch_size=64, is
       total_loss = epoch_loss / float(X_data.shape[0])
       losses.append(total_loss)
 
-      print("Epoch {0}: Overall Loss = {1:.3g} and Accuracy = {2:.3g}" \
-            .format(epoch + 1, total_loss, accuracy))
+      print("Epoch {0}: Overall Loss = {1:.3g} and Accuracy = {2:.3g}".format(
+          epoch + 1, total_loss, accuracy))
 
       if writer is not None:
         global_step += 1

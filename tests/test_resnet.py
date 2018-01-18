@@ -1,9 +1,9 @@
-import numpy as np
-import tensorflow as tf
-from utilities.train import *
 from models.resnet import setup_resnet_2d_model
+from utilities.train import *
 
-def run_resnet_test(data, num_classes, device, recover, ckpt_path, prev_epochs, epochs):
+
+def run_resnet_test(data, num_classes, device, recover, ckpt_path, prev_epochs,
+                    epochs):
   # Create Model
   print("Setting up model...")
   data_shape = list(data['X_train'][0].shape)
@@ -19,8 +19,9 @@ def run_resnet_test(data, num_classes, device, recover, ckpt_path, prev_epochs, 
 
   # Train Model
   print("Training model...")
-  train_model(device, sess, model, data['X_train'], data['y_train'], epochs=epochs,
-              batch_size=64, is_training=True, log_freq=100, plot_loss=False)
+  train_model(device, sess, model, data['X_train'], data['y_train'],
+              epochs=epochs, batch_size=64, is_training=True, log_freq=100,
+              plot_loss=False)
 
   # Check Final Training Accuracy
   print("\nFinal Training Accuracy:")
