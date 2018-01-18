@@ -5,8 +5,8 @@ import sys
 
 from data.cs231n.data_utils import get_CIFAR10_data
 from data.uwash_rgbd.load_pickles import load_uwash_rgbd
-from tests.test_inception_resnet_2d import *
-from tests.test_resnet_2d import *
+from tests.test_inception_resnet import *
+from tests.test_resnet import *
 from tests.test_two_branch_cnn import *
 
 
@@ -25,28 +25,24 @@ def parse_arguments(argv):
                         help='whether to load existing model', default=0)
     parser.add_argument('--model_name', type=str, help='model name',
                         default=None)
-    parser.add_argument('--epochs', type=int,
-                        help='number of epochs', default=None)
-    parser.add_argument('--device', type=str,
-                        help='CPU or GPU', default='/cpu:0')
-    parser.add_argument('--debug', type=int,
-                        help='debug mode', default=0)
+    parser.add_argument('--epochs', type=int, help='number of epochs',
+                        default=None)
+    parser.add_argument('--device', type=str, help='CPU or GPU',
+                        default='/cpu:0')
+    parser.add_argument('--debug', type=int, help='debug mode', default=0)
     parser.add_argument('--tensorboard_log_dir', type=str,
                         help='Where to save Tensorboard Logs for '
                              'visualization, setting it to None means disable '
-                             'Tensorboard',
-                        default=None)
-    parser.add_argument('--lr', type=float,
-                        help='learning rate', default=1e-3)
+                             'Tensorboard', default=None)
+    parser.add_argument('--lr', type=float, help='learning rate', default=1e-3)
     parser.add_argument('--dropout_keep_prob', type=float,
                         help='dropout keep probability', default=0.5)
-    parser.add_argument('--reg', type=float,
-                        help='regularization', default=0.0)
+    parser.add_argument('--reg', type=float, help='regularization', default=0.0)
     parser.add_argument('--train_epochs_per_validation', type=int,
                         help='How many epochs to train before validating once',
                         default=1)
-    parser.add_argument('--branch1', type=str,
-                        help='model of the first branch', default="IR2d")
+    parser.add_argument('--branch1', type=str, help='model of the first branch',
+                        default="IR2d")
     parser.add_argument('--branch2', type=str,
                         help='model of the second branch', default="IR3d")
     return parser.parse_args(argv)
@@ -100,8 +96,7 @@ def main(args):
     if dataset == 'cifar':
         # Get CIFAR-10 Dataset
         data = get_CIFAR10_data(num_training=49000, num_validation=1000,
-                                num_test=1000,
-                                subtract_mean=True)
+                                num_test=1000, subtract_mean=True)
         num_classes = 10
     elif dataset == 'uwash_2d':
         # Get UWASH Dataset (Without Depth)
@@ -130,16 +125,15 @@ def main(args):
 
     # Run Appropriate Network
     if network == 'resnet':
-        run_resnet_2d_test(data, num_classes, device, recover,
-                           'checkpoints/' + model_name, highest_epochs, epochs)
+        run_resnet_test(data, num_classes, device, recover,
+                        'checkpoints/' + model_name, highest_epochs, epochs)
     elif network == 'inception_resnet':
-        run_inception_resnet_2d_test(data, num_classes, device, recover,
-                                     'checkpoints/' + model_name,
-                                     highest_epochs,
-                                     epochs, lr=args.lr,
-                                     train_epochs_per_validation=args.train_epochs_per_validation,
-                                     tensorboard_log_dir=args.tensorboard_log_dir,
-                                     dataset=dataset, reg=args.reg)
+        run_inception_resnet_test(data, num_classes, device, recover,
+                                  'checkpoints/' + model_name, highest_epochs,
+                                  epochs, lr=args.lr,
+                                  train_epochs_per_validation=args.train_epochs_per_validation,
+                                  tensorboard_log_dir=args.tensorboard_log_dir,
+                                  dataset=dataset, reg=args.reg)
 
     elif network == 'two_branch':
         run_two_branch_cnn_test(data, num_classes, device, recover,
